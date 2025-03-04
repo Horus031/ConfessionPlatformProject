@@ -33,7 +33,6 @@
                 }
 
                 header("Location: ../views/mainpage.html.php");
-                exit();
             } else {
                 echo "Password is incorrect";
             }

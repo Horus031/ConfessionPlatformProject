@@ -7,7 +7,30 @@
     --color-gradient1: #4CAF50;
     --color-gradient2: #3D89E3;
     --color-text: #333;
-    --color-text-light: #666;
+    --color-text-light: #888;
     --color-form-btn: #24A878;
     --color-secondary: #cccccc;
+    --color-tags: #DDDDDD;
+    --color-border: #666666;
+
+
+    --animate-menuTransition: menuTransition 0.5s ease forwards;
+    --animate-menuOut: menuOut 0.5s ease forwards;
+
+    @keyframes menuTransition {
+        100% {
+          transform: translateX(100%);
+        }
+    }
+
+    @keyframes menuOut {
+        0% {
+          transform: translateX(100%);
+        }
+
+        100% {
+          transform: translateX(0);
+        }
+    }
+
 }
