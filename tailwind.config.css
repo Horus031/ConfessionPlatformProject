@@ -3,11 +3,10 @@ module.exports = {
     './views/*.html.php',
     './src/*.css',
     './*.html',
+    './*.php',
   ],
   theme: {
-    extend: {
-      
-    },
+    extend: {},
     
   },
   plugins: [],
