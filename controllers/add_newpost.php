@@ -23,6 +23,6 @@
 
         header('Location: ../views/main.html.php');
     } catch (PDOException $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        echo 'Error:' . $e->getMessage();
     }
 ?>

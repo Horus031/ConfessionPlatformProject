@@ -1,53 +1,15 @@
-<main class="mt-28 px-4 md:pl-[26%] lg:pl-[20%] xl:pl-[20%] 2xl:pl-[16%]">
-    <div class="flex flex-col md:flex-row md:items-center">
+<main class="mt-28 w-full px-4 md:pl-[26%] lg:pl-[20%] xl:pl-[20%] 2xl:pl-[16%]">
+    <div id="profile-container" class="flex flex-col md:flex-row md:items-center">
         <div class="flex  justify-between items-start px-2 space-y-4 md:flex-col md:items-center md:justify-start">
-            <img src="../assets/images/user.png" alt="" aspect-ratio="1/1" class="h-30 w-30 rounded-full">
+            <img src="<?= isset($_SESSION['avatarURL']) ? $_SESSION["avatarURL"] : '../assets/images/user.png';?>" alt="" aspect-ratio="1/1" class="h-30 w-30 rounded-full">
 
             <a href="main.html.php?page=editprofile" class="border-1 border-secondary rounded-lg px-3 py-1 font-semibold cursor-pointer">Edit profile</a>
         </div>
 
         <div class="space-y-2 mt-1">
-            <h2 class="text-2xl my-1"><?=$_SESSION['username']?></h2>
-            <div>
-                <span class="text-text font-medium">@horus031</span>
-                <span class="text-text">•</span>
-                <span class="text-text-light font-medium">Joined February 2025</span>
-            </div>
-
-            <div class="flex space-x-4 font-medium">
-                <div>
-                    <span>0</span>
-                    <span class="text-text">Followers</span>
-                </div>
-                <div>
-                    <span>0</span>
-                    <span class="text-text">Following</span>
-                </div>
-            </div>
-
-            <div class="flex space-x-4 font-medium">
-                <div>
-                    <span>0</span>
-                    <span class="text-text">Views</span>
-                </div>
-                <div>
-                    <span>0</span>
-                    <span class="text-text">Likes</span>
-                </div>
-            </div>
-
-            <div>
-                <button class="border-1 border-secondary rounded-xl px-4 py-1 font-semibold">
-                    @Github
-                </button>
-
-                <button class="border-1 border-secondary rounded-xl px-4 py-1 font-semibold">
-                    @LinkedIn
-                </button>
-
-                <button class="border-1 border-secondary rounded-xl px-4 py-1 font-semibold">
-                    +2
-                </button>
+            <div id="info-container" class="flex flex-col space-y-2">
+                <h2 class="text-2xl my-1"><?=$_SESSION['username']?></h2>
+                
             </div>
         </div>
 
@@ -82,7 +44,7 @@
 
     <div  class="mt-4 font-medium">
         <h2>Your posts</h2>
-        <div id="mypost-container" class="grid lg:grid-cols-2 gap-4">
+        <div id="mypost-container" class="grid w-full lg:grid-cols-2 2xl:grid-cols-3 gap-4">
             
         </div>
     </div>
@@ -90,19 +52,78 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        fetch('../controllers/get_userinfo.php')
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            const profileContainer = document.querySelector('#info-container');
+            if (data.error) {
+                profileContainer.innerHTML = `<p class="text-red-500">${data.error}</p>`;
+            } else {
+                const profileElements = document.createElement('div');
+                profileElements.classList.add('flex', 'flex-col', 'space-y-2');
+
+                const createdAt = new Date(data.created_at);
+                const formattedDate = createdAt.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+
+                profileElements.innerHTML = `
+                        <div>
+                            <span class="text-text font-medium">${data.nickname ?? '@horus031'}</span>
+                            <span class="text-text">•</span>
+                            <span class="text-text-light font-medium">Joined ${formattedDate}</span>
+                        </div>
+
+                        <div class="flex flex-col space-y-2">
+                            <div>
+                                <span>0</span>
+                                <span class="text-text">Followers</span>
+
+                                <span>0</span>
+                                <span class="text-text">Following</span>
+                            </div>
+
+                            <div>
+                                <span>0</span>
+                                <span class="text-text">Views</span>
+
+                                <span>0</span>
+                                <span class="text-text">Likes</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button class="border-1 border-secondary rounded-xl px-4 py-1 font-semibold">
+                                @Github
+                            </button>
+
+                            <button class="border-1 border-secondary rounded-xl px-4 py-1 font-semibold">
+                                @LinkedIn
+                            </button>
+
+                            <button class="border-1 border-secondary rounded-xl px-4 py-1 font-semibold">
+                                +2
+                            </button>
+                        </div>
+                
+                `;
+                profileContainer.appendChild(profileElements);
+            }
+        });
+
+
         fetch('../controllers/list_question.php')
         .then(response => response.json())
         .then(data => {
             const mypostContainer = document.querySelector('#mypost-container');
             let hasPosts = false;
             if (data.error) {
-                container.innerHTML = `<p class="text-red-500">${data.error}</p>`;
+                mypostContainer.innerHTML = `<p class="text-red-500">${data.error}</p>`;
             } else {
                 data.forEach(myPost => {
                     if (myPost.user_id == <?= $_SESSION['user_id'] ?>) {
                         hasPosts = true;
                         const mypostElements = document.createElement('div');
-                        mypostElements.classList.add('flex', 'items-center', 'justify-between', 'border-2', 'border-secondary', 'mt-2', 'p-4', 'rounded-lg');
+                        mypostElements.classList.add('flex', 'items-center', 'justify-between', 'border-2', 'border-secondary', 'mt-2', 'p-4', 'rounded-lg', 'w-full');
                         mypostElements.innerHTML = `
                             <div class="space-y-2">
                                 <h2 class="font-semibold text-xl line-clamp-2">${myPost.title}</h2>
