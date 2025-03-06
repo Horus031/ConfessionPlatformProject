@@ -1,6 +1,6 @@
 <?php
     session_start();
-    include '../models/dbconnection.php';
+    include '../includes/dbconnection.php';
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_SPECIAL_CHARS);
@@ -8,7 +8,7 @@
         $remember = isset($_POST['remember_me']);
 
         // Query from database
-        $sql = "SELECT user_id, password FROM users WHERE username = :username";
+        $sql = "SELECT user_id, password, avatar FROM users WHERE username = :username";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':username', $username);
         $stmt->execute();
@@ -18,6 +18,7 @@
             if (password_verify($password, $user['password'])) {
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['username'] = $username;
+                $_SESSION['avatarURL'] = $user['avatar'];
 
                 // Check xem người dùng có bật remember me không
                 if ($remember) {
@@ -32,7 +33,7 @@
                     $stmt->execute();
                 }
 
-                header("Location: ../views/mainpage.html.php");
+                header("Location: ../views/main.html.php");
             } else {
                 echo "Password is incorrect";
             }

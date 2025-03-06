@@ -1,6 +1,3 @@
-<?php 
-    session_start();
-?>
 
 <header class="fixed top-0 w-full flex justify-between items-center z-50 p-3 shadow-lg bg-white border-b border-secondary">
     <div class="hidden md:flex items-center px-3 pt-3 pb-2">
@@ -66,7 +63,7 @@
             </div>
         </button>
         <button class="relative group">
-            <img id="user-btn" loading="lazy" src="../assets/images/user.png" alt="" class="h-10">
+            <img id="user-btn" loading="lazy" src="<?= isset($_SESSION['avatarURL']) ? $_SESSION["avatarURL"] : '../assets/images/user.png'; ?>" alt="" class="h-10">
             <div id="user-popup" class="absolute bg-white rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent">
                 <a href="main.html.php?page=profile" class="flex items-center space-x-4 p-3 hover:bg-gray-200 cursor-pointer">
                     <img loading="lazy" src="../assets/images/profile.png" alt="" class="h-6">
@@ -76,7 +73,7 @@
                     <img loading="lazy" src="../assets/images/settings.png" alt="" class="h-6">
                     <span>Settings</span>
                 </a>
-                <a class="flex items-center space-x-4 p-3 hover:bg-gray-200">
+                <a href="../controllers/logout.php" class="flex items-center space-x-4 p-3 hover:bg-gray-200">
                     <img loading="lazy" src="../assets/images/logout.png" alt="" class="h-6">
                     <span>Logout</span>
                 </a>

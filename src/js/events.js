@@ -61,12 +61,13 @@ const app = {
                 notifyPopup.classList.add('hidden');
             }
         });
+
+        
     },
 
     start: function() {
         this.handleEvents();
 
-        console.log(navbar);
 
     }
 }

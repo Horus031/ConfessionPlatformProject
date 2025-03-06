@@ -1,10 +1,10 @@
 <?php
 session_start();
-include './models/dbconnection.php'; // Kết nối database
+include './includes/dbconnection.php'; // Kết nối database
 
 // Kiểm tra nếu đã đăng nhập bằng session
 if (isset($_SESSION['user_id'])) {
-    header("Location: views/mainpage.html.php");
+    header("Location: views/main.html.php");
     exit();
 }
 
@@ -23,7 +23,7 @@ if (isset($_COOKIE['remember_token'])) {
         $_SESSION['username'] = $username;
 
         // Chuyển hướng đến dashboard
-        header("Location: views/mainpage.html.php");
+        header("Location: views/main.html.php");
         exit();
     }
 }

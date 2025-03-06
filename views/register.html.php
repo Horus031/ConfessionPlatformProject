@@ -33,25 +33,8 @@
         
 
         <div class="relative bg-transparent -mt-18">
-            <svg width="100%" height="700px" xmlns="http://www.w3.org/2000/svg" class="absolute top-20">
-                <defs>
-                    <filter id="inset-shadow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feComponentTransfer in="SourceAlpha">
-                            <feFuncA type="table" tableValues="1 0" />
-                        </feComponentTransfer>
-                        <feGaussianBlur stdDeviation="5" />
-                        <feOffset dx="0" dy="3" result="offsetblur" />
-                        <feFlood flood-color="black" result="color" />
-                        <feComposite in2="offsetblur" operator="in" />
-                        <feComposite in2="SourceAlpha" operator="in" />
-                        <feMerge>
-                            <feMergeNode in="SourceGraphic" />
-                            <feMergeNode />
-                        </feMerge>
-                    </filter>
-                </defs>
-                <path d="M 0 60 q 100 30 150 -20 q 75 -70 300 0 l 180 600 l -800 0" stroke="none" stroke-width="0" fill="white" filter="url(#inset-shadow)"/>
-            </svg>
+            <?php include '../includes/wave-background.php' ?>
+
             <div class="absolute top-40 w-full flex flex-col justify-center items-center">
                 <div class="flex w-full justify-center items-center">
                     <hr class="text-secondary w-1/4">
@@ -72,11 +55,13 @@
                 </div>
 
                 <div class="mt-8">
-                    <span class="text-text-light">Don't have account?</span>
-                    <a href="./register.html.php" class="text-form-btn">Sign up</a>
+                    <span class="text-text-light">Already have account?</span>
+                    <a href="./login.html.php" class="text-form-btn">Log in</a>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="../src/js/resizebackground.js"></script>
 </body>
 </html>
