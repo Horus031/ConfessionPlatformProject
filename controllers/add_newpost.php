@@ -3,7 +3,7 @@
     include '../includes/dbconnection.php';
 
     try {
-        include './upload_images.php';
+        include '../includes/upload_images.php';
 
         $sql = 'INSERT INTO posts SET
                 user_id = :user_id,

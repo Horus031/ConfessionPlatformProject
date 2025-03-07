@@ -5,7 +5,12 @@
     if ($_FILES['imageURL']['tmp_name']) {
         try {
             $upload = (new UploadApi())->upload($_FILES['imageURL']['tmp_name'], [
-                'folder' => 'posts' // Lưu hình vào folder trên Cloudinary
+                'folder' => 'posts', // Lưu hình vào folder trên Cloudinary
+                'transformation' => [
+                    'width' => 320,
+                    'height' => 200,
+                    'crop' => 'fill'
+                ]
             ]);
 
             // Lấy URL từ Cloudinary

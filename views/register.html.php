@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/mywebsite/src/output.css">
+    <link rel="stylesheet" href="/mywebsite/src/css/output.css">
 </head>
 <body class="font-poppins h-screen overflow-hidden bg-no-repeat bg-linear-to-br from-gradient1 to-gradient2">
     <div class="mt-20">

@@ -12,7 +12,6 @@
                 
             </div>
         </div>
-
         
     </div>
 
@@ -55,20 +54,21 @@
         fetch('../controllers/get_userinfo.php')
         .then(response => response.json())
         .then(data => {
-            console.log(data);
             const profileContainer = document.querySelector('#info-container');
+            let hasLinks = false;
             if (data.error) {
                 profileContainer.innerHTML = `<p class="text-red-500">${data.error}</p>`;
             } else {
+                console.log(data);
                 const profileElements = document.createElement('div');
                 profileElements.classList.add('flex', 'flex-col', 'space-y-2');
 
-                const createdAt = new Date(data.created_at);
+                const createdAt = new Date(data[0].created_at);
                 const formattedDate = createdAt.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 
                 profileElements.innerHTML = `
                         <div>
-                            <span class="text-text font-medium">${data.nickname ?? '@horus031'}</span>
+                            <span class="text-text font-medium">@${data[0].tag_name ?? ''}</span>
                             <span class="text-text">•</span>
                             <span class="text-text-light font-medium">Joined ${formattedDate}</span>
                         </div>
@@ -89,23 +89,24 @@
                                 <span>0</span>
                                 <span class="text-text">Likes</span>
                             </div>
-                        </div>
-
-                        <div>
-                            <button class="border-1 border-secondary rounded-xl px-4 py-1 font-semibold">
-                                @Github
-                            </button>
-
-                            <button class="border-1 border-secondary rounded-xl px-4 py-1 font-semibold">
-                                @LinkedIn
-                            </button>
-
-                            <button class="border-1 border-secondary rounded-xl px-4 py-1 font-semibold">
-                                +2
-                            </button>
-                        </div>
-                
+                        </div>                
                 `;
+
+                const socialContainer = document.createElement('div');
+                socialContainer.classList.add('space-x-2');
+                data.forEach(link => {
+                    if (link.url && link.platform) {
+                        const socialLink = document.createElement('a');
+                        socialLink.href = link.url;
+                        socialLink.target = '_blank';
+                        socialLink.classList.add('border-1', 'border-secondary', 'rounded-xl', 'px-4', 'py-1', 'font-semibold');
+                        socialLink.textContent = `@${link.platform}`;
+                        socialContainer.appendChild(socialLink);
+                    }
+                });
+
+                
+                profileElements.appendChild(socialContainer);
                 profileContainer.appendChild(profileElements);
             }
         });
@@ -149,7 +150,7 @@
                     }
 
                     if (!hasPosts) {
-                    mypostContainer.innerHTML = `<p class="text-red-500">There are no posts</p>`;
+                        mypostContainer.innerHTML = ``;
                     }
                 })
             }

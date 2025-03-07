@@ -86,8 +86,7 @@
         </div>
     </div>
 
-        <div id="question-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:w-3/4 lg:w-5/6 transition-all
- ">
+        <div id="question-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:w-3/4 lg:w-5/6 transition-all">
         
 
         
@@ -118,7 +117,7 @@
 
                             <div class="flex justify-between items-center mt-3">
                                 <div class="flex items-center space-x-2">
-                                    <img loading="lazy" src="${question.avatar}" alt="" class="h-10 rounded-full">
+                                    <img loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
                                     <span class="text-xs">${question.username}</span>
                                     <span class="text-xs">${new Date(question.created_at).toLocaleString()}</span>
                                 </div>
