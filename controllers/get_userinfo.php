@@ -8,7 +8,7 @@
             exit;
         }
     
-        $sql = 'SELECT users.username, users.tag_name, users.avatar, users.created_at, user_social_links.platform, user_social_links.url
+        $sql = 'SELECT users.username, users.tag_name, users.email, users.bio, users.avatar, users.created_at, user_social_links.platform, user_social_links.url
                 FROM users
                 LEFT JOIN user_social_links ON users.user_id = user_social_links.user_id
                 WHERE users.user_id = :user_id';

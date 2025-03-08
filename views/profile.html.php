@@ -10,9 +10,14 @@
             <div id="info-container" class="flex flex-col space-y-2">
                 <h2 class="text-2xl my-1"><?=$_SESSION['username']?></h2>
                 
+
+                
             </div>
         </div>
-        
+    </div>
+
+    <div id="bio-container" class="mt-4">
+
     </div>
 
     <div class="mt-4 space-y-2">
@@ -55,6 +60,7 @@
         .then(response => response.json())
         .then(data => {
             const profileContainer = document.querySelector('#info-container');
+            const bioContainer = document.querySelector('#bio-container');
             let hasLinks = false;
             if (data.error) {
                 profileContainer.innerHTML = `<p class="text-red-500">${data.error}</p>`;
@@ -105,6 +111,12 @@
                     }
                 });
 
+                const bioContext = document.createElement('span');
+                bioContext.classList.add('font-semibold', 'text-text-light');
+                bioContext.textContent = `${data[0].bio}`;
+
+                bioContainer.appendChild(bioContext);
+
                 
                 profileElements.appendChild(socialContainer);
                 profileContainer.appendChild(profileElements);
@@ -124,7 +136,7 @@
                     if (myPost.user_id == <?= $_SESSION['user_id'] ?>) {
                         hasPosts = true;
                         const mypostElements = document.createElement('div');
-                        mypostElements.classList.add('flex', 'items-center', 'justify-between', 'border-2', 'border-secondary', 'mt-2', 'p-4', 'rounded-lg', 'w-full');
+                        mypostElements.classList.add('flex', 'items-center', 'justify-between', 'border-2', 'border-secondary', 'mt-2', 'p-4', 'rounded-lg', 'w-full', 'hover:border-black', 'cursor-pointer' ,'transition-all');
                         mypostElements.innerHTML = `
                             <div class="space-y-2">
                                 <h2 class="font-semibold text-xl line-clamp-2">${myPost.title}</h2>

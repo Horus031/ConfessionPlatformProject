@@ -61,6 +61,7 @@
         fetch('../controllers/get_userinfo.php')
         .then(response => response.json())
         .then(data => {
+            console.log(data);
             const editContainer = document.querySelector('#edit-container');
             if (data.error) {
                 editContainer.innerHTML = `<p class="text-red-500">${data.error}</p>`;
@@ -99,6 +100,7 @@
                 bioElement.cols = '40';
                 bioElement.rows = '8';
                 bioElement.classList.add('border-1', 'border-text', 'p-2', 'rounded-lg');
+                bioElement.value = `${data[0].bio}`;
 
                 bioInput.appendChild(bioElement);
 
@@ -106,7 +108,7 @@
                     const socialLinkBox = document.createElement('div');
                     socialLinkBox.classList.add('relative');
                     socialLinkBox.innerHTML = `
-                        <img src="../assets/images/facebook.png" alt="" class="absolute top-1/2 left-4 h-6">
+                        <img src="../assets/images/${link.platform.toLowerCase()}.png" alt="" class="absolute top-1/2 left-4 h-6">
                         <label for="${link.platform}">${link.platform}</label>
                         <input type="url" name="social_links[${link.platform}]" id="${link.platform}" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your ${link.platform.toUpperCase()}  Link" value="${link.url}">
                     `; 

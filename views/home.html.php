@@ -106,13 +106,33 @@
                     const questionElement = document.createElement('div');
                     questionElement.classList.add('mt-2', 'border-2', 'p-4', 'rounded-md', 'border-gray-200', 'hover:border-black', 'cursor-pointer');
                     questionElement.innerHTML = `
-                        <div class="flex flex-col ">
-                            <span class="w-fit rounded-full text-xs ${question.bg_class} ${question.text_class} px-2 font-medium">${question.name}</span>
+                        <div class="flex flex-col">
+                            <input type="hidden" name="post_id" value="${question.post_id}">
+                            <div class="flex justify-between items-center">
+                                <span class="w-fit rounded-full text-xs ${question.bg_class} ${question.text_class} px-2 font-medium">${question.name}</span>
+
+                                <div class="relative group">
+                                    <img src="../assets/images/dots.png" class="h-10 ${question.user_id == <?= $_SESSION['user_id']; ?> ? 'block' : 'hidden'} hover:bg-gray-300 p-2 rounded-full">
+
+                                    <div class="absolute bg-white rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent">
+                                        <a href="" class="flex items-center space-x-4 p-3 hover:bg-gray-200 cursor-pointer">
+                                            <span>View Details</span>
+                                        </a> 
+                                        <a class="flex items-center space-x-4 p-3 hover:bg-gray-200">
+                                            <span>Edit</span>
+                                        </a>
+                                        <form action="../controllers/deletepost.php" method="post">
+                                            <input type="hidden" name="post_id" value="${question.post_id}">
+                                            <input type="submit" value="Delete" class="space-x-4 p-3 text-left cursor-pointer hover:bg-gray-200 text-red-400 w-full">
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                             <h2 class="mt-3 font-semibold text-lg w-56">${question.title}</h2>
                             <p class="mt-3 text-xs text-text-light font-medium line-clamp-1">${question.content}</p>
 
                             <div class="mt-3 border-2 border-gray-200 rounded-md">
-                                <img loading="lazy" src="${question.imageURL}" alt="" width="100%" height="100px" class="rounded-md">
+                                <img loading="lazy" src="${question.imageURL ?? ''}" alt="Post image" width="100%" height="100px" class="rounded-md">
                             </div>
 
                             <div class="flex justify-between items-center mt-3">
@@ -145,6 +165,12 @@
                             </div>
                         </div>
                     `;
+
+                    questionElement.addEventListener('click', function() {
+                        window.location.href = `../views/main.html.php?page=postdetails&id=${question.post_id}`;
+                    })
+
+
                     container.appendChild(questionElement);
                 });
             }
@@ -153,6 +179,8 @@
             const container = document.querySelector('#question-container');
             container.innerHTML = `<p class="text-red-500">Error fetching questions: ${error.message}</p>`;
         });
+
+
     })
 </script>
 
