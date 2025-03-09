@@ -101,8 +101,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         const postId = urlParams.get('id');
 
-        console.log(postId)
-
         if (postId) {
             fetch(`../controllers/get_postdetails.php?id=${postId}`)
                 .then(response => response.json())
