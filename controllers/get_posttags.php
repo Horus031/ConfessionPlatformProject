@@ -2,7 +2,7 @@
     include '../includes/dbconnection.php';
 
     try {
-        $sql = "SELECT posts.post_id, posts.title, tags.tag_id, tags.name, tags.description 
+        $sql = "SELECT posts.post_id, posts.post_title, tags.tag_id, tags.tag_name, tags.tag_description 
                 FROM posts
                 JOIN posttags ON posts.post_id = posttags.post_id
                 JOIN tags ON tags.tag_id = posttags.tag_id

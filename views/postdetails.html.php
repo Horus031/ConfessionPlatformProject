@@ -1,47 +1,33 @@
-<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[16%]">
+<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[16%] transition-all">
     <div class="flex items-center">
         <a href="main.html.php?page=home">
-            <img src="../assets/images/left-chevron.png" alt="" class="h-10">
+            <img src="../assets/images/left-chevron.png" alt="" class="h-12 hover:bg-secondary rounded-full p-2">
         </a>
-        <span class="font-semibold text-lg">Back to home</span>
+        <span class="font-semibold text-xl">Back to home</span>
     </div>
 
     <div id="post-container" class="mt-2 border-2 p-4 rounded-md border-secondary">
         <div class="flex flex-col">
             <input type="hidden" name="post_id" id="post_id" value="">
 
-            <div class="flex justify-between items-center">
+            <div id="module-container" class="flex justify-between items-center">
                 <span id="module-name" class="w-fit rounded-full text-xs px-2 font-medium"></span>
 
-                <div class="relative group">
-                    <img src="../assets/images/dots.png" class="h-10 hover:bg-gray-300 p-2 rounded-full">
-
-                    <div class="absolute bg-white rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent">
-                        <a href="" class="flex items-center space-x-4 p-3 hover:bg-gray-200 cursor-pointer">
-                            <span>View Details</span>
-                        </a> 
-                        <a class="flex items-center space-x-4 p-3 hover:bg-gray-200">
-                            <span>Edit</span>
-                        </a>
-                        <a href="../controllers/logout.php" class="flex items-center space-x-4 p-3 hover:bg-gray-200">
-                            <span class="text-red-400">Delete</span>
-                        </a>
-                    </div>
-                </div>
+                
             </div>
 
-            <div class="flex flex-col">
-                <h2 id="post-title" class="font-semibold text-lg"></h2>
-                <div class="flex items-center justify-between space-x-2">
+            <div class="flex flex-col space-y-4">
+                <h2 id="post-title" class="font-semibold text-lg lg:text-2xl"></h2>
+                <div id="user-tag" class="flex items-center justify-between space-x-2">
                     <div class="flex items-center space-x-2">
-                        <img id="user-avatar" loading="lazy" src="../assets/images/user.png" alt="" class="h-10 rounded-full md:h-16">
-                        <span id="username" class="text-xs md:text-lg"></span>
-                        <span id="created-at" class="text-xs md:text-lg"></span>
+                        <img id="user-avatar" loading="lazy" src="../assets/images/user.png" alt="" class="h-10 rounded-full md:h-14 2xl:h-16">
+                        <span id="username" class="text-xs md:text-md lg:text-lg"></span>
+                        <span id="created-at" class="text-xs md:text-md lg:text-lg"></span>
                     </div>
 
-                    <div class="flex items-center space-x-2 text-sm">
-                        <span id="post-tag" class="bg-tags p-1 rounded-md"></span>
-                    </div>
+
+                    
+                    
                 </div>
             </div>
 
@@ -54,15 +40,12 @@
             </div>
 
             <div class="flex justify-between items-center mt-3">
-                <div class="flex justify-between w-fit border-2 border-text-light rounded-md space-x-2">
+                <div class="flex justify-between w-fit rounded-md space-x-2">
                     <div class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
                         <img loading="lazy" src="../assets/images/like.png" alt="" class="h-10 p-2">
-                        <span>12</span>
+                        <span id="likeCount">12</span>
                     </div>
-                    <div class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
-                        <img loading="lazy" src="../assets/images/comments.png" alt="" class="h-10 p-2">
-                        <span>12</span>
-                    </div>
+                    
                 </div>
 
                 <div class="flex items-center space-x-2 ">
@@ -73,24 +56,15 @@
 
             <hr class="mt-4 text-secondary">
 
-            <div class="flex flex-col mt-2 space-y-2">
-                <h2 class="font-semibold text-lg">Comment (2)</h2>
+            <div id="comment-container" class="flex flex-col mt-2 space-y-2">
+                <h2 id="commentCount" class="font-semibold text-lg">Comment (2)</h2>
 
-                <div class="bg-[#F1F1F1] flex space-x-2 rounded-md p-2 lg:w-1/2">
-                    <img src="../assets/images/user.png" alt="" class="h-10">
-                    <div>
-                        <h1 class="font-semibold text-md">Horus</h1>
-                        <p class="text-sm">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fuga qui suscipit, eius architecto quo pariatur.</p>
-                    </div>
+                <div class="relative w-full p-2 text-wrap rounded-md border border-secondary h-40">
+                    <textarea name="commentValues" id="commentValues" placeholder="Write something..." class="w-full h-2/3"></textarea>
+
+                    <button class="absolute bottom-2 right-4 border py-2 px-6 font-medium rounded-full bg-black text-white">Post</button>
                 </div>
 
-                <div class="bg-[#F1F1F1] flex space-x-2 rounded-md p-2 lg:w-1/2">
-                    <img src="../assets/images/user.png" alt="" class="h-10">
-                    <div>
-                        <h1 class="font-semibold text-md">Horus</h1>
-                        <p class="text-sm">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fuga qui suscipit, eius architecto quo pariatur.</p>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -108,17 +82,122 @@
                     if (data.error) {
                         console.error(data.error);
                     } else {
-                        document.getElementById('post_id').value = data.post_id;
-                        document.getElementById('module-name').textContent = data.name;
-                        document.getElementById('module-name').className = `w-fit rounded-full text-xs px-2 font-medium ${data.bg_class} ${data.text_class}`;
-                        document.getElementById('post-title').textContent = data.title;
-                        document.getElementById('user-avatar').src = data.avatar ?? '../assets/images/user.png';
-                        document.getElementById('username').textContent = data.username;
-                        document.getElementById('created-at').textContent = new Date(data.created_at).toLocaleString();
-                        document.getElementById('post-tag').textContent = `#${data.name}`;
-                        document.getElementById('post-content').textContent = data.content;
-                        document.getElementById('post-image').src = data.imageURL ?? '';
+                        document.querySelector('#post_id').value = data.post_id;
+                        document.querySelector('#module-name').textContent = data.module_name;
+                        document.querySelector('#module-name').className = `w-fit rounded-full text-xs px-2 font-medium ${data.bg_class} ${data.text_class}`;
+                        document.querySelector('#post-title').textContent = data.post_title;
+                        document.querySelector('#user-avatar').src = data.avatar ?? '../assets/images/user.png';
+                        document.querySelector('#username').textContent = data.username;
+                        document.querySelector('#created-at').textContent = new Date(data.created_at).toLocaleString();
+                        document.querySelector('#post-content').textContent = data.post_content;
+                        document.querySelector('#post-image').src = data.imageURL ?? '';
+                        document.querySelector('#commentCount').textContent = `Comment (${data.comments})`;
+                        document.querySelector('#likeCount').textContent = `${data.likes}`;
+
+                        const usertagContainer = document.querySelector('#user-tag');
+                        const tagContainer = document.createElement('div');
+                        tagContainer.classList.add('flex', 'items-center', 'space-x-2', 'text-sm');
+                        tagContainer.id = `tags-container-${data.post_id}`;
+
+                        usertagContainer.appendChild(tagContainer);
+
+
+                        const moduleContainer = document.querySelector('#module-container');
+                        const selectElement = document.createElement('div');
+                        selectElement.classList.add('relative', 'group');
+                        selectElement.innerHTML = `
+                            <img src="../assets/images/dots.png" class="h-10 ${data.user_id == <?= $_SESSION['user_id']; ?> ? 'block' : 'hidden'} hover:bg-gray-300 p-2 rounded-full">
+
+                            <div class="absolute bg-white rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 z-10 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent">
+                                <a class="flex items-center space-x-4 p-3 hover:bg-gray-200 cursor-pointer">
+                                    <span>Edit</span>
+                                </a>
+                                <a href="" class="flex items-center space-x-4 p-3 hover:bg-gray-200">
+                                    <span class="text-red-400">Delete</span>
+                                </a>
+                            </div>
+                        
+                        `;
+
+                        moduleContainer.appendChild(selectElement);
+                        
+                        
                     }
+
+
+                    fetch('../controllers/get_posttags.php')
+                    .then(response => response.json())
+                    .then(tagsData => {
+                        if (tagsData.error) {
+                            tagContainer.innerHTML = `<p class="text-red-500">${data.error}</p>`;
+                        } else {
+                            tagsData.forEach(tag => {
+                                const tagContainer = document.querySelector(`#tags-container-${tag.post_id}`);
+                                if (tagContainer) {
+                                    const existingTags = tagContainer.querySelectorAll('span');
+                                    if (existingTags.length === 0) {
+                                        const tagElement = document.createElement('span');
+                                        tagElement.classList.add('bg-tags', 'p-1', 'rounded-md');
+                                        tagElement.textContent = `#${tag.tag_name}`;
+                                        tagContainer.appendChild(tagElement);
+                                    } else {
+                                        const additionalTags = tagContainer.querySelector('.additional-tags');
+                                        const tagPopup = document.querySelector('#tags-popup');
+                                        if (additionalTags) {
+                                            const count = parseInt(additionalTags.getAttribute('data-count')) + 1;
+                                            const tagSpan = document.querySelector('#tag-count');
+                                            additionalTags.setAttribute('data-count', count);
+                                            tagSpan.textContent = `+${count}`;
+
+
+                                            const additionalTagPopup = document.createElement('span');
+                                            additionalTagPopup.classList.add('p-2')
+                                            additionalTagPopup.textContent = `#${tag.tag_name}`
+                                            tagPopup.appendChild(additionalTagPopup);
+
+                                        } else {
+                                            const additionalTagElement = document.createElement('div');
+
+                                            additionalTagElement.classList.add('relative', 'group', 'bg-tags', 'p-1', 'rounded-md', 'additional-tags');
+                                            additionalTagElement.setAttribute('data-count', 1);
+                                            additionalTagElement.innerHTML = `
+                                                <span id="tag-count">+1</span>
+
+                                                <div id="tags-popup" class="absolute space-y-2 bg-tags p-2 rounded-md right-1 top-8 shadow-lg hidden group-hover:block before:absolute before:content-[''] before:bg-black before:-top-2 before:w-6 before:h-3 before:right-0 before:bg-transparent">
+                                                    <span class="p-2">#${tag.tag_name}</span>
+                                                </div>
+                                            `;
+                                            tagContainer.appendChild(additionalTagElement);
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    })
+
+                    fetch(`../controllers/get_comments.php?id=${postId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const commentContainer = document.querySelector('#comment-container');
+                        if (data.error) {
+                            console.error(data.error)
+                        } else {
+                            data.forEach(comment => {
+                                const commentElement = document.createElement('div');
+                                commentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md');
+                                commentElement.innerHTML = `
+                                    <img src="${comment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+
+                                    <div>
+                                        <h2 class="font-medium text-md">${comment.username}</h2>
+                                        <p class="text-sm">${comment.content}</p>
+                                    </div>
+                                `;
+
+                                commentContainer.appendChild(commentElement);
+                            })
+                        }
+                    })
                 })
                 .catch(error => {
                     console.error('Error fetching post details:', error);
