@@ -150,26 +150,40 @@
 
                             <div class="flex justify-between items-center mt-3">
                                 <div class="flex justify-between w-fit border-2 border-text-light rounded-md space-x-2">
-                                    <div class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
+                                    <button id="likes-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
                                         <img loading="lazy" src="../assets/images/like.png" alt="" class="h-10 p-2">
                                         <span>${question.likes}</span>
-                                    </div>
-                                    <div class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
+                                    </button>
+                                    <button id="comment-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
                                         <img loading="lazy" src="../assets/images/comments.png" alt="" class="h-10 p-2">
                                         <span>${question.comments}</span>
-                                    </div>
+                                    </button>
                                 </div>
 
                                 <div class="flex items-center space-x-2 ">
-                                    <img loading="lazy" src="../assets/images/bookmark.png" alt="" class="h-10 p-2 rounded-md hover:bg-gray-300 transition-all">
-                                    <img loading="lazy" src="..//assets/images/link.png" alt="" class="h-10 p-2 rounded-md hover:bg-gray-300 transition-all">
+                                    <button id="save-btn" class="rounded-md hover:bg-gray-300 transition-all">
+                                        <img loading="lazy" src="../assets/images/bookmark.png" alt="" class="h-10 p-2">
+                                    </button>
+                                    <button id="link-btn" class="rounded-md hover:bg-gray-300 transition-all">
+                                        <img loading="lazy" src="../assets/images/link.png" alt="" class="h-10 p-2">
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     `;
 
-                        questionElement.addEventListener('click', function() {
-                            window.location.href = `../views/main.html.php?page=postdetails&id=${question.post_id}`;
+                        questionElement.addEventListener('click', function(e) {
+                            if (e.target.closest('button[id="likes-btn"]')) {
+                                console.log('likes');
+                            } else if (e.target.closest('button[id="comment-btn"]')) {
+                                console.log('comment');
+                            } else if (e.target.closest('button[id="save-btn"]')) {
+                                console.log('bookmark');
+                            } else if (e.target.closest('button[id="link-btn"]')) {
+                                console.log('link-btn')
+                            } else {
+                                window.location.href = `../views/main.html.php?page=postdetails&id=${question.post_id}`;
+                            }
                         })
 
 
@@ -203,7 +217,7 @@
 
                                             const additionalTagPopup = document.createElement('span');
                                             additionalTagPopup.classList.add('p-2')
-                                            additionalTagPopup.textContent = `#${tag.name}`
+                                            additionalTagPopup.textContent = `#${tag.tag_name}`;
                                             tagPopup.appendChild(additionalTagPopup);
 
                                         } else {
