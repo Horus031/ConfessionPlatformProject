@@ -30,18 +30,18 @@
             </select>
 
             <div class="flex items-center mt-4 space-x-6">
-                <select name="tagList" id="tag-list" class="border-1 border-secondary rounded-lg py-1 px-4 overflow-y-scroll md:w-5/8 lg:w-4/9">
+                <select name="tagList" id="tag-list" class="border-1 border-secondary rounded-lg py-1 px-4 overflow-y-scroll w-full  md:w-5/8 lg:w-4/9">
                     
                 </select>
 
-                <div id="button-container" class="space-x-2">
+                <div id="button-container" class="space-x-2 flex">
                     <button type="button" id="add-btn" class="bg-blue-500 p-2 rounded-md text-white">Add</button>
                     <button type="button" id="remove-btn" class="bg-red-500 p-2 rounded-md text-white">Remove</button>
                 </div>
             </div>
 
             <div id="tag-container" class="mt-4">
-                <input type="text" name="tagInput" id="tag-input" class="border-1 border-text-light rounded-lg py-1 px-4 md:w-5/8 lg:w-4/9" readonly>
+                <input type="text" name="tagInput" id="tag-input" class="border-1 border-text-light rounded-lg py-1 px-4 w-full md:w-5/8 lg:w-4/9" readonly>
             </div>
         </div>
 
@@ -52,7 +52,10 @@
             </select>
         </div>
 
-        <div class="text-right md:text-left">
+        <div class="flex justify-between md:w-2/3 lg:w-4/9">
+            <button id="cancel-btn" type="button" class="border border-black rounded-lg px-4 py-2 mt-4">
+                Cancel
+            </button>
             <button type="submit" name="submit" class="bg-black text-white rounded-lg px-4 py-2 mt-4">
                 Save
             </button>
@@ -197,5 +200,9 @@
             }
         });
 
+
+        document.querySelector('#cancel-btn').addEventListener('click', function() {
+            window.history.back();
+        })
     })
 </script>

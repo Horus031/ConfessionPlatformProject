@@ -167,7 +167,7 @@ class Database {
     }
 
     public function fetchAllPosts() {
-        $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, COUNT(DISTINCT likes.like_id) as likes, COUNT(DISTINCT comments.comment_id) as comments, modules.module_name, modules.bg_class, modules.text_class 
+        $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, COUNT(DISTINCT likes.like_id) as likes, COUNT(DISTINCT comments.comment_id) as comments, modules.module_id, modules.module_name, modules.bg_class, modules.text_class 
                 FROM ((((posts 
                 INNER JOIN users ON posts.user_id = users.user_id)
                 INNER JOIN modules ON posts.module_id = modules.module_id)
@@ -235,6 +235,13 @@ class Database {
                 WHERE tag_type = ?';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$type]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function fetchAllTags() {
+        $sql = 'SELECT * FROM tags';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

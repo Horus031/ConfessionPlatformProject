@@ -1,10 +1,10 @@
 <main class="flex flex-col overflow-hidden px-2 mt-24 items-end">
-    <div class="flex mt-2 justify-between items-center rounded-xl p-3 bg-linear-160 from-[#4CAF50] via-[#A5B82C] to-[#FFC107] md:w-3/4 lg:w-5/6 lg:px-8">
-        <div class="md:w-72 lg:w-96">
+    <div class="flex justify-between items-center rounded-xl p-3 bg-linear-160 z-30 from-[#4CAF50] via-[#A5B82C] to-[#FFC107] md:w-3/4 lg:w-5/6 lg:px-8 animate-postSlideIn transition-all">
+        <div class="md:w-72 lg:w-96 animate-fadeIn">
             <h1 class="text-2xl text-white font-bold leading-10 lg:leading-15 lg:text-6xl">Welcome to Knowledge Nexus, <?= isset($_SESSION['username']) ? $_SESSION["username"] : 'Users'; ?></h1>
-            <button class="bg-black text-white font-medium rounded-xl py-1.5 px-8 mt-4">Add question</button>
+            <button id="addques-btn" class="bg-black text-white font-medium rounded-xl py-1.5 px-8 mt-4 cursor-pointer">Add question</button>
         </div>
-        <div>
+        <div class="animate-fadeIn">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="-m-10 h-44 md:h-72 lg:h-96">
                 <!-- Background -->
                 <rect width="300" height="300" fill="white" opacity="0" />
@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <div id="quest-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:w-3/4 lg:w-5/6 transition-all">
+    <div id="quest-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:w-3/4 lg:w-5/6 animate-postSlideIn transition-all">
 
 
 
@@ -208,6 +208,8 @@
 
                 
 
+                
+
                 fetch('../controllers/get_posttags.php')
                 .then(response => response.json())
                 .then(tagsData => {
@@ -262,6 +264,11 @@
         .catch(error => {
             const container = document.querySelector('#question-container');
             container.innerHTML = `<p class="text-red-500">Error fetching questions: ${error.message}</p>`;
-        });  
+        });
+
+
+        document.querySelector('#addques-btn').addEventListener('click', function() {
+            window.location.href = '../views/main.html.php?page=newpost';
+        })
     })
 </script>

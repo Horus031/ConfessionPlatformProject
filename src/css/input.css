@@ -20,6 +20,13 @@
 
     --animate-menuTransition: menuTransition 0.5s ease forwards;
     --animate-menuOut: menuOut 0.5s ease forwards;
+    --animate-postSlideIn: fadeIn 0.8s ease forwards, postTransition 0.8s ease forwards;
+    --animate-postScale: fadeIn 0.8s ease forwards, postScale 0.8s ease forwards;
+    --animate-slideRight: fadeIn 0.8s ease forwards, slideRight 0.8s ease forwards;
+    --animate-slideLeft: fadeIn 0.8s ease forwards, slideLeft 0.8s ease forwards ;
+    --animate-infoSlide: fadeIn 0.8s ease forwards, infoSlide 0.8s ease forwards ;
+    --animate-fadeIn: fadeIn 0.8s ease forwards ;
+    --animate-fastFade: fadeIn 0.2s ease forwards;
 
     @keyframes menuTransition {
         100% {
@@ -35,6 +42,66 @@
         100% {
           transform: translateX(0);
         }
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes postTransition {
+        0% {
+          transform: translateY(-100%);
+        }
+
+        100% {
+          transform: translateY(0);
+        }
+    }
+
+    @keyframes postScale {
+        0% {
+          scale: 0.5;
+        }
+
+        100% {
+          scale: 1;
+        }
+    }
+
+    @keyframes slideRight {
+      0% {
+        transform: translateX(-100%);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideLeft {
+      0% {
+        transform: translateX(100%);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes infoSlide {
+      0% {
+        transform: translateX(-40%);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
     }
 
 }
