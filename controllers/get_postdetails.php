@@ -1,29 +1,36 @@
 <?php
+    header("Access-Control-Allow-Origin: *");
+    header("Content-Type: application/json");
     include '../includes/dbconnection.php';
+    include '../includes/dbfunctions.php';
+
+    $database = new Database($pdo);
 
     try {
-        if (isset($_GET['id'])) {
-            $post_id = $_GET['id'];
+        $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : "";
 
-            $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, comments.content, COUNT(DISTINCT likes.like_id) as likes, COUNT(DISTINCT comments.comment_id) as comments, modules.module_name, modules.bg_class, modules.text_class 
-                    FROM ((((posts 
-                    INNER JOIN users ON posts.user_id = users.user_id)
-                    INNER JOIN modules ON posts.module_id = modules.module_id)
-                    LEFT JOIN likes ON posts.post_id = likes.post_id)
-                    LEFT JOIN comments ON posts.post_id = comments.post_id)
-                    WHERE posts.post_id = :post_id
-                    GROUP BY post_id';
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':post_id', $post_id);
-            $stmt->execute();
-            $post = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($contentType === "application/json") {
+            $data = json_decode(file_get_contents("php://input"), true);
+            $post_id = isset($data['post_id']) ? intval($data['post_id']) : null;
+        } else {
+            $post_id = isset($_POST["post_id"]) ? intval($_POST["post_id"]) : (isset($_GET['id']) ? intval($_GET['id']) : null);
+        }
+
+        if ($post_id === null) {
+            throw new Exception("Post ID not provided");
+        }
+
+        $post = $database->fetchPostDetails($post_id);
+
+        if ($post) {
+            $tags = $database->fetchPostTagsWithId($post_id);
+            $post['tags'] = $tags;
 
             echo json_encode($post);
-
         } else {
-            echo json_encode(['error' => 'Post ID not provided']);
+            throw new Exception("Post not found");
         }
-    } catch (PDOException $e) {
+    } catch (Exception $e) {
         echo json_encode(['error' => $e->getMessage()]);
     }
 ?>

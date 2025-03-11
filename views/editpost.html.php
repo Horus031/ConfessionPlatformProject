@@ -2,7 +2,8 @@
     <h1 class="text-2xl font-semibold lg:text-4xl">Edit your post</h1>
 
 
-    <form id="newpost-form" action="../controllers/add_newpost.php" method="post" enctype="multipart/form-data">
+    <form id="edit-form" action="../controllers/editpost.php" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="postValues" id="post-value">
         <div class="mt-2 space-y-4">
             <input type="text" name="titleValue" id="title" class="border-1 border-text rounded-lg p-2 q px-4 w-full md:w-5/8 lg:w-4/9" placeholder="Post title">
         </div>
@@ -13,8 +14,34 @@
             <div class="mt-4">
                 <label for="imageURL" class="block py-1.5 px-3 cursor-pointer border-1 border-secondary rounded-md bg-[#f8f8f8] text-text text-center hover:bg-[#e8e8e8]">
                     <input type="file" name="imageURL" id="imageURL" class="hidden">
-                    <span id="file-name">Upload your image</span>
+                    <span id="file-name" class="w-44 text-wrap line-clamp-1 m-auto">Upload your image</span>
                 </label>
+            </div>
+        </div>
+
+        <div class="mt-4 flex flex-col">
+            <label for="select-tag-type">Select your tag here</label>
+            <select name="selectTagType" id="select-tag-type" class="border-1 border-secondary rounded-lg py-1 px-4 mt-4 md:w-5/8 lg:w-4/9">
+                <option value="" selected></option>
+                <option value="general">General Subject</option>
+                <option value="prog&tech">Programming & Technology</option>
+                <option value="study">Study Tips</option>
+                <option value="carrer">Career & Guidance</option>
+            </select>
+
+            <div class="flex items-center mt-4 space-x-6">
+                <select name="tagList" id="tag-list" class="border-1 border-secondary rounded-lg py-1 px-4 overflow-y-scroll md:w-5/8 lg:w-4/9">
+                    
+                </select>
+
+                <div id="button-container" class="space-x-2">
+                    <button type="button" id="add-btn" class="bg-blue-500 p-2 rounded-md text-white">Add</button>
+                    <button type="button" id="remove-btn" class="bg-red-500 p-2 rounded-md text-white">Remove</button>
+                </div>
+            </div>
+
+            <div id="tag-container" class="mt-4">
+                <input type="text" name="tagInput" id="tag-input" class="border-1 border-text-light rounded-lg py-1 px-4 md:w-5/8 lg:w-4/9" readonly>
             </div>
         </div>
 
@@ -26,8 +53,8 @@
         </div>
 
         <div class="text-right md:text-left">
-            <button type="submit" class="bg-black text-white rounded-lg px-4 py-2 mt-4">
-                Post
+            <button type="submit" name="submit" class="bg-black text-white rounded-lg px-4 py-2 mt-4">
+                Save
             </button>
         </div>
     </form>
@@ -46,15 +73,15 @@
                 data.forEach(module => {
                     const option = document.createElement('option');
                     option.setAttribute('value', `${module.module_id}`);
-                    option.innerHTML = `${module.name}`;
+                    option.innerHTML = `${module.module_name}`;
                     modulesContainer.appendChild(option);
                 });
             }
         });
 
-        // Custom file input
-        const fileInput = document.getElementById('imageURL');
-        const fileName = document.getElementById('file-name');
+        // Custom ô hình ảnh
+        const fileInput = document.querySelector('#imageURL');
+        const fileName = document.querySelector('#file-name');
 
         fileInput.addEventListener('change', function() {
             if (fileInput.files.length > 0) {
@@ -63,5 +90,112 @@
                 fileName.textContent = 'Upload your image';
             }
         });
+
+        const postId = sessionStorage.getItem('editPostId');
+
+        if (!postId) {
+            alert("There is no post for editing!");
+            window.location.href = "../views/main.html.php?page=home"; // Chuyển về trang chính nếu không có post_id
+            return;
+        }
+
+        fetch('../controllers/get_postdetails.php', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ post_id: postId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error(data.error);
+            } else {
+                console.log(data);
+                document.querySelector('#post-value').value = `${postId}`
+                document.querySelector('#title').value = `${data.post_title}`;
+                document.querySelector('#content').value = `${data.post_content}`;
+                document.querySelector('#file-name').textContent = `${data.imageURL}`;
+                setTimeout(function() {
+                    document.querySelector('#modules').value = `${data.module_id}`;
+                }, 0);
+
+                const tagNames = document.querySelector('#tag-input');
+                let selectedTag = [];
+                data['tags'].forEach(tagName => {
+                    selectedTag.push(`${tagName.tag_name}`);                    
+                })
+                tagNames.value = selectedTag.join(', ');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching post details:', error);
+        });
+
+
+        // Tạo logic chọn tag
+        const selectTagType = document.querySelector('#select-tag-type');
+        const buttonContainer = document.querySelector('#button-container');
+        const tagList = document.querySelector('#tag-list');
+        const tagInput = document.querySelector('#tag-input');
+        selectTagType.addEventListener('change', function() {
+            let selectedValue = selectTagType.value;
+            
+            while (tagList.firstChild) {
+                tagList.removeChild(tagList.firstChild);
+            }
+
+            fetch('../controllers/tags_withtype.php', {
+                method: 'POST',
+                header: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ type: selectedValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    tagList.innerHTML = `<option>${data.error}</option>`
+                } else {
+                    if (selectedValue == '') {
+                        tagList.classList.add('hidden');
+                        buttonContainer.classList.add('hidden');
+                        tagInput.classList.add('hidden');
+                    } else {
+                        tagList.classList.remove('hidden');
+                        buttonContainer.classList.remove('hidden');
+                        tagInput.classList.remove('hidden');
+                        data.forEach(tag => {
+                            const tagElement = document.createElement('option');
+                            tagElement.value = `${tag.tag_name}`;
+                            tagElement.textContent = `${tag.tag_name}`;
+                            tagList.appendChild(tagElement);
+                        })
+                    }
+                }
+
+            })
+        })
+
+        
+
+        // Tạo tương tác giữa nút thêm và xóa tag
+        buttonContainer.addEventListener('click', function(e) {
+            if (e.target.closest('button[id="add-btn"]')) {
+                const selectedTag = tagList.value;
+                const currentTags = tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+
+                if (currentTags.includes(selectedTag)) {
+                    console.log('You cannot duplicate the tag!');
+                } else {
+                    currentTags.push(selectedTag);
+                    tagInput.value = currentTags.join(', ');
+                }
+
+            } else if (e.target.closest('button[id="remove-btn"]')) {
+                const selectedTag = tagList.value;
+                let currentTags = tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+
+                currentTags = currentTags.filter(tag => tag !== selectedTag);
+                tagInput.value = currentTags.join(', ');
+            }
+        });
+
     })
 </script>

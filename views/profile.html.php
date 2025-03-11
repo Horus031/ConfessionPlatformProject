@@ -132,6 +132,7 @@
             if (data.error) {
                 mypostContainer.innerHTML = `<p class="text-red-500">${data.error}</p>`;
             } else {
+                console.log(data);
                 data.forEach(myPost => {
                     if (myPost.user_id == <?= $_SESSION['user_id'] ?>) {
                         hasPosts = true;
@@ -139,16 +140,16 @@
                         mypostElements.classList.add('flex', 'items-center', 'justify-between', 'border-2', 'border-secondary', 'mt-2', 'p-4', 'rounded-lg', 'w-full', 'hover:border-black', 'cursor-pointer' ,'transition-all');
                         mypostElements.innerHTML = `
                             <div class="space-y-2">
-                                <h2 class="font-semibold text-xl line-clamp-2">${myPost.title}</h2>
-                                <p class="text-sm text-text-light font-medium">${myPost.content}</p>
+                                <h2 class="font-semibold text-xl line-clamp-2">${myPost.post_title}</h2>
+                                <p class="text-sm text-text-light font-medium">${myPost.post_content}</p>
                                 <div class="flex items-center w-fit justify-around border-2 border-secondary rounded-xl p-2 ">
                                     <div class="flex items-center space-x-2 text-text font-medium px-2">
                                         <img src="../assets/images/like.png" alt="" class="h-6">
-                                        <span>24</span>
+                                        <span>${myPost.likes}</span>
                                     </div>
                                     <div class="flex items-center space-x-2 text-text font-medium px-2">
                                         <img src="../assets/images/comments.png" alt="" class="h-6">
-                                        <span>12</span>
+                                        <span>${myPost.comments}</span>
                                     </div>
                                 </div>
                             </div>

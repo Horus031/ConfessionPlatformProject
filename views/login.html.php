@@ -11,7 +11,7 @@
         <h1 class="text-4xl font-semibold text-center text-white">
             Login
         </h1> 
-        <form action="/mywebsite/controllers/login.php" method="post" class="w-fit mx-auto">
+        <form action="../controllers/login.php" method="post" class="w-fit mx-auto">
             <div class="">
                 <img src="" alt="">
                 <input type="text" name="username" id="username" placeholder="Username" class="bg-white rounded-full mt-9 p-3 pl-8 w-72 text-text text-xl shadow-[0_6px_16px_-6px]">
@@ -26,7 +26,7 @@
                 <input type="submit" name="login" value="Login" class="bg-form-btn rounded-full mt-9 p-3 pl-8 w-72 text-white text-xl text-center font-semibold shadow-text shadow-[0_6px_16px_-6px]">
                 <div class="flex justify-between items-center mt-4">
                     <div class="flex justify-between items-center space-x-2">
-                        <input type="checkbox" name="remember_me" id="remember_me">
+                        <input type="checkbox" name="remember_me" id="remember_me" >
                         <label for="remember_me" class="text-white text-xs">Remember me</label>
                     </div>
 

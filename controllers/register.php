@@ -1,40 +1,29 @@
 <?php
+    header("Access-Control-Allow-Origin: *");
+    header("Content-Type: application/json");
     include '../includes/dbconnection.php';
+    include '../includes/dbfunctions.php';
 
+    $database = new Database($pdo);
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_SPECIAL_CHARS);
         $password = filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS);
 
         if (empty($username)) {
-            echo "Please enter a username";
+            echo json_encode(['error' => 'Please enter a username']);
         } elseif (empty($password)) {
-            echo "Please enter a password";
+            echo json_encode(['error' => 'Please enter a password']);
         } else {
-            $hash = password_hash($password, PASSWORD_DEFAULT);
-            $sql = "SELECT COUNT(*) FROM users WHERE username = :username";
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':username', $username);
-            $stmt->execute();
-            $count = $stmt->fetchColumn();
+            $count = $database->checkUsernameExists($username);
             if ($count > 0) {
-                echo 'Username already exists, please choose another name';
+                echo json_encode(['error' => 'Username already exists, please choose another name']);
             } else {
-                $sql = "INSERT INTO users (username, password) VALUES (:username, :password)";
-                $stmt = $pdo->prepare($sql);
-                $stmt->bindParam(':username', $username);
-                $stmt->bindParam(':password', $hash);
-                $stmt->execute();
-                echo "User is registered!";
+                $database->registerUser($username, $password);
+                echo json_encode(['success' => 'User is registered!']);
                 header("Location: ../views/login.html.php");
                 exit();
             }
         }
     }
-
-
-    $pdo = null;
-    $sql = null;
-    $stmt = null;
-    $count = null;
 ?>

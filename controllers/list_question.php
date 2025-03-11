@@ -1,17 +1,10 @@
 <?php
     include '../includes/dbconnection.php';
+    include '../includes/dbfunctions.php';
+    $database = new Database($pdo);
 
     try {
-        $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, COUNT(DISTINCT likes.like_id) as likes, COUNT(DISTINCT comments.comment_id) as comments, modules.module_name, modules.bg_class, modules.text_class 
-                FROM ((((posts 
-                INNER JOIN users ON posts.user_id = users.user_id)
-                INNER JOIN modules ON posts.module_id = modules.module_id)
-                LEFT JOIN likes ON posts.post_id = likes.post_id)
-                LEFT JOIN comments ON posts.post_id = comments.post_id)
-                GROUP BY post_id';
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute();
-        $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $questions = $database->fetchAllPosts($pdo);
         echo json_encode($questions);
     } catch (PDOException $e) {
         echo json_encode(['error' => $e->getMessage()]);

@@ -82,6 +82,7 @@
                     if (data.error) {
                         console.error(data.error);
                     } else {
+                        console.log(data);
                         document.querySelector('#post_id').value = data.post_id;
                         document.querySelector('#module-name').textContent = data.module_name;
                         document.querySelector('#module-name').className = `w-fit rounded-full text-xs px-2 font-medium ${data.bg_class} ${data.text_class}`;
@@ -121,59 +122,48 @@
 
                         moduleContainer.appendChild(selectElement);
                         
-                        
-                    }
+                        data['tags'].forEach(tag => {
+                            console.log(tagContainer)
+                            if (tagContainer) {
+                                const existingTags = tagContainer.querySelectorAll('span');
+                                if (existingTags.length === 0) {
+                                    const tagElement = document.createElement('span');
+                                    tagElement.classList.add('bg-tags', 'p-1', 'rounded-md');
+                                    tagElement.textContent = `#${tag.tag_name}`;
+                                    tagContainer.appendChild(tagElement);
+                                } else {
+                                    const additionalTags = tagContainer.querySelector('.additional-tags');
+                                    const tagPopup = document.querySelector('#tags-popup');
+                                    if (additionalTags) {
+                                        const count = parseInt(additionalTags.getAttribute('data-count')) + 1;
+                                        const tagSpan = document.querySelector('#tag-count');
+                                        additionalTags.setAttribute('data-count', count);
+                                        tagSpan.textContent = `+${count}`;
 
 
-                    fetch('../controllers/get_posttags.php')
-                    .then(response => response.json())
-                    .then(tagsData => {
-                        if (tagsData.error) {
-                            tagContainer.innerHTML = `<p class="text-red-500">${data.error}</p>`;
-                        } else {
-                            tagsData.forEach(tag => {
-                                const tagContainer = document.querySelector(`#tags-container-${tag.post_id}`);
-                                if (tagContainer) {
-                                    const existingTags = tagContainer.querySelectorAll('span');
-                                    if (existingTags.length === 0) {
-                                        const tagElement = document.createElement('span');
-                                        tagElement.classList.add('bg-tags', 'p-1', 'rounded-md');
-                                        tagElement.textContent = `#${tag.tag_name}`;
-                                        tagContainer.appendChild(tagElement);
+                                        const additionalTagPopup = document.createElement('span');
+                                        additionalTagPopup.classList.add('p-2')
+                                        additionalTagPopup.textContent = `#${tag.tag_name}`
+                                        tagPopup.appendChild(additionalTagPopup);
+
                                     } else {
-                                        const additionalTags = tagContainer.querySelector('.additional-tags');
-                                        const tagPopup = document.querySelector('#tags-popup');
-                                        if (additionalTags) {
-                                            const count = parseInt(additionalTags.getAttribute('data-count')) + 1;
-                                            const tagSpan = document.querySelector('#tag-count');
-                                            additionalTags.setAttribute('data-count', count);
-                                            tagSpan.textContent = `+${count}`;
+                                        const additionalTagElement = document.createElement('div');
 
+                                        additionalTagElement.classList.add('relative', 'group', 'bg-tags', 'p-1', 'rounded-md', 'additional-tags');
+                                        additionalTagElement.setAttribute('data-count', 1);
+                                        additionalTagElement.innerHTML = `
+                                            <span id="tag-count">+1</span>
 
-                                            const additionalTagPopup = document.createElement('span');
-                                            additionalTagPopup.classList.add('p-2')
-                                            additionalTagPopup.textContent = `#${tag.tag_name}`
-                                            tagPopup.appendChild(additionalTagPopup);
-
-                                        } else {
-                                            const additionalTagElement = document.createElement('div');
-
-                                            additionalTagElement.classList.add('relative', 'group', 'bg-tags', 'p-1', 'rounded-md', 'additional-tags');
-                                            additionalTagElement.setAttribute('data-count', 1);
-                                            additionalTagElement.innerHTML = `
-                                                <span id="tag-count">+1</span>
-
-                                                <div id="tags-popup" class="absolute space-y-2 bg-tags p-2 rounded-md right-1 top-8 shadow-lg hidden group-hover:block before:absolute before:content-[''] before:bg-black before:-top-2 before:w-6 before:h-3 before:right-0 before:bg-transparent">
-                                                    <span class="p-2">#${tag.tag_name}</span>
-                                                </div>
-                                            `;
-                                            tagContainer.appendChild(additionalTagElement);
-                                        }
+                                            <div id="tags-popup" class="absolute space-y-2 bg-tags p-2 rounded-md right-1 top-8 shadow-lg hidden group-hover:block before:absolute before:content-[''] before:bg-black before:-top-2 before:w-6 before:h-3 before:right-0 before:bg-transparent">
+                                                <span class="p-2">#${tag.tag_name}</span>
+                                            </div>
+                                        `;
+                                        tagContainer.appendChild(additionalTagElement);
                                     }
                                 }
-                            });
-                        }
-                    })
+                            }
+                        });
+                    }
 
                     fetch(`../controllers/get_comments.php?id=${postId}`)
                     .then(response => response.json())

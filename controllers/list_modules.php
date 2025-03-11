@@ -1,13 +1,11 @@
 <?php
     include '../includes/dbconnection.php';
+    include '../includes/dbfunctions.php';
+    $database = new Database($pdo);
 
     try {
-        $sql = "SELECT * FROM modules";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute();
-        $modules = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $modules = $database->fetchAllModules($pdo);
         echo json_encode($modules);
-        
     } catch (PDOException $e) {
         echo json_encode(['error' => $e->getMessage()]);
     }

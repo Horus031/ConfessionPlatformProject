@@ -1,44 +1,40 @@
 <?php
     session_start();
+    header("Access-Control-Allow-Origin: *");
+    header("Content-Type: application/json");
     include '../includes/dbconnection.php';
+    include '../includes/dbfunctions.php';
+
+    $database = new Database($pdo);
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_SPECIAL_CHARS);
         $password = filter_input(INPUT_POST, "password", FILTER_SANITIZE_NUMBER_INT);
         $remember = isset($_POST['remember_me']);
 
-        // Query from database
-        $sql = "SELECT user_id, password, avatar FROM users WHERE username = :username";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':username', $username);
-        $stmt->execute();
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user = $database->fetchUserByUsername($username);
 
-        if ($stmt->rowCount() > 0) {
+        if ($user) {
             if (password_verify($password, $user['password'])) {
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['username'] = $username;
                 $_SESSION['avatarURL'] = $user['avatar'];
 
-                // Check xem người dùng có bật remember me không
                 if ($remember) {
-                    $token = bin2hex(random_bytes(32)); // Tạo token ngẫu nhiên
-                    setcookie("remember_token", $token, time() + (30 * 24 * 60 * 60), "/"); // Lưu 30 ngày
-    
-                    // Lưu token vào database
-                    $sql = "UPDATE users SET remember_token = :token WHERE user_id = :user_id";
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->bindParam(':token', $token);
-                    $stmt->bindParam(':user_id', $user['user_id']);
-                    $stmt->execute();
+                    $token = bin2hex(random_bytes(32)); // Generate a random token
+                    setcookie("remember_token", $token, time() + (30 * 24 * 60 * 60), "/"); // Set cookie for 30 days
+
+                    $database->updateRememberToken($user['user_id'], $token);
+                } else {
+                    setcookie("remember_token", "", time() - 3600, "/");
                 }
 
-                header("Location: ../views/main.html.php");
+                header("Location: ../views/main.html.php?page=home");
             } else {
-                echo "Password is incorrect";
+                echo json_encode(['error' => 'Password is incorrect']);
             }
         } else {
-            echo "Username is not found, please try again";
+            echo json_encode(['error' => 'Username is not found, please try again']);
         }
     }
 ?>

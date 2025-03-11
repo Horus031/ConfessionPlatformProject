@@ -1,20 +1,23 @@
 <?php
-session_start();
-include '../includes/dbconnection.php';
+    session_start();
+    header("Access-Control-Allow-Origin: *");
+    header("Content-Type: application/json");
+    include '../includes/dbconnection.php';
+    include '../includes/dbfunctions.php';
 
-if (isset($_SESSION['user_id'])) {
-    $user_id = $_SESSION['user_id'];
+    $database = new Database($pdo);
 
-    // Xóa token trong database
-    $stmt = $pdo->prepare("UPDATE users SET remember_token = NULL WHERE user_id = :user_id");
-    $stmt->bindParam(":user_id", $user_id);
-    $stmt->execute();
-}
+    if (isset($_SESSION['user_id'])) {
+        $user_id = $_SESSION['user_id'];
 
-// Hủy session và xóa cookie
-session_destroy();
-setcookie("remember_token", "", time() - 3600, "/"); // Xóa cookie bằng cách đặt thời gian hết hạn trong quá khứ
+        // Clear token in the database
+        $database->clearRememberToken($user_id);
+    }
 
-header("Location: ../views/login.html.php");
-exit();
+    // Destroy session and clear cookie
+    session_destroy();
+    setcookie("remember_token", "", time() - 3600, "/"); // Clear cookie by setting expiration time in the past
+
+    header("Location: ../views/login.html.php");
+    exit();
 ?>
