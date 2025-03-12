@@ -5,21 +5,22 @@
     if ($_FILES['imageURL']['tmp_name']) {
         try {
             $upload = (new UploadApi())->upload($_FILES['imageURL']['tmp_name'], [
-                'folder' => 'posts', // Lưu hình vào folder trên Cloudinary
+                'folder' => 'posts', // Save the image in the folder on Cloudinary
                 'transformation' => [
                     'width' => 320,
                     'height' => 200,
-                    'crop' => 'fill'
+                    'crop' => 'fill',
+                    'quality' => 'auto', // Automatically adjust the quality
+                    'fetch_format' => 'auto' // Automatically adjust the format
                 ]
             ]);
 
-            // Lấy URL từ Cloudinary
+            // Get the URL from Cloudinary
             $imageUrl = $upload['secure_url'];
-
         } catch (Exception $e) {
-            echo 'error' . $e->getMessage();
+            echo json_encode(['error' => $e->getMessage()]);
         }
     } else {
-        echo 'error' . 'No image uploaded';
+        echo json_encode(['error' => 'No image uploaded']);
     }
 ?>

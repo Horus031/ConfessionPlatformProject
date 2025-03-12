@@ -70,130 +70,62 @@
     </div>
 </main>
 
-<script>
+<script type="module">
+    import QuestionRenderer from '../src/js/render.js';
+    const userId = <?= $_SESSION['user_id'] ?>;
+
     document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const postId = urlParams.get('id');
+        const renderer = new QuestionRenderer('#post-container', null, null);
 
-        if (postId) {
-            fetch(`../controllers/get_postdetails.php?id=${postId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        console.error(data.error);
-                    } else {
-                        console.log(data);
-                        document.querySelector('#post_id').value = data.post_id;
-                        document.querySelector('#module-name').textContent = data.module_name;
-                        document.querySelector('#module-name').className = `w-fit rounded-full text-xs px-2 font-medium ${data.bg_class} ${data.text_class}`;
-                        document.querySelector('#post-title').textContent = data.post_title;
-                        document.querySelector('#user-avatar').src = data.avatar ?? '../assets/images/user.png';
-                        document.querySelector('#username').textContent = data.username;
-                        document.querySelector('#created-at').textContent = new Date(data.created_at).toLocaleString();
-                        document.querySelector('#post-content').textContent = data.post_content;
-                        document.querySelector('#post-image').src = data.imageURL ?? '';
-                        document.querySelector('#commentCount').textContent = `Comment (${data.comments})`;
-                        document.querySelector('#likeCount').textContent = `${data.likes}`;
-
-                        const usertagContainer = document.querySelector('#user-tag');
-                        const tagContainer = document.createElement('div');
-                        tagContainer.classList.add('flex', 'items-center', 'space-x-2', 'text-sm');
-                        tagContainer.id = `tags-container-${data.post_id}`;
-
-                        usertagContainer.appendChild(tagContainer);
-
-
-                        const moduleContainer = document.querySelector('#module-container');
-                        const selectElement = document.createElement('div');
-                        selectElement.classList.add('relative', 'group');
-                        selectElement.innerHTML = `
-                            <img src="../assets/images/dots.png" class="h-10 ${data.user_id == <?= $_SESSION['user_id']; ?> ? 'block' : 'hidden'} hover:bg-gray-300 p-2 rounded-full">
-
-                            <div class="absolute bg-white rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 z-10 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent">
-                                <a class="flex items-center space-x-4 p-3 hover:bg-gray-200 cursor-pointer">
-                                    <span>Edit</span>
-                                </a>
-                                <a href="" class="flex items-center space-x-4 p-3 hover:bg-gray-200">
-                                    <span class="text-red-400">Delete</span>
-                                </a>
-                            </div>
-                        
-                        `;
-
-                        moduleContainer.appendChild(selectElement);
-                        
-                        data['tags'].forEach(tag => {
-                            console.log(tagContainer)
-                            if (tagContainer) {
-                                const existingTags = tagContainer.querySelectorAll('span');
-                                if (existingTags.length === 0) {
-                                    const tagElement = document.createElement('span');
-                                    tagElement.classList.add('bg-tags', 'p-1', 'rounded-md');
-                                    tagElement.textContent = `#${tag.tag_name}`;
-                                    tagContainer.appendChild(tagElement);
-                                } else {
-                                    const additionalTags = tagContainer.querySelector('.additional-tags');
-                                    const tagPopup = document.querySelector('#tags-popup');
-                                    if (additionalTags) {
-                                        const count = parseInt(additionalTags.getAttribute('data-count')) + 1;
-                                        const tagSpan = document.querySelector('#tag-count');
-                                        additionalTags.setAttribute('data-count', count);
-                                        tagSpan.textContent = `+${count}`;
-
-
-                                        const additionalTagPopup = document.createElement('span');
-                                        additionalTagPopup.classList.add('p-2')
-                                        additionalTagPopup.textContent = `#${tag.tag_name}`
-                                        tagPopup.appendChild(additionalTagPopup);
-
-                                    } else {
-                                        const additionalTagElement = document.createElement('div');
-
-                                        additionalTagElement.classList.add('relative', 'group', 'bg-tags', 'p-1', 'rounded-md', 'additional-tags');
-                                        additionalTagElement.setAttribute('data-count', 1);
-                                        additionalTagElement.innerHTML = `
-                                            <span id="tag-count">+1</span>
-
-                                            <div id="tags-popup" class="absolute space-y-2 bg-tags p-2 rounded-md right-1 top-8 shadow-lg hidden group-hover:block before:absolute before:content-[''] before:bg-black before:-top-2 before:w-6 before:h-3 before:right-0 before:bg-transparent">
-                                                <span class="p-2">#${tag.tag_name}</span>
-                                            </div>
-                                        `;
-                                        tagContainer.appendChild(additionalTagElement);
-                                    }
-                                }
-                            }
-                        });
-                    }
-
-                    fetch(`../controllers/get_comments.php?id=${postId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const commentContainer = document.querySelector('#comment-container');
-                        if (data.error) {
-                            console.error(data.error)
-                        } else {
-                            data.forEach(comment => {
-                                const commentElement = document.createElement('div');
-                                commentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md');
-                                commentElement.innerHTML = `
-                                    <img src="${comment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
-
-                                    <div>
-                                        <h2 class="font-medium text-md">${comment.username}</h2>
-                                        <p class="text-sm">${comment.content}</p>
-                                    </div>
-                                `;
-
-                                commentContainer.appendChild(commentElement);
-                            })
-                        }
-                    })
-                })
-                .catch(error => {
-                    console.error('Error fetching post details:', error);
-                });
-        } else {
-            console.error('Post ID not provided');
+        try {
+            const postInfo = renderer.fetchData(`../controllers/get_postdetails.php?id=${postId}`)
+            renderer.renderPostDetail(postInfo, userId);
+        } catch (error) {
+            console.error('Error loading data:', error);
         }
+
+        // if (postId) {
+        //     fetch(`../controllers/get_postdetails.php?id=${postId}`)
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             if (data.error) {
+        //                 console.error(data.error);
+        //             } else {
+                        
+                        
+        //             }
+
+        //             fetch(`../controllers/get_comments.php?id=${postId}`)
+        //             .then(response => response.json())
+        //             .then(data => {
+        //                 const commentContainer = document.querySelector('#comment-container');
+        //                 if (data.error) {
+        //                     console.error(data.error)
+        //                 } else {
+        //                     data.forEach(comment => {
+        //                         const commentElement = document.createElement('div');
+        //                         commentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md');
+        //                         commentElement.innerHTML = `
+        //                             <img src="${comment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+
+        //                             <div>
+        //                                 <h2 class="font-medium text-md">${comment.username}</h2>
+        //                                 <p class="text-sm">${comment.content}</p>
+        //                             </div>
+        //                         `;
+
+        //                         commentContainer.appendChild(commentElement);
+        //                     })
+        //                 }
+        //             })
+        //         })
+        //         .catch(error => {
+        //             console.error('Error fetching post details:', error);
+        //         });
+        // } else {
+        //     console.error('Post ID not provided');
+        // }
     });
 </script>

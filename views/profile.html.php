@@ -54,7 +54,25 @@
     </div>
 </main>
 
-<script>
+<script type="module">
+    import QuestionRenderer from '../src/js/render.js';
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        const renderer = new QuestionRenderer('#profile-container', null, null);
+
+        try {
+            const userInfo = await renderer.fetchData('../controllers/get_userinfo.php');
+            renderer.renderUserProfile(userInfo);
+
+            const userPosts = await renderer.fetchData('../controllers/list_question.php');
+            renderer.renderUserPosts(userPosts, <?= $_SESSION['user_id'] ?>);
+        } catch (error) {
+            console.error('Error loading data:', error);
+        }
+    });
+</script>
+
+<!-- <script>
     document.addEventListener('DOMContentLoaded', function() {
         fetch('../controllers/get_userinfo.php')
         .then(response => response.json())
@@ -174,4 +192,4 @@
             }
         })
     })
-</script>
+</script> -->

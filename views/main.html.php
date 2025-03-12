@@ -16,15 +16,13 @@
         <?php include '../includes/overlay.php' ?>
         <?php include '../includes/header.php' ?>
 
-
         <?php include "./" . $page . ".html.php"; ?>
     </div> 
 
-
-    <script src="../src/js/events.js"></script>
-
+    <script type="module">
+        import EventListener from '../src/js/events.js';
+        const eventListener = new EventListener();
+        eventListener.start();
+    </script>
 </body>
 </html>
-
-
-

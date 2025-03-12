@@ -26,9 +26,23 @@
         </div>
     </div>
 </main>
+<script type="module">
+    import QuestionRenderer from '../src/js/render.js';
 
+    document.addEventListener('DOMContentLoaded', async function() {
+        const renderer = new QuestionRenderer('#tags-container', '#filter-tags');
 
-<script>
+        try {
+            const tags = await renderer.fetchData('../controllers/list_tags.php');
+            renderer.renderTags(tags);
+            renderer.filterTags();
+        } catch (error) {
+            console.error('Error loading data:', error);
+        }
+    });
+</script>
+
+<!-- <script>
     document.addEventListener('DOMContentLoaded', function() {
         fetch('../controllers/list_tags.php')
         .then(response => response.json())
@@ -74,4 +88,4 @@
             }
         })
     })
-</script>
+</script> -->

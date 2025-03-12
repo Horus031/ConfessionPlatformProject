@@ -1,75 +1,79 @@
-const menuBtn = document.querySelector('#openMenu');
-const closeBtn = document.querySelector('#closeMenu');
-const menu = document.querySelector('#menu');
-const overlay = document.querySelector('#overlay');
-const navbar = document.querySelector('#navbar');
-const btnWrapper = document.querySelector('#btn-wrapper');
-const currentURL = window.location.href;
-const userBtn = document.querySelector('#user-btn');
-const userPopup = document.querySelector('#user-popup');
-const notifyBtn = document.querySelector('#notify-btn');
-const notifyPopup = document.querySelector('#notify-popup');
+class EventListener {
+    constructor() {
+        this.currentURL = window.location.href;
+    }
 
-const app = {
-    handleEvents: function() {
+    initElements() {
+        this.menuBtn = document.querySelector('#openMenu');
+        this.closeBtn = document.querySelector('#closeMenu');
+        this.menu = document.querySelector('#menu');
+        this.overlay = document.querySelector('#overlay');
+        this.navbar = document.querySelector('#navbar');
+        this.btnWrapper = document.querySelector('#btn-wrapper');
+        this.userBtn = document.querySelector('#user-btn');
+        this.userPopup = document.querySelector('#user-popup');
+        this.notifyBtn = document.querySelector('#notify-btn');
+        this.notifyPopup = document.querySelector('#notify-popup');
+    }
+
+    handleEvents() {
+        this.initElements();
+
         // Bật menu
-        menuBtn.addEventListener('click', function() {
-            menu.classList.add('animate-menuTransition');
-            overlay.classList.remove('hidden');
-            closeBtn.classList.remove('hidden');
+        this.menuBtn.addEventListener('click', () => {
+            this.menu.classList.add('animate-menuTransition');
+            this.overlay.classList.remove('hidden');
+            this.closeBtn.classList.remove('hidden');
         });
 
         // Tắt menu
-        closeBtn.addEventListener('click', function() {
-            menu.classList.add('animate-menuOut');
-            menu.classList.remove('animate-menuTransition');
-            overlay.classList.add('hidden');
-            closeBtn.classList.add('hidden');
+        this.closeBtn.addEventListener('click', () => {
+            this.menu.classList.add('animate-menuOut');
+            this.menu.classList.remove('animate-menuTransition');
+            this.overlay.classList.add('hidden');
+            this.closeBtn.classList.add('hidden');
         });
 
-        overlay.addEventListener('click', function() {
-            menu.classList.add('animate-menuOut');
-            menu.classList.remove('animate-menuTransition');
-            overlay.classList.add('hidden');
-            closeBtn.classList.add('hidden');
+        this.overlay.addEventListener('click', () => {
+            this.menu.classList.add('animate-menuOut');
+            this.menu.classList.remove('animate-menuTransition');
+            this.overlay.classList.add('hidden');
+            this.closeBtn.classList.add('hidden');
         });
 
         // Lặp qua các link trong navbar, check xem đang ở trang nào để thêm class tương ứng
-        const buttons = navbar.querySelectorAll('a[id$="btn"]');
+        const buttons = this.navbar.querySelectorAll('a[id$="btn"]');
         buttons.forEach(link => {
             link.classList.remove("bg-gray-200");
-            if (link.href === currentURL) {
+            if (link.href === this.currentURL) {
                 link.classList.add("bg-gray-200");
             }
         });
 
-        userBtn.addEventListener('click', function() {
-            userPopup.classList.toggle('hidden');
+        this.userBtn.addEventListener('click', () => {
+            this.userPopup.classList.toggle('hidden');
         });
 
-        notifyBtn.addEventListener('click', function() {
-            notifyPopup.classList.toggle('hidden');
+        this.notifyBtn.addEventListener('click', () => {
+            this.notifyPopup.classList.toggle('hidden');
         });
 
         // Check khi click ra ngoài các menu & popup
-        document.addEventListener('click', function(event) {
-            if (!userBtn.contains(event.target) && !userPopup.contains(event.target)) {
-                userPopup.classList.add('hidden');
+        document.addEventListener('click', (event) => {
+            if (!this.userBtn.contains(event.target) && !this.userPopup.contains(event.target)) {
+                this.userPopup.classList.add('hidden');
             }
 
-            if (!notifyBtn.contains(event.target) && !notifyPopup.contains(event.target)) {
-                notifyPopup.classList.add('hidden');
+            if (!this.notifyBtn.contains(event.target) && !this.notifyPopup.contains(event.target)) {
+                this.notifyPopup.classList.add('hidden');
             }
         });
+    }
 
-        
-    },
-
-    start: function() {
+    start() {
         this.handleEvents();
-
-
     }
 }
 
-app.start();
+// Export the class
+export default EventListener;

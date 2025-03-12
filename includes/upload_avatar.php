@@ -9,16 +9,18 @@
                 'transformation' => [
                     'width' => 200,
                     'height' => 200,
-                    'crop' => 'fill' // Resize and crop the image to fit the specified dimensions
+                    'crop' => 'fill', // Resize and crop the image to fit the specified dimensions
+                    'quality' => 'auto', // Automatically adjust the quality
+                    'fetch_format' => 'auto' // Automatically adjust the format
                 ]
             ]);
 
             // Get the image URL from Cloudinary
             $avatarURL = $upload['secure_url'];
         } catch (Exception $e) {
-            echo 'error' . $e->getMessage();
+            echo json_encode(['error' => $e->getMessage()]);
         }
     } else {
-        echo 'error' . 'No avatar found';
+        echo json_encode(['error' => 'No avatar found']);
     }
 ?>
