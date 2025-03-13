@@ -20,7 +20,9 @@ class EventListener {
         this.buttonContainer = document.querySelector('#button-container');
         this.tagList = document.querySelector('#tag-list');
         this.tagInput = document.querySelector('#tag-input');
-        this.questionElement = document.querySelectorAll('div[id^="value-"]');
+        this.questionElement = document.querySelectorAll('div[id^="ques-"]');
+        this.filterTags = document.querySelector('#filter-tags');
+        this.tagElements = document.querySelectorAll('div[id^="tag-"]');
     }
 
     handleEvents() {
@@ -86,7 +88,9 @@ class EventListener {
                 }
                 switch (true) {
                     case button.id == "likes-btn":
-                        _this.handleLikes(postId);
+                        const likeImage = question.querySelector('.like-img');
+                        const likeCountSpan = question.querySelector('.like-count');
+                        _this.handleLikes(postId, likeCountSpan, likeImage);
                         break;
                     case button.id == "comment-btn":
                         console.log('comment');
@@ -107,24 +111,77 @@ class EventListener {
                 }
             })
         })
+
+        if (this.filterTags) {
+            this.filterTags.addEventListener('change', function() {
+                if (_this.filterTags.value == "all") {
+                    _this.tagElements.forEach(tag => {
+                        tag.classList.remove('hidden');
+                        tag.classList.add('animate-postSlideIn');
+                    });
+                } else {
+                    _this.tagElements.forEach(tag => {
+                        const tagValue = tag.querySelector('#tag-value');
+                        const tagType = tagValue.value;
+                        if (tagType == _this.filterTags.value) {
+                            tag.classList.remove('hidden');
+                            tag.classList.add('animate-postSlideIn');
+                        } else {
+                            tag.classList.add('hidden');
+                        }
+                    });
+                }
+            });
+        }
     }
 
-    async handleLikes(postId) {
+    async handleLikes(postId, likeCountSpan, likeImage) {
         try {
             const likes = await this.renderer.fetchData('../controllers/handle_likes.php', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ post_id: postId })
             })
-            console.log(likes);
+            if (likes.status == "like") {
+                likeImage.src = '../assets/images/like-on.png';
+                likeCountSpan.textContent = parseInt(likeCountSpan.textContent) + 1;
+            } else {
+                likeImage.src = '../assets/images/like.png';
+                likeCountSpan.textContent = parseInt(likeCountSpan.textContent) - 1;
+            }
         } catch (error) {
             console.error('Error handling likes:', error);
         }
         
     }
 
+    async updateLikeCount(postId) {
+        const likeCount = await this.renderer.fetchData(`../controllers/get_likes.php?post_id=${postId}`, {
+            method: "POST",
+            header: { "Content-Type": "application/json" },
+            body: JSON.stringify({ post_id: postId })
+        });
+        if (likeCount.error) {
+            console.log(likeCount.error);
+        } else {
+            let likeCountSpan = document.querySelector(`.like-count[data-post-id="${postId}"]`);
+            if (likeCountSpan) {
+                likeCountSpan.textContent = likeCount.like_count;
+            }
+        }
+    }
+
+    
+
     start() {
         this.handleEvents();
+
+        setInterval(() => {
+            document.querySelectorAll(".like-count").forEach((span) => {
+                let postId = span.dataset.postId;
+                this.updateLikeCount(postId);
+            });
+        }, 5000);
     }
 }
 

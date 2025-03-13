@@ -10,9 +10,15 @@
         $post_id = isset($data['post_id']) ? intval($data['post_id']) : null;
         if ($post_id) {
             try {
-                $like = $database->handleLikes($post_id);
+                $like = $database->handleLikes($database->checkLikes($post_id), $post_id);
+
+                if ($like) {
+                    echo json_encode(["status" => "unliked"]);
+                } else {
+                    echo json_encode(["status" => "like"]);
+                }
         
-                echo json_encode($like);
+                
             } catch(PDOException $e) {
                 echo json_encode(['error ' . $e->getMessage()]);
             }

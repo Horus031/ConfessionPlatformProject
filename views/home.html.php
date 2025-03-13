@@ -113,9 +113,9 @@
             renderer.renderQuestions(questions, userId);
             const tags = await renderer.fetchData('../controllers/get_posttags.php');
             renderer.renderTagsForPost(tags);
+           
             
             eventListener.start();
-            
         } catch (error) {
             console.error('Error loading data:', error);
         }

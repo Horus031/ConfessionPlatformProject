@@ -29,9 +29,9 @@ class QuestionRenderer {
 
         const fragment = document.createDocumentFragment();
 
-        questions.forEach(question => {
+        questions.forEach(async question => {
             const questionElement = document.createElement('div');
-            questionElement.id = `value-${question.post_id}`;
+            questionElement.id = `ques-${question.post_id}`;
             questionElement.setAttribute('data-value', `${question.post_id}`);
             questionElement.classList.add('mt-2', 'border-2', 'p-4', 'rounded-md', 'border-gray-200', 'hover:border-black', 'cursor-pointer');
             questionElement.innerHTML = `
@@ -72,12 +72,12 @@ class QuestionRenderer {
                         <div class="flex justify-between items-center mt-3">
                             <div class="flex justify-between w-fit border-2 border-text-light rounded-md space-x-2">
                                 <button id="likes-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
-                                    <img loading="lazy" src="../assets/images/like.png" alt="" class="h-10 p-2">
-                                    <span>${question.likes}</span>
+                                    <img loading="lazy" src="../assets/images/like.png" alt="" class="like-img h-10 p-2">
+                                    <span class="like-count" data-post-id="${question.post_id}">${question.likes}</span>
                                 </button>
                                 <button id="comment-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
-                                    <img loading="lazy" src="../assets/images/comments.png" alt="" class="h-10 p-2">
-                                    <span>${question.comments}</span>
+                                    <img loading="lazy" src="../assets/images/comments.png" alt="" class="like-img h-10 p-2">
+                                    <span class="comment-count" data-post-id="${question.post_id}">${question.comments}</span>
                                 </button>
                             </div>
                             <div class="flex items-center space-x-2 ">
@@ -93,9 +93,29 @@ class QuestionRenderer {
                 </div>
             `;
 
-            
-
             fragment.appendChild(questionElement);
+
+
+            try {
+                const data = await this.fetchData('../controllers/check_likes.php', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ post_id: question.post_id })
+                })
+
+                if (data.error) {
+                    console.log(error);
+                } else {
+                    if (data.status == "yes") {
+                        questionElement.querySelector('.like-img').src = '../assets/images/like-on.png';
+                    } else {
+                        questionElement.querySelector('.like-img').src = '../assets/images/like.png';
+                    }
+                }
+
+            } catch (error) {
+                console.log(error);
+            }
         });
 
         this.container.appendChild(fragment);
@@ -163,30 +183,6 @@ class QuestionRenderer {
         });
 
         this.container.appendChild(fragment);
-    }
-
-    filterTags() {
-        const filterTags = document.querySelector('#filter-tags');
-        const tagElements = document.querySelectorAll('div[id^="tag-"]');
-        filterTags.addEventListener('change', function() {
-            if (filterTags.value == "all") {
-                tagElements.forEach(tag => {
-                    tag.classList.remove('hidden');
-                    tag.classList.add('animate-postSlideIn');
-                });
-            } else {
-                tagElements.forEach(tag => {
-                    const tagValue = tag.querySelector('#tag-value');
-                    const tagType = tagValue.value;
-                    if (tagType == filterTags.value) {
-                        tag.classList.remove('hidden');
-                        tag.classList.add('animate-postSlideIn');
-                    } else {
-                        tag.classList.add('hidden');
-                    }
-                });
-            }
-        });
     }
 
     renderTagsWithType() {

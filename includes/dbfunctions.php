@@ -1,4 +1,5 @@
 <?php
+session_start();
 class Database {
     private $pdo;
 
@@ -245,13 +246,46 @@ class Database {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function handleLikes($post_id) {
-        $sqlSelect = 'SELECT likes.like_id, likes.user_id, likes.post_id FROM likes
-                INNER JOIN posts ON likes.post_id = posts.post_id
-                WHERE posts.post_id = ?';
-        $stmt = $this->pdo->prepare($sqlSelect);
+    public function getLikes($post_id) {
+        $sql = 'SELECT like_count FROM posts WHERE post_id = ?';
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$post_id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $like = $stmt->fetch();
+
+        return $like;
+    }
+
+    public function checkLikes($post_id) {
+        $sqlSelect = 'SELECT 1 FROM likes WHERE user_id = ? AND post_id = ?';
+        $stmt = $this->pdo->prepare($sqlSelect);
+        $stmt->execute([$_SESSION['user_id'], $post_id]);
+        $isLiked = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $isLiked;
+    }
+
+    public function handleLikes($isLiked, $post_id) {
+        if ($isLiked) {
+            $sqlDelete = "DELETE FROM likes WHERE user_id = ? AND post_id = ?";
+            $stmtDelete = $this->pdo->prepare($sqlDelete);
+            $stmtDelete->execute([$_SESSION['user_id'], $post_id]);
+
+            $sqlUpdate = "UPDATE posts SET like_count = like_count - 1 WHERE post_id = ?";
+            $stmtUpdate = $this->pdo->prepare($sqlUpdate);
+            $stmtUpdate->execute([$post_id]);
+
+            return true;
+        } else {
+            $sqlInsert = "INSERT INTO likes (user_id, post_id) VALUES (?, ?)";
+            $stmtInsert = $this->pdo->prepare($sqlInsert);
+            $stmtInsert->execute([$_SESSION['user_id'], $post_id]);
+
+            $sqlUpdate = "UPDATE posts SET like_count = like_count + 1 WHERE post_id = ?";
+            $stmtUpdate = $this->pdo->prepare($sqlUpdate);
+            $stmtUpdate->execute([$post_id]);
+
+            return false;
+        }
     }
 }
 ?>

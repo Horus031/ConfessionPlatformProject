@@ -18,11 +18,5 @@
 
         <?php include "./" . $page . ".html.php"; ?>
     </div> 
-
-    <script type="module">
-        import EventListener from '../src/js/events.js';
-        const eventListener = new EventListener();
-        eventListener.start();
-    </script>
 </body>
 </html>

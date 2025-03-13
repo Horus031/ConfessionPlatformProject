@@ -31,15 +31,17 @@
 <script type="module">
     const userId = <?= $_SESSION['user_id'] ?>;
     import QuestionRenderer from '../src/js/render.js';
+    import EventListener from '../src/js/events.js';
 
     document.addEventListener('DOMContentLoaded', async function() {
         const renderer = new QuestionRenderer('#question-container', '#question-filter');
+        const eventListener = new EventListener();
 
         try {
             const questions = await renderer.fetchData('../controllers/list_question.php');
             renderer.renderQuestions(questions, userId);
             document.querySelector('#total-question').textContent = `${questions.length}`;
-            document.querySelectorAll('div[id^="value-"]').forEach(question => {
+            document.querySelectorAll('div[id^="question-"]').forEach(question => {
                 question.classList.add('animate-postScale');
             })
 
@@ -54,5 +56,7 @@
         } catch (error) {
             console.error('Error loading data:', error);
         }
+
+        eventListener.start();
     });
 </script>
