@@ -1,5 +1,8 @@
+import QuestionRenderer from "../js/render.js";
+
 class EventListener {
     constructor() {
+        this.renderer = new QuestionRenderer();
         this.currentURL = window.location.href;
     }
 
@@ -14,10 +17,15 @@ class EventListener {
         this.userPopup = document.querySelector('#user-popup');
         this.notifyBtn = document.querySelector('#notify-btn');
         this.notifyPopup = document.querySelector('#notify-popup');
+        this.buttonContainer = document.querySelector('#button-container');
+        this.tagList = document.querySelector('#tag-list');
+        this.tagInput = document.querySelector('#tag-input');
+        this.questionElement = document.querySelectorAll('div[id^="value-"]');
     }
 
     handleEvents() {
-        this.initElements();
+        const _this = this;
+        setTimeout(this.initElements(), 100);
 
         // Bật menu
         this.menuBtn.addEventListener('click', () => {
@@ -68,6 +76,51 @@ class EventListener {
                 this.notifyPopup.classList.add('hidden');
             }
         });
+
+        this.questionElement.forEach(question => {
+            question.addEventListener('click', function(e) {
+                const postId = question.getAttribute('data-value');
+                let button = e.target.closest('button');
+                if (!button) {
+                    window.location.href = `../views/main.html.php?page=postdetails&id=${postId}`;
+                }
+                switch (true) {
+                    case button.id == "likes-btn":
+                        _this.handleLikes(postId);
+                        break;
+                    case button.id == "comment-btn":
+                        console.log('comment');
+                        break;
+                    case button.id == "save-btn":
+                        console.log('bookmark');
+                        break;
+                    case button.id == "link-btn":
+                        console.log('link-btn');
+                        break;
+                    case button.id == "view-btn":
+                        window.location.href = `../views/main.html.php?page=postdetails&id=${postId}`;
+                        break;
+                    case button.id == "edit-btn":
+                        sessionStorage.setItem('editPostId', postId);
+                        window.location.href = '../views/main.html.php?page=editpost';
+                        break;
+                }
+            })
+        })
+    }
+
+    async handleLikes(postId) {
+        try {
+            const likes = await this.renderer.fetchData('../controllers/handle_likes.php', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ post_id: postId })
+            })
+            console.log(likes);
+        } catch (error) {
+            console.error('Error handling likes:', error);
+        }
+        
     }
 
     start() {

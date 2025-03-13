@@ -96,8 +96,10 @@
 <script type="module">
     const userId = <?= $_SESSION['user_id'] ?>;
     import QuestionRenderer from '../src/js/render.js';
+    import EventListener from '../src/js/events.js';
     document.addEventListener('DOMContentLoaded', async function() {
-        const renderer = new QuestionRenderer('#question-container', '#question-filter', '#total-question');
+        const renderer = new QuestionRenderer('#question-container');
+        const eventListener = new EventListener();
         const addQuestionButton = document.querySelector('#addques-btn');
 
         if (addQuestionButton) {
@@ -111,6 +113,9 @@
             renderer.renderQuestions(questions, userId);
             const tags = await renderer.fetchData('../controllers/get_posttags.php');
             renderer.renderTagsForPost(tags);
+            
+            eventListener.start();
+            
         } catch (error) {
             console.error('Error loading data:', error);
         }

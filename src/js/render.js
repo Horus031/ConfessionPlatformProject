@@ -1,19 +1,22 @@
 class QuestionRenderer {
-    constructor(containerId, filterId, totalQuestionsId) {
+    constructor(containerId, filterId) {
         this.container = document.querySelector(containerId);
         this.filterContainer = document.querySelector(filterId);
-        this.totalQuestionsElement = document.querySelector(totalQuestionsId);
     }
 
     async fetchData(url, options = {}) {
         try {
             const response = await fetch(url, options);
-            const data = await response.json();
-            console.log(data);
-            if (data.error) {
-                throw new Error(data.error);
+            const text = await response.text();
+            try {
+                const data = JSON.parse(text);
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                return data;
+            } catch (error) {
+                throw new Error(`Invalid JSON response: ${text}`);
             }
-            return data;
         } catch (error) {
             console.error(`Error fetching data from ${url}:`, error);
             throw error;
@@ -22,7 +25,7 @@ class QuestionRenderer {
 
     renderQuestions(questions, userId) {
         if (!this.container) return;
-        this.container.innerHTML = ''; // Clear previous questions
+        this.container.innerHTML = '';
 
         const fragment = document.createDocumentFragment();
 
@@ -52,70 +55,45 @@ class QuestionRenderer {
                             </div>
                         </div>
                     </div>
-                    <h2 class="mt-3 font-semibold text-lg w-56">${question.post_title}</h2>
+                    <h2 class="mt-3 font-semibold text-lg w-56 h-20">${question.post_title}</h2>
                     <p class="mt-3 text-xs text-text-light font-medium line-clamp-1">${question.post_content}</p>
-                    <div class="mt-3 border-2 border-gray-200 rounded-md">
-                        <img loading="lazy" src="${question.imageURL ?? ''}" alt="Post image" width="100%" height="100px" class="rounded-md lazy-load">
-                    </div>
-                    <div class="flex justify-between items-center mt-3">
-                        <div class="flex items-center space-x-2">
-                            <img loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
-                            <span class="text-xs">${question.username}</span>
-                            <span class="text-xs">${new Date(question.created_at).toLocaleString()}</span>
+                    <div>
+                        <div class="mt-3 border-2 border-gray-200 rounded-md">
+                            <img loading="lazy" src="${question.imageURL ?? ''}" alt="Post image" width="100%" height="100px" class="rounded-md lazy-load">
                         </div>
-                        <div id="tags-container-${question.post_id}" class="flex items-center space-x-2 text-sm"></div>
-                    </div>
-                    <div class="flex justify-between items-center mt-3">
-                        <div class="flex justify-between w-fit border-2 border-text-light rounded-md space-x-2">
-                            <button id="likes-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
-                                <img loading="lazy" src="../assets/images/like.png" alt="" class="h-10 p-2">
-                                <span>${question.likes}</span>
-                            </button>
-                            <button id="comment-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
-                                <img loading="lazy" src="../assets/images/comments.png" alt="" class="h-10 p-2">
-                                <span>${question.comments}</span>
-                            </button>
+                        <div class="flex justify-between items-center mt-3">
+                            <div class="flex items-center space-x-2">
+                                <img loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+                                <span class="text-xs">${question.username}</span>
+                                <span class="text-xs">${new Date(question.created_at).toLocaleString()}</span>
+                            </div>
+                            <div id="tags-container-${question.post_id}" class="flex items-center space-x-2 text-sm"></div>
                         </div>
-                        <div class="flex items-center space-x-2 ">
-                            <button id="save-btn" class="rounded-md hover:bg-gray-300 transition-all">
-                                <img loading="lazy" src="../assets/images/bookmark.png" alt="" class="h-10 p-2">
-                            </button>
-                            <button id="link-btn" class="rounded-md hover:bg-gray-300 transition-all">
-                                <img loading="lazy" src="../assets/images/link.png" alt="" class="h-10 p-2">
-                            </button>
+                        <div class="flex justify-between items-center mt-3">
+                            <div class="flex justify-between w-fit border-2 border-text-light rounded-md space-x-2">
+                                <button id="likes-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
+                                    <img loading="lazy" src="../assets/images/like.png" alt="" class="h-10 p-2">
+                                    <span>${question.likes}</span>
+                                </button>
+                                <button id="comment-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
+                                    <img loading="lazy" src="../assets/images/comments.png" alt="" class="h-10 p-2">
+                                    <span>${question.comments}</span>
+                                </button>
+                            </div>
+                            <div class="flex items-center space-x-2 ">
+                                <button id="save-btn" class="rounded-md hover:bg-gray-300 transition-all">
+                                    <img loading="lazy" src="../assets/images/bookmark.png" alt="" class="h-10 p-2">
+                                </button>
+                                <button id="link-btn" class="rounded-md hover:bg-gray-300 transition-all">
+                                    <img loading="lazy" src="../assets/images/link.png" alt="" class="h-10 p-2">
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
 
-            questionElement.addEventListener('click', function(e) {
-                let button = e.target.closest('button');
-                if (!button) {
-                    window.location.href = `../views/main.html.php?page=postdetails&id=${question.post_id}`;
-                }
-                switch (true) {
-                    case button.id == "likes-btn":
-                        console.log('likes');
-                        break;
-                    case button.id == "comment-btn":
-                        console.log('comment');
-                        break;
-                    case button.id == "save-btn":
-                        console.log('bookmark');
-                        break;
-                    case button.id == "link-btn":
-                        console.log('link-btn');
-                        break;
-                    case button.id == "view-btn":
-                        window.location.href = `../views/main.html.php?page=postdetails&id=${question.post_id}`;
-                        break;
-                    case button.id == "edit-btn":
-                        const postId = questionElement.getAttribute('data-value');
-                        sessionStorage.setItem('editPostId', postId);
-                        window.location.href = '../views/main.html.php?page=editpost';
-                        break;
-                }
-            });
+            
 
             fragment.appendChild(questionElement);
         });
@@ -209,6 +187,76 @@ class QuestionRenderer {
                 });
             }
         });
+    }
+
+    renderTagsWithType() {
+        const selectTagType = document.querySelector('#select-tag-type');
+        const buttonContainer = document.querySelector('#button-container');
+        const tagList = document.querySelector('#tag-list');
+        const tagInput = document.querySelector('#tag-input');
+        
+        selectTagType.addEventListener('change', async () => {
+            let selectedValue = selectTagType.value;
+            
+            while (tagList.firstChild) {
+                tagList.removeChild(tagList.firstChild);
+            }
+
+            try {
+                const data = await this.fetchData('../controllers/tags_withtype.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ type: selectedValue })
+                });
+
+                if (data.error) {
+                    tagList.innerHTML = `<option>${data.error}</option>`;
+                } else {
+                    if (selectedValue == '') {
+                        tagList.classList.add('hidden');
+                        buttonContainer.classList.add('hidden');
+                        tagInput.classList.add('hidden');
+                    } else {
+                        tagList.classList.remove('hidden');
+                        buttonContainer.classList.remove('hidden');
+                        tagInput.classList.remove('hidden');
+                        data.forEach(tag => {
+                            const tagElement = document.createElement('option');
+                            tagElement.value = `${tag.tag_name}`;
+                            tagElement.textContent = `${tag.tag_name}`;
+                            tagList.appendChild(tagElement);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading tags:', error);
+            }
+        });
+
+        buttonContainer.addEventListener('click', function(e) {
+            if (e.target.closest('button[id="add-btn"]')) {
+                const selectedTag = tagList.value;
+                const currentTags = tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+
+                if (currentTags.includes(selectedTag)) {
+                    console.log('You cannot duplicate the tag!');
+                } else {
+                    currentTags.push(selectedTag);
+                    tagInput.value = currentTags.join(', ');
+                }
+
+            } else if (e.target.closest('button[id="remove-btn"]')) {
+                const selectedTag = tagList.value;
+                let currentTags = tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+
+                currentTags = currentTags.filter(tag => tag !== selectedTag);
+                tagInput.value = currentTags.join(', ');
+            }
+        });
+
+        document.querySelector('#cancel-btn').addEventListener('click', function() {
+            window.history.back();
+        })
     }
 
     renderModules(modules) {
@@ -326,7 +374,60 @@ class QuestionRenderer {
         }
     }
 
+    renderEditUser(userInfo, username, avatarURL) {
+        const imageInput = document.querySelector('#uploadimg-container');
+        const imageChildren = document.querySelector('#img-child');
+
+        const accountInput = document.querySelector('#accountinfo-container');
+        const bioInput = document.querySelector('#bio-container');
+        const socialInput = document.querySelector('#social-container');
+
+        const imageElements = document.createElement('img');
+        imageElements.id = 'image';
+        imageElements.classList.add('h-20', 'rounded-full');
+        imageElements.src = avatarURL;
+        imageInput.insertBefore(imageElements, imageChildren);
+
+        accountInput.innerHTML = `
+            <div class="relative">
+                <img src="../assets/images/name.png" alt="" class="absolute top-1/4 left-4 h-6">
+                <input type="text" name="usernameValue" id="" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your username" value="${username}">
+            </div>
+            <div class="relative">
+                <img src="../assets/images/username.png" alt="" class="absolute top-1/4 left-4 h-6">
+                <input type="text" name="tagnameValue" id="" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your tagname" value="${userInfo[0].tag_name ?? ''}">
+            </div>
+            <div class="relative">
+                <img src="../assets/images/email.png" alt="" class="absolute top-1/4 left-4 h-6">
+                <input type="text" name="emailValue" id="" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your email" value="${userInfo[0].email ?? ''}">
+            </div>
+        `;
+
+        const bioElement = document.createElement('textarea');
+        bioElement.name = 'bioValue';
+        bioElement.placeholder = 'Your bio...';
+        bioElement.cols = '40';
+        bioElement.rows = '8';
+        bioElement.classList.add('border-1', 'border-text', 'p-2', 'rounded-lg');
+        bioElement.value = `${userInfo[0].bio}`;
+
+        bioInput.appendChild(bioElement);
+
+        userInfo.forEach(link => {
+            const socialLinkBox = document.createElement('div');
+            socialLinkBox.classList.add('relative');
+            socialLinkBox.innerHTML = `
+                <img src="../assets/images/${link.platform.toLowerCase()}.png" alt="" class="absolute top-1/2 left-4 h-6">
+                <label for="${link.platform}">${link.platform}</label>
+                <input type="url" name="social_links[${link.platform}]" id="${link.platform}" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your ${link.platform.toUpperCase()}  Link" value="${link.url}">
+            `; 
+
+            socialInput.appendChild(socialLinkBox);
+        })
+    }
+
     renderPostDetail(post, userId) {
+        console.log(post)
         document.querySelector('#post_id').value = post.post_id;
         document.querySelector('#module-name').textContent = post.module_name;
         document.querySelector('#module-name').className = `w-fit rounded-full text-xs px-2 font-medium ${post.bg_class} ${post.text_class}`;
@@ -354,16 +455,17 @@ class QuestionRenderer {
             <img src="../assets/images/dots.png" class="h-10 ${post.user_id == userId ? 'block' : 'hidden'} hover:bg-gray-300 p-2 rounded-full">
 
             <div class="absolute bg-white rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 z-10 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent">
-                <a class="flex items-center space-x-4 p-3 hover:bg-gray-200 cursor-pointer">
+                <button type="button" id="edit-btn"  class="flex items-center w-full space-x-4 p-3 hover:bg-gray-200 cursor-pointer">
                     <span>Edit</span>
-                </a>
-                <a href="" class="flex items-center space-x-4 p-3 hover:bg-gray-200">
-                    <span class="text-red-400">Delete</span>
-                </a>
+                </button>
+                <form action="../controllers/deletepost.php" method="post" class="${post.user_id == userId ? 'block' : 'hidden'} ">
+                    <input type="hidden" name="post_id" value="${post.post_id}">
+                    <input type="submit" value="Delete" class="space-x-4 p-3 text-left cursor-pointer hover:bg-gray-200 text-red-400 w-full">
+                </form>
             </div>
         
         `;
-
+        
         moduleContainer.appendChild(selectElement);
         
         if (Array.isArray(post.tags)) {
@@ -410,6 +512,43 @@ class QuestionRenderer {
         }
 
         
+    }
+
+    renderEditPosts(post, postId) {
+        console.log(post);
+        document.querySelector('#post-value').value = `${postId}`
+        document.querySelector('#title').value = `${post.post_title}`;
+        document.querySelector('#content').value = `${post.post_content}`;
+        document.querySelector('#file-name').textContent = `${post.imageURL}`;
+        setTimeout(function() {
+            document.querySelector('#modules').value = `${post.module_id}`;
+        }, 0);
+
+        const tagNames = document.querySelector('#tag-input');
+        let selectedTag = [];
+        post['tags'].forEach(tagName => {
+            selectedTag.push(`${tagName.tag_name}`);                    
+        })
+        tagNames.value = selectedTag.join(', ');
+    }
+
+    renderComments(comments) {
+        const commentContainer = document.querySelector('#comment-container');
+
+        comments.forEach(comment => {
+            const commentElement = document.createElement('div');
+            commentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md');
+            commentElement.innerHTML = `
+                <img src="${comment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+
+                    <div>
+                        <h2 class="font-medium text-md">${comment.username}</h2>
+                        <p class="text-sm">${comment.content}</p>
+                    </div>
+            `;
+
+            commentContainer.appendChild(commentElement);
+        })
     }
 }
 

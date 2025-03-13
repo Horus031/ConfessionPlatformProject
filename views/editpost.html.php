@@ -64,23 +64,39 @@
     
 </main>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        fetch('../controllers/list_modules.php')
-        .then(response => response.json())
-        .then(data => {
-            const modulesContainer = document.querySelector('#modules');
-            if (data.error) {
-                container.innerHTML = `<p class="text-red-500">${data.error}</p>`;
-            } else {
-                data.forEach(module => {
-                    const option = document.createElement('option');
-                    option.setAttribute('value', `${module.module_id}`);
-                    option.innerHTML = `${module.module_name}`;
-                    modulesContainer.appendChild(option);
-                });
+<script type="module">
+    import QuestionRenderer from '../src/js/render.js';
+    import EventListener from '../src/js/events.js';
+    document.addEventListener('DOMContentLoaded', async function() {
+        const postId = sessionStorage.getItem('editPostId');
+        const renderer = new QuestionRenderer('#modules');
+        const eventListener = new EventListener();
+
+        try {
+            const modules = await renderer.fetchData('../controllers/list_modules.php');
+            renderer.renderModules(modules);
+
+            if (!postId) {
+                alert("There is no post for editing!");
+                window.location.href = "../views/main.html.php?page=home"; // Chuyển về trang chính nếu không có post_id
+                return;
             }
-        });
+
+            const editPost = await renderer.fetchData('../controllers/get_postdetails.php', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ post_id: postId })
+            })
+            renderer.renderEditPosts(editPost, postId);
+
+            renderer.renderTagsWithType();
+
+
+            
+            eventListener.start();
+        } catch (error) {
+            console.error('Error loading data:', error);
+        }
 
         // Custom ô hình ảnh
         const fileInput = document.querySelector('#imageURL');
@@ -94,115 +110,11 @@
             }
         });
 
-        const postId = sessionStorage.getItem('editPostId');
-
-        if (!postId) {
-            alert("There is no post for editing!");
-            window.location.href = "../views/main.html.php?page=home"; // Chuyển về trang chính nếu không có post_id
-            return;
-        }
-
-        fetch('../controllers/get_postdetails.php', {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ post_id: postId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                console.error(data.error);
-            } else {
-                console.log(data);
-                document.querySelector('#post-value').value = `${postId}`
-                document.querySelector('#title').value = `${data.post_title}`;
-                document.querySelector('#content').value = `${data.post_content}`;
-                document.querySelector('#file-name').textContent = `${data.imageURL}`;
-                setTimeout(function() {
-                    document.querySelector('#modules').value = `${data.module_id}`;
-                }, 0);
-
-                const tagNames = document.querySelector('#tag-input');
-                let selectedTag = [];
-                data['tags'].forEach(tagName => {
-                    selectedTag.push(`${tagName.tag_name}`);                    
-                })
-                tagNames.value = selectedTag.join(', ');
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching post details:', error);
-        });
-
-
-        // Tạo logic chọn tag
-        const selectTagType = document.querySelector('#select-tag-type');
-        const buttonContainer = document.querySelector('#button-container');
-        const tagList = document.querySelector('#tag-list');
-        const tagInput = document.querySelector('#tag-input');
-        selectTagType.addEventListener('change', function() {
-            let selectedValue = selectTagType.value;
-            
-            while (tagList.firstChild) {
-                tagList.removeChild(tagList.firstChild);
-            }
-
-            fetch('../controllers/tags_withtype.php', {
-                method: 'POST',
-                header: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ type: selectedValue })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    tagList.innerHTML = `<option>${data.error}</option>`
-                } else {
-                    if (selectedValue == '') {
-                        tagList.classList.add('hidden');
-                        buttonContainer.classList.add('hidden');
-                        tagInput.classList.add('hidden');
-                    } else {
-                        tagList.classList.remove('hidden');
-                        buttonContainer.classList.remove('hidden');
-                        tagInput.classList.remove('hidden');
-                        data.forEach(tag => {
-                            const tagElement = document.createElement('option');
-                            tagElement.value = `${tag.tag_name}`;
-                            tagElement.textContent = `${tag.tag_name}`;
-                            tagList.appendChild(tagElement);
-                        })
-                    }
-                }
-
-            })
-        })
 
         
 
-        // Tạo tương tác giữa nút thêm và xóa tag
-        buttonContainer.addEventListener('click', function(e) {
-            if (e.target.closest('button[id="add-btn"]')) {
-                const selectedTag = tagList.value;
-                const currentTags = tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+        
 
-                if (currentTags.includes(selectedTag)) {
-                    console.log('You cannot duplicate the tag!');
-                } else {
-                    currentTags.push(selectedTag);
-                    tagInput.value = currentTags.join(', ');
-                }
-
-            } else if (e.target.closest('button[id="remove-btn"]')) {
-                const selectedTag = tagList.value;
-                let currentTags = tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
-
-                currentTags = currentTags.filter(tag => tag !== selectedTag);
-                tagInput.value = currentTags.join(', ');
-            }
-        });
-
-
-        document.querySelector('#cancel-btn').addEventListener('click', function() {
-            window.history.back();
-        })
+        
     })
 </script>

@@ -74,58 +74,21 @@
     import QuestionRenderer from '../src/js/render.js';
     const userId = <?= $_SESSION['user_id'] ?>;
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
         const urlParams = new URLSearchParams(window.location.search);
         const postId = urlParams.get('id');
-        const renderer = new QuestionRenderer('#post-container', null, null);
+        const renderer = new QuestionRenderer('#post-container');
 
         try {
-            const postInfo = renderer.fetchData(`../controllers/get_postdetails.php?id=${postId}`)
+            const postInfo = await renderer.fetchData(`../controllers/get_postdetails.php?id=${postId}`)
             renderer.renderPostDetail(postInfo, userId);
+
+            const comments = await renderer.fetchData(`../controllers/get_comments.php?id=${postId}`);
+            renderer.renderComments(comments);
         } catch (error) {
             console.error('Error loading data:', error);
         }
 
-        // if (postId) {
-        //     fetch(`../controllers/get_postdetails.php?id=${postId}`)
-        //         .then(response => response.json())
-        //         .then(data => {
-        //             if (data.error) {
-        //                 console.error(data.error);
-        //             } else {
-                        
-                        
-        //             }
-
-        //             fetch(`../controllers/get_comments.php?id=${postId}`)
-        //             .then(response => response.json())
-        //             .then(data => {
-        //                 const commentContainer = document.querySelector('#comment-container');
-        //                 if (data.error) {
-        //                     console.error(data.error)
-        //                 } else {
-        //                     data.forEach(comment => {
-        //                         const commentElement = document.createElement('div');
-        //                         commentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md');
-        //                         commentElement.innerHTML = `
-        //                             <img src="${comment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
-
-        //                             <div>
-        //                                 <h2 class="font-medium text-md">${comment.username}</h2>
-        //                                 <p class="text-sm">${comment.content}</p>
-        //                             </div>
-        //                         `;
-
-        //                         commentContainer.appendChild(commentElement);
-        //                     })
-        //                 }
-        //             })
-        //         })
-        //         .catch(error => {
-        //             console.error('Error fetching post details:', error);
-        //         });
-        // } else {
-        //     console.error('Post ID not provided');
-        // }
+        
     });
 </script>

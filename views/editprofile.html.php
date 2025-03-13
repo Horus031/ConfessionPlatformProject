@@ -56,88 +56,20 @@
     </form>
 </main>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        fetch('../controllers/get_userinfo.php')
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            const editContainer = document.querySelector('#edit-container');
-            if (data.error) {
-                editContainer.innerHTML = `<p class="text-red-500">${data.error}</p>`;
-            } else {
-                const imageInput = document.querySelector('#uploadimg-container');
-                const imageChildren = document.querySelector('#img-child');
+<script type="module">
+    import QuestionRenderer from '../src/js/render.js';
+    document.addEventListener('DOMContentLoaded', async function() {
+        const renderer = new QuestionRenderer('#edit-container');
+        const username = "<?=$_SESSION['username']?>";
+        const avatarURL = "<?= isset($_SESSION['avatarURL']) ? $_SESSION["avatarURL"] : '../assets/images/user.png'; ?>";
 
-                const accountInput = document.querySelector('#accountinfo-container');
-                const bioInput = document.querySelector('#bio-container');
-                const socialInput = document.querySelector('#social-container');
-
-                const imageElements = document.createElement('img');
-                imageElements.id = 'image';
-                imageElements.classList.add('h-20', 'rounded-full');
-                imageElements.src = "<?= isset($_SESSION['avatarURL']) ? $_SESSION["avatarURL"] : '../assets/images/user.png'; ?>";
-                imageInput.insertBefore(imageElements, imageChildren);
-
-                accountInput.innerHTML = `
-                    <div class="relative">
-                        <img src="../assets/images/name.png" alt="" class="absolute top-1/4 left-4 h-6">
-                        <input type="text" name="usernameValue" id="" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your username" value="<?=$_SESSION['username']?>">
-                    </div>
-                    <div class="relative">
-                        <img src="../assets/images/username.png" alt="" class="absolute top-1/4 left-4 h-6">
-                        <input type="text" name="tagnameValue" id="" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your tagname" value="${data[0].tag_name ?? ''}">
-                    </div>
-                    <div class="relative">
-                        <img src="../assets/images/email.png" alt="" class="absolute top-1/4 left-4 h-6">
-                        <input type="text" name="emailValue" id="" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your email" value="${data[0].email ?? ''}">
-                    </div>
-                `;
-
-                const bioElement = document.createElement('textarea');
-                bioElement.name = 'bioValue';
-                bioElement.placeholder = 'Your bio...';
-                bioElement.cols = '40';
-                bioElement.rows = '8';
-                bioElement.classList.add('border-1', 'border-text', 'p-2', 'rounded-lg');
-                bioElement.value = `${data[0].bio}`;
-
-                bioInput.appendChild(bioElement);
-
-                data.forEach(link => {
-                    const socialLinkBox = document.createElement('div');
-                    socialLinkBox.classList.add('relative');
-                    socialLinkBox.innerHTML = `
-                        <img src="../assets/images/${link.platform.toLowerCase()}.png" alt="" class="absolute top-1/2 left-4 h-6">
-                        <label for="${link.platform}">${link.platform}</label>
-                        <input type="url" name="social_links[${link.platform}]" id="${link.platform}" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your ${link.platform.toUpperCase()}  Link" value="${link.url}">
-                    `; 
-
-                    socialInput.appendChild(socialLinkBox);
-                })
-            }
-        })
-
-        const fileInput = document.getElementById('avatarURL');
-        const fileName = document.getElementById('file-name');
-
-        fileInput.addEventListener('change', function() {
-            setTimeout(function() {
-                if (fileInput.files.length > 0) {
-                    const image = document.getElementById('image');
-                    const file = fileInput.files[0];
-                    const reader = new FileReader();
-
-                    reader.onload = function(e) {
-                        image.src = e.target.result;
-                    };
-
-                    reader.readAsDataURL(file);
-                    fileName.textContent = file.name;
-                } else {
-                    fileName.textContent = 'Upload your image';
-                }
-            }, 1000);
-        });
+        try {
+            const editUserInfo = await renderer.fetchData('../controllers/get_userinfo.php');
+            renderer.renderEditUser(editUserInfo, username, avatarURL);
+        } catch (error) {
+            console.error('Error loading data:', error);
+        }
+        
+        
     })
 </script>

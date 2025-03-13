@@ -244,5 +244,14 @@ class Database {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function handleLikes($post_id) {
+        $sqlSelect = 'SELECT likes.like_id, likes.user_id, likes.post_id FROM likes
+                INNER JOIN posts ON likes.post_id = posts.post_id
+                WHERE posts.post_id = ?';
+        $stmt = $this->pdo->prepare($sqlSelect);
+        $stmt->execute([$post_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 ?>

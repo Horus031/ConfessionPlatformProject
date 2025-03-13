@@ -30,7 +30,7 @@
     import QuestionRenderer from '../src/js/render.js';
 
     document.addEventListener('DOMContentLoaded', async function() {
-        const renderer = new QuestionRenderer('#tags-container', '#filter-tags');
+        const renderer = new QuestionRenderer('#tags-container');
 
         try {
             const tags = await renderer.fetchData('../controllers/list_tags.php');

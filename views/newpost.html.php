@@ -62,6 +62,8 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        
+
         fetch('../controllers/list_modules.php')
         .then(response => response.json())
         .then(data => {

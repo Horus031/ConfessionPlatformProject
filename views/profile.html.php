@@ -58,7 +58,7 @@
     import QuestionRenderer from '../src/js/render.js';
 
     document.addEventListener('DOMContentLoaded', async function() {
-        const renderer = new QuestionRenderer('#profile-container', null, null);
+        const renderer = new QuestionRenderer('#profile-container');
 
         try {
             const userInfo = await renderer.fetchData('../controllers/get_userinfo.php');

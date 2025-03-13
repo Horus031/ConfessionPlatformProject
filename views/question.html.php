@@ -5,7 +5,7 @@
         </div>
 
         <div>
-            <button class="bg-black text-white py-1 px-6 rounded-lg font-medium md:py-4 lg:text-2xl animate-slideLeft">Add question</button>
+            <a href="main.html.php?page=newpost" id="add-btn" class="bg-black text-white py-1 px-6 rounded-lg font-medium md:py-4 lg:text-2xl animate-slideLeft">Add question</a>
         </div>
     </div>
     <div>
@@ -33,11 +33,11 @@
     import QuestionRenderer from '../src/js/render.js';
 
     document.addEventListener('DOMContentLoaded', async function() {
-        const renderer = new QuestionRenderer('#question-container', '#question-filter', '#total-question');
+        const renderer = new QuestionRenderer('#question-container', '#question-filter');
 
         try {
             const questions = await renderer.fetchData('../controllers/list_question.php');
-            renderer.renderQuestions(questions);
+            renderer.renderQuestions(questions, userId);
             document.querySelector('#total-question').textContent = `${questions.length}`;
             document.querySelectorAll('div[id^="value-"]').forEach(question => {
                 question.classList.add('animate-postScale');

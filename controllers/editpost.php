@@ -14,7 +14,7 @@
         $tagArray = array_map('trim', explode(',', $tagValues));
         $tagArray = array_filter($tagArray);
     
-        $existingImageURL = $database->fetchExistingImageURL($pdo, $post_id);
+        $existingImageURL = $database->fetchExistingImageURL($post_id);
     
         include '../includes/upload_images.php';
     
@@ -24,9 +24,9 @@
     
         $imageURL = $imageUrl ?? $existingImageURL;
     
-        $database->updatePost($pdo, $post_id, $title, $content, $module_id, $imageURL);
-        $database->deleteExistingTags($pdo, $post_id);
-        $database->insertNewTags($pdo, $post_id, $tagArray);
+        $database->updatePost($post_id, $title, $content, $module_id, $imageURL);
+        $database->deleteExistingTags($post_id);
+        $database->insertNewTags($post_id, $tagArray);
     
         $pdo->commit();
         header('Location: ../views/main.html.php?page=home');
