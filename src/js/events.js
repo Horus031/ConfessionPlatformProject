@@ -5,6 +5,7 @@ class EventListener {
         this.renderer = new QuestionRenderer();
         this.currentURL = window.location.href;
         this.userId = userId;
+        this.renderedComments = new Set(); // Tạo Set lưu trữ các id của comment
     }
 
     initElements() {
@@ -25,7 +26,9 @@ class EventListener {
         this.filterTags = document.querySelector('#filter-tags');
         this.tagElements = document.querySelectorAll('div[id^="tag-"]');
         this.postForm = document.querySelector('#post-form');
-        this.postDetalContainer = document.querySelector('#postdetail-container');
+        this.postDetailContainer = document.querySelector('#postdetail-container');
+        this.questionFilter = document.querySelector('#question-filter');
+        this.questionContainer = document.querySelector('#question-container');
     }
 
     handleEvents() {
@@ -119,17 +122,18 @@ class EventListener {
             this.filterTags.addEventListener('change', function() {
                 if (_this.filterTags.value == "all") {
                     _this.tagElements.forEach(tag => {
-                        tag.classList.remove('hidden');
                         tag.classList.add('animate-postSlideIn');
+                        tag.classList.remove('hidden');
                     });
                 } else {
                     _this.tagElements.forEach(tag => {
                         const tagValue = tag.querySelector('#tag-value');
                         const tagType = tagValue.value;
                         if (tagType == _this.filterTags.value) {
-                            tag.classList.remove('hidden');
                             tag.classList.add('animate-postSlideIn');
+                            tag.classList.remove('hidden');
                         } else {
+                            tag.classList.remove('animate-postSlideIn');
                             tag.classList.add('hidden');
                         }
                     });
@@ -137,16 +141,21 @@ class EventListener {
             });
         }
 
-        if (this.postDetalContainer) {
-            this.postDetalContainer.addEventListener('click', function(e) {
-                const postId = _this.postDetalContainer.getAttribute('data-value');
+        if (this.postDetailContainer) {
+            this.postDetailContainer.addEventListener('click', function(e) {
+                const postId = _this.postDetailContainer.getAttribute('data-value');
                 let button = e.target.closest('button');
+
+                if (!button) {
+                    return;
+                }
 
                 switch(true) {
                     case button.id == "like-btn":
-                        const likeImage = _this.postDetalContainer.querySelector('#like-img');
-                        const likeCountSpan = _this.postDetalContainer.querySelector('#like-count');
+                        const likeImage = _this.postDetailContainer.querySelector('#like-img');
+                        const likeCountSpan = _this.postDetailContainer.querySelector('#like-count');
                         _this.handleLikes(postId, likeCountSpan, likeImage);
+                        break;
                     case button.id == "edit-btn":
                         sessionStorage.setItem('editPostId', postId);
                         window.location.href = '../views/main.html.php?page=editpost';
@@ -156,6 +165,8 @@ class EventListener {
                         break;
                     case button.id == "link-btn":
                         console.log('link-btn');
+                        break;
+                    default:
                         break;
 
                 }
@@ -200,12 +211,25 @@ class EventListener {
                     `;
     
                     commentContainer.insertBefore(newCommentElement, firstChildElement);
+                    _this.renderedComments.add(newComment.comment_id); // Thêm comment id vừa post vào Set
     
                     textarea.value = '';
+                    document.querySelector('#comment-count').textContent = `(${_this.renderedComments.size})`;
                 }
     
     
             })
+        }
+
+        if (this.questionFilter) {
+            this.questionFilter.addEventListener('change', function() {
+                if (_this.questionFilter.value == 'All') {
+                    _this.questionContainer.forEach(question => {
+                        question.classList.remove('hidden');
+                        question.classList.add('animate-postScale');
+                    })
+                }
+            });
         }
     }
 
@@ -230,18 +254,63 @@ class EventListener {
     }
 
     async updateLikeCount(postId) {
-        const likeCount = await this.renderer.fetchData(`../controllers/get_likes.php?post_id=${postId}`, {
-            method: "POST",
-            header: { "Content-Type": "application/json" },
-            body: JSON.stringify({ post_id: postId })
-        });
-        if (likeCount.error) {
-            console.log(likeCount.error);
-        } else {
-            let likeCountSpan = document.querySelector(`.like-count[data-post-id="${postId}"]`);
-            if (likeCountSpan) {
-                likeCountSpan.textContent = likeCount.like_count;
+        try {
+            const likeCount = await this.renderer.fetchData(`../controllers/get_likes.php?id=${postId}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ post_id: postId })
+            });
+            if (likeCount.error) {
+                console.log(likeCount.error);
+            } else {
+                let likeCountSpan = document.querySelector(`#like-count`);
+                if (likeCountSpan) {
+                    likeCountSpan.textContent = likeCount.like_count;
+                }
             }
+        } catch (error) {
+            console.error('Error updating like count:', error);
+        } finally {
+            setTimeout(() => this.updateLikeCount(postId), 5000);
+        }
+    }
+
+    
+    async updateComments(postId) {
+        try {
+            const comments = await this.renderer.fetchData(`../controllers/get_comments.php?id=${postId}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ post_id: postId })
+            });
+            if (comments.error) {
+                console.log(comments.error);
+            } else {
+                const commentContainer = document.querySelector('#comment-container');
+                const firstChildElement = commentContainer.firstElementChild;
+                comments.forEach(comment => {
+                    if (!this.renderedComments.has(comment.comment_id)) {
+                        const commentElement = document.createElement('div');
+                        commentElement.setAttribute('data-value', `${comment.comment_id}`);
+                        commentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'animate-slideRight');
+                        commentElement.innerHTML = `
+                            <img src="${comment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+                            <div>
+                                <h2 class="font-medium text-md">${comment.username}</h2>
+                                <p class="text-sm">${comment.content}</p>
+                            </div>
+                        `;
+                        commentContainer.insertBefore(commentElement, firstChildElement);
+                        this.renderedComments.add(comment.comment_id); // Thêm comment ID vừa post vào Set
+                    }
+                });
+                document.querySelector('#comment-count').textContent = `(${this.renderedComments.size})`;
+                
+            }
+        } catch (error) {
+            console.error('Error updating comments:', error);
+        } finally {
+            setTimeout(() => this.updateComments(postId), 5000); // Long polling
         }
     }
 
@@ -250,12 +319,13 @@ class EventListener {
     start() {
         this.handleEvents();
 
-        setInterval(() => {
-            document.querySelectorAll(".like-count").forEach((span) => {
-                let postId = span.dataset.postId;
-                this.updateLikeCount(postId);
-            });
-        }, 5000);
+        const postDetailId = this.postDetailContainer ? this.postDetailContainer.getAttribute('data-value') : null;
+        if (postDetailId) {
+            this.updateLikeCount(postId);
+            this.updateComments(postId);
+        }
+
+        
     }
 }
 

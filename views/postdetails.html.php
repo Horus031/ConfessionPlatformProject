@@ -61,7 +61,10 @@
             <hr class="mt-4 text-secondary">
 
             <div class="mt-2 space-y-4">
-                <h2 id="comment-count" class="font-semibold text-lg">Comment (2)</h2>
+                <div class="font-semibold text-lg">
+                    <span>Comment</span>
+                    <span id="comment-count">()</span>
+                </div>
 
                 <form id="post-form" class="relative w-full p-2 text-wrap rounded-md border border-secondary h-40">
                     <textarea name="commentValues" id="commentValues" placeholder="Write something..." class="w-full h-2/3"></textarea>

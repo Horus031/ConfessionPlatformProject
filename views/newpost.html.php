@@ -25,7 +25,7 @@
                 <option value="general">General Subject</option>
                 <option value="prog&tech">Programming & Technology</option>
                 <option value="study">Study Tips</option>
-                <option value="carrer">Career & Guidance</option>
+                <option value="career">Career & Guidance</option>
             </select>
 
             <div class="flex items-center mt-4 space-x-6">

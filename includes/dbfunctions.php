@@ -122,7 +122,7 @@ class Database {
     }
 
     public function fetchAllComments($post_id) {
-        $sql = 'SELECT comments.comment_id, comments.user_id, comments.post_id, comments.content, users.username, users.avatar
+        $sql = 'SELECT COUNT(comments.comment_id) AS comment_count comments.comment_id, comments.user_id, comments.post_id, comments.content, users.username, users.avatar
                 FROM ((comments
                 INNER JOIN posts ON comments.post_id = posts.post_id)
                 INNER JOIN users ON comments.user_id = users.user_id)
