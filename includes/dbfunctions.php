@@ -121,15 +121,39 @@ class Database {
         }
     }
 
-    public function fetchComments($post_id) {
+    public function fetchAllComments($post_id) {
         $sql = 'SELECT comments.comment_id, comments.user_id, comments.post_id, comments.content, users.username, users.avatar
                 FROM ((comments
                 INNER JOIN posts ON comments.post_id = posts.post_id)
                 INNER JOIN users ON comments.user_id = users.user_id)
-                WHERE posts.post_id = ?';
+                WHERE posts.post_id = ?
+                ORDER BY comments.created_at DESC';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$post_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function postComment($user_id, $post_id, $content) {
+        $sql = "INSERT INTO comments (user_id, post_id, content)
+                VALUES (?, ?, ?)
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$user_id, $post_id, $content]);
+
+        return $this->pdo->lastInsertId();
+    }
+
+    public function fetchNewComment($user_id, $post_id, $content) {
+        $comment_id = $this->postComment($user_id, $post_id, $content);
+        $sql = 'SELECT users.username, users.avatar, comments.comment_id, comments.content, comments.created_at 
+        FROM comments 
+        JOIN users ON comments.user_id = users.user_id 
+        WHERE comments.comment_id = ?';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$comment_id]);
+        $new_comment = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $new_comment;
     }
 
     public function fetchPostDetails($post_id) {

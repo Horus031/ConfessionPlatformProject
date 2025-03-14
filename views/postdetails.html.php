@@ -6,7 +6,7 @@
         <span class="font-semibold text-xl">Back to home</span>
     </div>
 
-    <div id="post-container" class="mt-2 border-2 p-4 rounded-md border-secondary">
+    <div id="postdetail-container" class="mt-2 border-2 p-4 rounded-md border-secondary">
         <div class="flex flex-col">
             <input type="hidden" name="post_id" id="post_id" value="">
 
@@ -39,32 +39,39 @@
                 <img id="post-image" loading="lazy" src="" alt="Post image" class="w-full rounded-md h-2/3">
             </div>
 
-            <div class="flex justify-between items-center mt-3">
+            <div id="postdetail-action" class="flex justify-between items-center mt-3">
                 <div class="flex justify-between w-fit rounded-md space-x-2">
-                    <div class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
-                        <img loading="lazy" src="../assets/images/like.png" alt="" class="h-10 p-2">
-                        <span id="likeCount">12</span>
-                    </div>
+                    <button type="button" id="like-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
+                        <img id="like-img" loading="lazy" src="../assets/images/like.png" alt="" class="h-10 p-2">
+                        <span id="like-count"></span>
+                    </button>
                     
                 </div>
 
                 <div class="flex items-center space-x-2 ">
-                    <img loading="lazy" src="../assets/images/bookmark.png" alt="" class="h-10 p-2 rounded-md hover:bg-gray-300 transition-all">
-                    <img loading="lazy" src="../assets/images/link.png" alt="" class="h-10 p-2 rounded-md hover:bg-gray-300 transition-all">
+                    <button id="save-btn">
+                        <img loading="lazy" src="../assets/images/bookmark.png" alt="" class="h-10 p-2 rounded-md hover:bg-gray-300 transition-all">
+                    </button>
+                    <button id="link-btn">
+                        <img loading="lazy" src="../assets/images/link.png" alt="" class="h-10 p-2 rounded-md hover:bg-gray-300 transition-all">
+                    </button>
                 </div>
             </div>
 
             <hr class="mt-4 text-secondary">
 
-            <div id="comment-container" class="flex flex-col mt-2 space-y-2">
-                <h2 id="commentCount" class="font-semibold text-lg">Comment (2)</h2>
+            <div class="mt-2 space-y-4">
+                <h2 id="comment-count" class="font-semibold text-lg">Comment (2)</h2>
 
-                <div class="relative w-full p-2 text-wrap rounded-md border border-secondary h-40">
+                <form id="post-form" class="relative w-full p-2 text-wrap rounded-md border border-secondary h-40">
                     <textarea name="commentValues" id="commentValues" placeholder="Write something..." class="w-full h-2/3"></textarea>
 
-                    <button class="absolute bottom-2 right-4 border py-2 px-6 font-medium rounded-full bg-black text-white">Post</button>
-                </div>
+                    <button id="post-comment" class="absolute bottom-2 right-4 border py-2 px-6 font-medium rounded-full bg-black text-white">Post</button>
+                </form>
 
+                <div id="comment-container" class="flex flex-col space-y-2">
+
+                </div>
             </div>
         </div>
     </div>
@@ -72,12 +79,15 @@
 
 <script type="module">
     import QuestionRenderer from '../src/js/render.js';
+    import EventListener from '../src/js/events.js';
+
     const userId = <?= $_SESSION['user_id'] ?>;
 
     document.addEventListener('DOMContentLoaded', async function() {
         const urlParams = new URLSearchParams(window.location.search);
         const postId = urlParams.get('id');
         const renderer = new QuestionRenderer('#post-container');
+        const eventListener = new EventListener(userId);
 
         try {
             const postInfo = await renderer.fetchData(`../controllers/get_postdetails.php?id=${postId}`)
@@ -89,6 +99,7 @@
             console.error('Error loading data:', error);
         }
 
-        
+
+        eventListener.start();
     });
 </script>

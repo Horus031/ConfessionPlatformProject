@@ -1,9 +1,10 @@
 import QuestionRenderer from "../js/render.js";
 
 class EventListener {
-    constructor() {
+    constructor(userId) {
         this.renderer = new QuestionRenderer();
         this.currentURL = window.location.href;
+        this.userId = userId;
     }
 
     initElements() {
@@ -23,6 +24,8 @@ class EventListener {
         this.questionElement = document.querySelectorAll('div[id^="ques-"]');
         this.filterTags = document.querySelector('#filter-tags');
         this.tagElements = document.querySelectorAll('div[id^="tag-"]');
+        this.postForm = document.querySelector('#post-form');
+        this.postDetalContainer = document.querySelector('#postdetail-container');
     }
 
     handleEvents() {
@@ -132,6 +135,77 @@ class EventListener {
                     });
                 }
             });
+        }
+
+        if (this.postDetalContainer) {
+            this.postDetalContainer.addEventListener('click', function(e) {
+                const postId = _this.postDetalContainer.getAttribute('data-value');
+                let button = e.target.closest('button');
+
+                switch(true) {
+                    case button.id == "like-btn":
+                        const likeImage = _this.postDetalContainer.querySelector('#like-img');
+                        const likeCountSpan = _this.postDetalContainer.querySelector('#like-count');
+                        _this.handleLikes(postId, likeCountSpan, likeImage);
+                    case button.id == "edit-btn":
+                        sessionStorage.setItem('editPostId', postId);
+                        window.location.href = '../views/main.html.php?page=editpost';
+                        break;
+                    case button.id == "save-btn":
+                        console.log('bookmark');
+                        break;
+                    case button.id == "link-btn":
+                        console.log('link-btn');
+                        break;
+
+                }
+            })
+        }
+
+        if (this.postForm) {
+            this.postForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+    
+    
+                let postId = _this.postForm.dataset.postId;
+                let textarea = _this.postForm.querySelector('textarea');
+                let commentContent = textarea.value.trim();
+                let userId = _this.userId;
+    
+                if (commentContent === "") return;
+    
+                const newComment = await _this.renderer.fetchData('../controllers/add_comments.php', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: userId, post_id: postId, content: encodeURIComponent(commentContent) })
+                });
+    
+                if (newComment.error) {
+                    console.log (newComment.error);
+                } else {
+                    console.log(newComment);
+                    const commentContainer = document.querySelector('#comment-container');
+                    const firstChildElement = commentContainer.firstElementChild;
+    
+                    const newCommentElement = document.createElement('div');
+                    newCommentElement.setAttribute('data-value', `${newComment.comment_id}`)
+                    newCommentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'animate-slideRight');
+                    newCommentElement.innerHTML = `
+                        <img src="${newComment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+    
+                            <div>
+                                <h2 class="font-medium text-md">${newComment.username}</h2>
+                                <p class="text-sm">${newComment.content}</p>
+                            </div>
+                    `;
+    
+                    commentContainer.insertBefore(newCommentElement, firstChildElement);
+    
+                    textarea.value = '';
+                }
+    
+    
+            })
         }
     }
 

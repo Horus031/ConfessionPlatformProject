@@ -9,7 +9,7 @@
     try {
         if (isset($_GET['id'])) {
             $post_id = $_GET['id'];
-            $commentInfo = $database->fetchComments($post_id);
+            $commentInfo = $database->fetchAllComments($post_id);
             echo json_encode($commentInfo);
         } else {
             echo json_encode(['error' => 'Post ID not provided']);

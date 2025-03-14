@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <div id="question-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:w-3/4 lg:w-5/6 animate-postSlideIn transition-all">
+    <div id="question-container" class="grid w-full md:grid-cols-2 lg:grid-cols-3 gap-4 md:w-3/4 lg:w-5/6 animate-postSlideIn transition-all">
 
 
 

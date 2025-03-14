@@ -422,8 +422,8 @@ class QuestionRenderer {
         })
     }
 
-    renderPostDetail(post, userId) {
-        console.log(post)
+    async renderPostDetail(post, userId) {
+        document.querySelector('#postdetail-container').setAttribute('data-value', `${post.post_id}`);
         document.querySelector('#post_id').value = post.post_id;
         document.querySelector('#module-name').textContent = post.module_name;
         document.querySelector('#module-name').className = `w-fit rounded-full text-xs px-2 font-medium ${post.bg_class} ${post.text_class}`;
@@ -433,8 +433,10 @@ class QuestionRenderer {
         document.querySelector('#created-at').textContent = new Date(post.created_at).toLocaleString();
         document.querySelector('#post-content').textContent = post.post_content;
         document.querySelector('#post-image').src = post.imageURL ?? '';
-        document.querySelector('#commentCount').textContent = `Comment (${post.comments})`;
-        document.querySelector('#likeCount').textContent = `${post.likes}`;
+        document.querySelector('#comment-count').textContent = `Comment (${post.comments})`;
+        document.querySelector('#like-count').textContent = `${post.likes}`;
+        document.querySelector('#comment-container').setAttribute('data-post-id', `${post.post_id}`);
+        document.querySelector('#post-form').setAttribute('data-post-id', `${post.post_id}`);
 
         const usertagContainer = document.querySelector('#user-tag');
         const tagContainer = document.createElement('div');
@@ -463,6 +465,26 @@ class QuestionRenderer {
         `;
         
         moduleContainer.appendChild(selectElement);
+
+        try {
+            const data = await this.fetchData('../controllers/check_likes.php', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ post_id: post.post_id })
+            })
+
+            if (data.error) {
+                console.log(error);
+            } else {
+                if (data.status == "yes") {
+                    document.querySelector('#like-img').src = '../assets/images/like-on.png';
+                } else {
+                    document.querySelector('#like-img').src = '../assets/images/like.png';
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        }
         
         if (Array.isArray(post.tags)) {
             post['tags'].forEach(tag => {
@@ -533,6 +555,7 @@ class QuestionRenderer {
 
         comments.forEach(comment => {
             const commentElement = document.createElement('div');
+            commentElement.setAttribute('data-value', `${comment.comment_id}`)
             commentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md');
             commentElement.innerHTML = `
                 <img src="${comment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
