@@ -9,9 +9,9 @@
         $data = json_decode(file_get_contents("php://input"), true);
         $post_id = isset($data['post_id']) ? intval($data['post_id']) : null;
         try {
-            $likes = $database->getLikes($post_id);
+            $comments = $database->getCommentsCount($post_id);
 
-            echo json_encode($likes);
+            echo json_encode($comments);
 
         } catch (PDOException $e) {
             echo json_encode(['error ' . $e->getMessage()]);

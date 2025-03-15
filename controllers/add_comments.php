@@ -17,6 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
 
+            $database->handleComments($post_id);
+
             $newComment = $database->fetchNewComment($user_id, $post_id, $content);
 
             echo json_encode($newComment);
@@ -31,5 +33,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
     echo json_encode(['error ' . 'Invalid request method']);
 }
-
-?>

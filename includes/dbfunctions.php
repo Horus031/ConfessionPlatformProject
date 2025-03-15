@@ -1,13 +1,18 @@
 <?php
-session_start();
-class Database {
+if (!isset($_SESSION)) {
+    session_start();
+}
+class Database
+{
     private $pdo;
 
-    public function __construct($pdo) {
+    public function __construct($pdo)
+    {
         $this->pdo = $pdo;
     }
 
-    public function fetchExistingImageURL($post_id) {
+    public function fetchExistingImageURL($post_id)
+    {
         $sql = "SELECT imageURL FROM posts WHERE post_id = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$post_id]);
@@ -15,14 +20,16 @@ class Database {
         return $existingPost['imageURL'];
     }
 
-    public function insertPost($user_id, $title, $content, $module_id, $imageURL) {
+    public function insertPost($user_id, $title, $content, $module_id, $imageURL)
+    {
         $sql = 'INSERT INTO posts (user_id, post_title, post_content, module_id, imageURL, status) VALUES (?, ?, ?, ?, ?, "approved")';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$user_id, $title, $content, $module_id, $imageURL]);
         return $this->pdo->lastInsertId();
     }
 
-    public function fetchTagIds($tagArray) {
+    public function fetchTagIds($tagArray)
+    {
         if (!empty($tagArray)) {
             $placeholders = implode(',', array_fill(0, count($tagArray), '?'));
             $sql = "SELECT tag_id FROM tags WHERE tag_name IN ($placeholders)";
@@ -33,7 +40,8 @@ class Database {
         return [];
     }
 
-    public function insertPostTags($post_id, $tagIds) {
+    public function insertPostTags($post_id, $tagIds)
+    {
         $sql = "INSERT INTO posttags (post_id, tag_id) VALUES (?, ?)";
         $stmt = $this->pdo->prepare($sql);
         foreach ($tagIds as $tag_id) {
@@ -41,7 +49,8 @@ class Database {
         }
     }
 
-    public function updatePost($post_id, $title, $content, $module_id, $imageURL) {
+    public function updatePost($post_id, $title, $content, $module_id, $imageURL)
+    {
         $sql = "UPDATE posts SET
                 post_title = ?,
                 post_content = ?,
@@ -52,19 +61,22 @@ class Database {
         $stmt->execute([$title, $content, $module_id, $imageURL, $post_id]);
     }
 
-    public function deleteExistingTags($post_id) {
+    public function deleteExistingTags($post_id)
+    {
         $sql = "DELETE FROM posttags WHERE post_id = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$post_id]);
     }
 
-    public function deletePost($post_id) {
+    public function deletePost($post_id)
+    {
         $sql = "DELETE FROM posts WHERE post_id = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$post_id]);
     }
 
-    public function insertNewTags($post_id, $tagArray) {
+    public function insertNewTags($post_id, $tagArray)
+    {
         if (!empty($tagArray)) {
             $placeholders = implode(',', array_fill(0, count($tagArray), '?'));
             $sql = "SELECT tag_id FROM tags WHERE tag_name IN ($placeholders)";
@@ -80,7 +92,8 @@ class Database {
         }
     }
 
-    public function fetchExistingAvatarURL($user_id) {
+    public function fetchExistingAvatarURL($user_id)
+    {
         $sql = "SELECT avatar FROM users WHERE user_id = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$user_id]);
@@ -88,7 +101,8 @@ class Database {
         return $existingUser['avatar'];
     }
 
-    public function updateUser($user_id, $username, $tag_name, $email, $avatarURL, $bio) {
+    public function updateUser($user_id, $username, $tag_name, $email, $avatarURL, $bio)
+    {
         $sql = "UPDATE users SET
                 username = ?,
                 tag_name = ?,
@@ -100,7 +114,8 @@ class Database {
         $stmt->execute([$username, $tag_name, $email, $avatarURL, $bio, $user_id]);
     }
 
-    public function updateUserSocialLinks($user_id, $social_links) {
+    public function updateUserSocialLinks($user_id, $social_links)
+    {
         foreach ($social_links as $platform => $url) {
             if (!empty($url)) {
                 $sql = "SELECT id FROM user_social_links WHERE user_id = ? AND platform = ?";
@@ -121,8 +136,9 @@ class Database {
         }
     }
 
-    public function fetchAllComments($post_id) {
-        $sql = 'SELECT COUNT(comments.comment_id) AS comment_count comments.comment_id, comments.user_id, comments.post_id, comments.content, users.username, users.avatar
+    public function fetchAllComments($post_id)
+    {
+        $sql = 'SELECT comments.comment_id, comments.user_id, comments.post_id, comments.content, users.username, users.avatar
                 FROM ((comments
                 INNER JOIN posts ON comments.post_id = posts.post_id)
                 INNER JOIN users ON comments.user_id = users.user_id)
@@ -133,7 +149,8 @@ class Database {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function postComment($user_id, $post_id, $content) {
+    public function postComment($user_id, $post_id, $content)
+    {
         $sql = "INSERT INTO comments (user_id, post_id, content)
                 VALUES (?, ?, ?)
         ";
@@ -143,7 +160,8 @@ class Database {
         return $this->pdo->lastInsertId();
     }
 
-    public function fetchNewComment($user_id, $post_id, $content) {
+    public function fetchNewComment($user_id, $post_id, $content)
+    {
         $comment_id = $this->postComment($user_id, $post_id, $content);
         $sql = 'SELECT users.username, users.avatar, comments.comment_id, comments.content, comments.created_at 
         FROM comments 
@@ -156,7 +174,8 @@ class Database {
         return $new_comment;
     }
 
-    public function fetchPostDetails($post_id) {
+    public function fetchPostDetails($post_id)
+    {
         $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, COUNT(DISTINCT likes.like_id) as likes, COUNT(DISTINCT comments.comment_id) as comments, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
                 FROM ((((posts 
                 INNER JOIN users ON posts.user_id = users.user_id)
@@ -170,7 +189,8 @@ class Database {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function fetchPostTagsWithId($post_id) {
+    public function fetchPostTagsWithId($post_id)
+    {
         $sql = 'SELECT tags.tag_id, tags.tag_name, tags.tag_description, tags.tag_type
                 FROM tags
                 JOIN posttags ON tags.tag_id = posttags.tag_id
@@ -180,7 +200,8 @@ class Database {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function fetchAllPostTags() {
+    public function fetchAllPostTags()
+    {
         $sql = "SELECT posts.post_id, posts.post_title, tags.tag_id, tags.tag_name, tags.tag_description, tags.tag_type
                 FROM posts
                 JOIN posttags ON posts.post_id = posttags.post_id
@@ -191,8 +212,9 @@ class Database {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function fetchAllPosts() {
-        $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, COUNT(DISTINCT likes.like_id) as likes, COUNT(DISTINCT comments.comment_id) as comments, modules.module_id, modules.module_name, modules.bg_class, modules.text_class 
+    public function fetchAllPosts()
+    {
+        $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class 
                 FROM ((((posts 
                 INNER JOIN users ON posts.user_id = users.user_id)
                 INNER JOIN modules ON posts.module_id = modules.module_id)
@@ -204,7 +226,8 @@ class Database {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function fetchUserInfo($user_id) {
+    public function fetchUserInfo($user_id)
+    {
         $sql = 'SELECT users.username, users.tag_name, users.email, users.bio, users.avatar, users.created_at, user_social_links.platform, user_social_links.url
                 FROM users
                 LEFT JOIN user_social_links ON users.user_id = user_social_links.user_id
@@ -214,47 +237,54 @@ class Database {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function fetchAllModules() {
+    public function fetchAllModules()
+    {
         $sql = "SELECT * FROM modules";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function fetchUserByUsername($username) {
+    public function fetchUserByUsername($username)
+    {
         $sql = "SELECT user_id, password, avatar FROM users WHERE username = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$username]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function updateRememberToken($user_id, $token) {
+    public function updateRememberToken($user_id, $token)
+    {
         $sql = "UPDATE users SET remember_token = ? WHERE user_id = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$token, $user_id]);
     }
 
-    public function clearRememberToken($user_id) {
+    public function clearRememberToken($user_id)
+    {
         $sql = "UPDATE users SET remember_token = NULL WHERE user_id = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$user_id]);
     }
 
-    public function checkUsernameExists($username) {
+    public function checkUsernameExists($username)
+    {
         $sql = "SELECT COUNT(*) FROM users WHERE username = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$username]);
         return $stmt->fetchColumn();
     }
 
-    public function registerUser($username, $password) {
+    public function registerUser($username, $password)
+    {
         $hash = password_hash($password, PASSWORD_DEFAULT);
         $sql = "INSERT INTO users (username, password) VALUES (?, ?)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$username, $hash]);
     }
 
-    public function fetchTagsByType($type) {
+    public function fetchTagsByType($type)
+    {
         $sql = 'SELECT tag_name, tag_description
                 FROM tags
                 WHERE tag_type = ?';
@@ -263,14 +293,16 @@ class Database {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function fetchAllTags() {
+    public function fetchAllTags()
+    {
         $sql = 'SELECT * FROM tags';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getLikes($post_id) {
+    public function getLikesCount($post_id)
+    {
         $sql = 'SELECT like_count FROM posts WHERE post_id = ?';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$post_id]);
@@ -279,7 +311,26 @@ class Database {
         return $like;
     }
 
-    public function checkLikes($post_id) {
+
+    public function getCommentsCount($post_id)
+    {
+        $sql = 'SELECT comment_count FROM posts WHERE post_id = ?';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$post_id]);
+        $comment = $stmt->fetch();
+
+        return $comment;
+    }
+
+    public function handleComments($post_id)
+    {
+        $sql = 'UPDATE posts SET comment_count = comment_count + 1 WHERE post_id = ?';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$post_id]);
+    }
+
+    public function checkLikes($post_id)
+    {
         $sqlSelect = 'SELECT 1 FROM likes WHERE user_id = ? AND post_id = ?';
         $stmt = $this->pdo->prepare($sqlSelect);
         $stmt->execute([$_SESSION['user_id'], $post_id]);
@@ -288,7 +339,8 @@ class Database {
         return $isLiked;
     }
 
-    public function handleLikes($isLiked, $post_id) {
+    public function handleLikes($isLiked, $post_id)
+    {
         if ($isLiked) {
             $sqlDelete = "DELETE FROM likes WHERE user_id = ? AND post_id = ?";
             $stmtDelete = $this->pdo->prepare($sqlDelete);
@@ -312,4 +364,3 @@ class Database {
         }
     }
 }
-?>

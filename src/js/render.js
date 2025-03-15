@@ -38,7 +38,7 @@ class QuestionRenderer {
                 <div class="flex flex-col">
                     <input type="hidden" name="post_id" value="${question.post_id}">
                     <div class="flex justify-between items-center">
-                        <span class="w-fit rounded-full text-xs ${question.bg_class} ${question.text_class} px-2 font-medium">${question.module_name}</span>
+                        <span data-module="${question.module_id}" class="w-fit module-name rounded-full text-xs ${question.bg_class} ${question.text_class} px-2 font-medium">${question.module_name}</span>
                         <div class="relative group">
                             <img src="../assets/images/dots.png" class="h-10 hover:bg-gray-300 p-2 rounded-full">
                             <div id="action-popup" class="absolute bg-white rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent">
@@ -73,11 +73,11 @@ class QuestionRenderer {
                             <div class="flex justify-between w-fit border-2 border-text-light rounded-md">
                                 <button id="likes-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
                                     <img loading="lazy" src="../assets/images/like.png" alt="" class="like-img h-10 p-2">
-                                    <span class="like-count" data-post-id="${question.post_id}">${question.likes}</span>
+                                    <span class="like-count" data-post-id="${question.post_id}">${question.like_count}</span>
                                 </button>
                                 <button id="comment-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
                                     <img loading="lazy" src="../assets/images/comments.png" alt="" class="like-img h-10 p-2">
-                                    <span class="comment-count" data-post-id="${question.post_id}">${question.comments}</span>
+                                    <span class="comment-count" data-post-id="${question.post_id}">${question.comment_count}</span>
                                 </button>
                             </div>
                             <div class="flex items-center space-x-2 ">
@@ -175,7 +175,7 @@ class QuestionRenderer {
             tagElement.classList.add('border', 'border-gray-300', 'rounded-md', 'p-4', 'tag-element', 'animate-postSlideIn');
             tagElement.innerHTML = `
                 <input id="tag-value" type="hidden" value="${tag.tag_type}">
-                <span class="w-fit rounded-full bg-gray-300 px-2 text-sm font-medium">#${tag.tag_name}</span>
+                <span id="tagname-${tag.tag_id}" class="w-fit rounded-full bg-gray-300 px-2 text-sm font-medium">#${tag.tag_name}</span>
                 <p class="text-sm mt-4 text-text-light font-normal">${tag.tag_description}</p>
             `;
 
@@ -343,11 +343,11 @@ class QuestionRenderer {
                             <div class="flex items-center w-fit justify-around border-2 border-secondary rounded-xl p-2 ">
                                 <div class="flex items-center space-x-2 text-text font-medium px-2">
                                     <img src="../assets/images/like.png" alt="" class="h-6">
-                                    <span>${myPost.likes}</span>
+                                    <span>${myPost.like_count}</span>
                                 </div>
                                 <div class="flex items-center space-x-2 text-text font-medium px-2">
                                     <img src="../assets/images/comments.png" alt="" class="h-6">
-                                    <span>${myPost.comments}</span>
+                                    <span>${myPost.comment_count}</span>
                                 </div>
                             </div>
                         </div>
@@ -433,8 +433,8 @@ class QuestionRenderer {
         document.querySelector('#created-at').textContent = new Date(post.created_at).toLocaleString();
         document.querySelector('#post-content').textContent = post.post_content;
         document.querySelector('#post-image').src = post.imageURL ?? '';
-        document.querySelector('#comment-count').textContent = `(${post.comments})`;
-        document.querySelector('#like-count').textContent = `${post.likes}`;
+        document.querySelector('.comment-count').textContent = `(${post.comments})`;
+        document.querySelector('.like-count').textContent = `${post.likes}`;
         document.querySelector('#comment-container').setAttribute('data-post-id', `${post.post_id}`);
         document.querySelector('#post-form').setAttribute('data-post-id', `${post.post_id}`);
 

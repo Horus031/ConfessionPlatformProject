@@ -1,4 +1,4 @@
-<main class="mt-24 px-4 w-full md:pl-[26%] lg:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[16%]">
+<main class="mt-24 px-4 w-full md:mt-28 md:pl-[26%] lg:pl-[20%] xl:pl-[20%] 2xl:pl-[16%]">
     <div class="flex justify-between items-center transition-all">
         <div class="animate-slideRight">
             <h1 class="text-2xl font-semibold lg:text-4xl">Questions</h1>
@@ -17,7 +17,7 @@
         <div class="animate-slideLeft">
             <h1 class="text-right text-text font-medium">Filter</h1>
             <select id="question-filter" class="ml-auto w-fit py-1 border border-text flex justify-around rounded-md">
-                <option value="" selected>All</option>
+                <option value="all" selected>All</option>
             </select>
         </div>
     </div>

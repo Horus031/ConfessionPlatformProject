@@ -4,7 +4,7 @@
     <div class="mt-4 space-y-4 transition-all">
         <div class="relative flex animate-postSlideIn">
             <img src="../assets/images/magnify.png" alt="" class="absolute h-6 left-4 top-1/5">
-            <input type="text" name="tagInput" id="" placeholder="Search tags by name" class="border-1 border-secondary rounded-lg pl-12 p-2 flex-1">
+            <input type="text" name="tagInput" id="question-search" placeholder="Search tags by name" class="border-1 border-secondary rounded-lg pl-12 p-2 flex-1">
         </div>
 
         <div class="flex flex-col items-end animate-postSlideIn">
@@ -22,7 +22,7 @@
         </div>
 
         <div id="tags-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2 p-2 mt-2">
-            
+
         </div>
     </div>
 </main>
@@ -38,7 +38,7 @@
             const tags = await renderer.fetchData('../controllers/list_tags.php');
             renderer.renderTags(tags);
 
-            
+
             eventListener.start();
         } catch (error) {
             console.error('Error loading data:', error);

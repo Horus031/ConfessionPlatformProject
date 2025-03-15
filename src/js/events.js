@@ -28,7 +28,8 @@ class EventListener {
         this.postForm = document.querySelector('#post-form');
         this.postDetailContainer = document.querySelector('#postdetail-container');
         this.questionFilter = document.querySelector('#question-filter');
-        this.questionContainer = document.querySelector('#question-container');
+        this.questionSearch = document.querySelector('#question-search');
+
     }
 
     handleEvents() {
@@ -120,24 +121,59 @@ class EventListener {
 
         if (this.filterTags) {
             this.filterTags.addEventListener('change', function() {
-                if (_this.filterTags.value == "all") {
-                    _this.tagElements.forEach(tag => {
-                        tag.classList.add('animate-postSlideIn');
-                        tag.classList.remove('hidden');
-                    });
-                } else {
-                    _this.tagElements.forEach(tag => {
-                        const tagValue = tag.querySelector('#tag-value');
-                        const tagType = tagValue.value;
-                        if (tagType == _this.filterTags.value) {
+                _this.tagElements.forEach(tag => {
+                    tag.classList.remove('animate-postSlideIn');
+                })
+
+                setTimeout(function() {
+                    if (_this.filterTags.value == "all") {
+                        _this.tagElements.forEach(tag => {
                             tag.classList.add('animate-postSlideIn');
                             tag.classList.remove('hidden');
-                        } else {
-                            tag.classList.remove('animate-postSlideIn');
-                            tag.classList.add('hidden');
-                        }
-                    });
-                }
+                        });
+                    } else {
+                        _this.tagElements.forEach(tag => {
+                            const tagValue = tag.querySelector('#tag-value');
+                            const tagType = tagValue.value;
+                            if (tagType == _this.filterTags.value) {
+                                tag.classList.add('animate-postSlideIn');
+                                tag.classList.remove('hidden');
+                            } else {
+                                tag.classList.remove('animate-postSlideIn');
+                                tag.classList.add('hidden');
+                            }
+                        });
+                    }
+                }, 100)
+            });
+        }
+
+        if (this.questionFilter) {
+            this.questionFilter.addEventListener('change', function() {
+                _this.questionElement.forEach(question => {
+                    question.classList.remove('animate-postScale');
+                })
+
+                setTimeout(function() {
+                    if (_this.questionFilter.value == 'all') {
+                        _this.questionElement.forEach(question => {
+                            question.classList.add('animate-postScale');
+                            question.classList.remove('hidden');
+                        })
+                    } else {
+                        _this.questionElement.forEach(question => {
+                            const moduleElement = question.querySelector('.module-name');
+                            const moduleValue = moduleElement.getAttribute('data-module');
+                            if (moduleValue == _this.questionFilter.value) {
+                                question.classList.add('animate-postScale');
+                                question.classList.remove('hidden');
+                            } else {
+                                question.classList.remove('animate-postScale');
+                                question.classList.add('hidden');
+                            }
+                        })
+                    }
+                }, 100)
             });
         }
 
@@ -153,7 +189,7 @@ class EventListener {
                 switch(true) {
                     case button.id == "like-btn":
                         const likeImage = _this.postDetailContainer.querySelector('#like-img');
-                        const likeCountSpan = _this.postDetailContainer.querySelector('#like-count');
+                        const likeCountSpan = _this.postDetailContainer.querySelector('.like-count');
                         _this.handleLikes(postId, likeCountSpan, likeImage);
                         break;
                     case button.id == "edit-btn":
@@ -213,24 +249,24 @@ class EventListener {
                     commentContainer.insertBefore(newCommentElement, firstChildElement);
                     _this.renderedComments.add(newComment.comment_id); // Thêm comment id vừa post vào Set
     
+
                     textarea.value = '';
-                    document.querySelector('#comment-count').textContent = `(${_this.renderedComments.size})`;
+                    document.querySelector('.comment-count').textContent = `(${_this.renderedComments.size})`;
                 }
     
-    
+                
             })
         }
 
-        if (this.questionFilter) {
-            this.questionFilter.addEventListener('change', function() {
-                if (_this.questionFilter.value == 'All') {
-                    _this.questionContainer.forEach(question => {
-                        question.classList.remove('hidden');
-                        question.classList.add('animate-postScale');
-                    })
-                }
-            });
-        }
+        
+
+        this.questionElement.forEach(question => {
+            const postId = question.getAttribute('data-value');
+            this.updateLikeCount(postId, question);
+            this.updateCommentCount(postId, question);
+        })
+
+        
     }
 
     async handleLikes(postId, likeCountSpan, likeImage) {
@@ -253,9 +289,9 @@ class EventListener {
         
     }
 
-    async updateLikeCount(postId) {
+    async updateLikeCount(postId, container) {
         try {
-            const likeCount = await this.renderer.fetchData(`../controllers/get_likes.php?id=${postId}`, {
+            const likeCount = await this.renderer.fetchData(`../controllers/get_likecount.php?id=${postId}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ post_id: postId })
@@ -263,7 +299,7 @@ class EventListener {
             if (likeCount.error) {
                 console.log(likeCount.error);
             } else {
-                let likeCountSpan = document.querySelector(`#like-count`);
+                let likeCountSpan = container.querySelector(`.like-count`);
                 if (likeCountSpan) {
                     likeCountSpan.textContent = likeCount.like_count;
                 }
@@ -271,7 +307,29 @@ class EventListener {
         } catch (error) {
             console.error('Error updating like count:', error);
         } finally {
-            setTimeout(() => this.updateLikeCount(postId), 5000);
+            setTimeout(() => this.updateLikeCount(postId, container), 5000);
+        }
+    }
+
+    async updateCommentCount(postId, container) {
+        try {
+            const commentCount = await this.renderer.fetchData(`../controllers/get_commentcount.php?id=${postId}`, {
+                method: "POST",
+                headers: { "Content-Type" : "application/json" },
+                body: JSON.stringify({ post_id: postId })
+            });
+            if (commentCount.error) {
+                console.log(commentCount.error)
+            } else {
+                let commentCountSpan = container.querySelector('.comment-count');
+                if (commentCountSpan) {
+                    commentCountSpan.textContent = commentCount.comment_count;
+                }
+            }
+        } catch (error) {
+            console.log('Error updating comment count:', error);
+        } finally {
+            setTimeout(() => this.updateCommentCount(postId, container), 5000);
         }
     }
 
@@ -304,7 +362,7 @@ class EventListener {
                         this.renderedComments.add(comment.comment_id); // Thêm comment ID vừa post vào Set
                     }
                 });
-                document.querySelector('#comment-count').textContent = `(${this.renderedComments.size})`;
+                document.querySelector('.comment-count').textContent = `(${this.renderedComments.size})`;
                 
             }
         } catch (error) {
@@ -319,11 +377,13 @@ class EventListener {
     start() {
         this.handleEvents();
 
-        const postDetailId = this.postDetailContainer ? this.postDetailContainer.getAttribute('data-value') : null;
-        if (postDetailId) {
-            this.updateLikeCount(postId);
+        const postId = this.postDetailContainer ? this.postDetailContainer.getAttribute('data-value') : null;
+        if (postId) {
+            this.updateLikeCount(postId, this.postDetailContainer);
             this.updateComments(postId);
         }
+
+        
 
         
     }

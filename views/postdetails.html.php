@@ -13,7 +13,7 @@
             <div id="module-container" class="flex justify-between items-center">
                 <span id="module-name" class="w-fit rounded-full text-xs px-2 font-medium"></span>
 
-                
+
             </div>
 
             <div class="flex flex-col space-y-4">
@@ -26,8 +26,8 @@
                     </div>
 
 
-                    
-                    
+
+
                 </div>
             </div>
 
@@ -35,17 +35,17 @@
 
             <p id="post-content" class="mt-3 text-xl text-text"></p>
 
-            <div id="post-image-container" class="mt-3 border-2 border-gray-200 rounded-md lg:w-2/3">
-                <img id="post-image" loading="lazy" src="" alt="Post image" class="w-full rounded-md h-2/3">
+            <div id="post-image-container" class="mt-3 border-2 border-gray-200 rounded-md lg:w-2/3 2xl:w-1/3">
+                <img id="post-image" loading="lazy" src="" alt="Post image" class="w-full rounded-md h-1/3">
             </div>
 
             <div id="postdetail-action" class="flex justify-between items-center mt-3">
                 <div class="flex justify-between w-fit rounded-md space-x-2">
                     <button type="button" id="like-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
                         <img id="like-img" loading="lazy" src="../assets/images/like.png" alt="" class="h-10 p-2">
-                        <span id="like-count"></span>
+                        <span class="like-count"></span>
                     </button>
-                    
+
                 </div>
 
                 <div class="flex items-center space-x-2 ">
@@ -63,7 +63,7 @@
             <div class="mt-2 space-y-4">
                 <div class="font-semibold text-lg">
                     <span>Comment</span>
-                    <span id="comment-count">()</span>
+                    <span class="comment-count">()</span>
                 </div>
 
                 <form id="post-form" class="relative w-full p-2 text-wrap rounded-md border border-secondary h-40">
@@ -95,9 +95,6 @@
         try {
             const postInfo = await renderer.fetchData(`../controllers/get_postdetails.php?id=${postId}`)
             renderer.renderPostDetail(postInfo, userId);
-
-            const comments = await renderer.fetchData(`../controllers/get_comments.php?id=${postId}`);
-            renderer.renderComments(comments);
         } catch (error) {
             console.error('Error loading data:', error);
         }

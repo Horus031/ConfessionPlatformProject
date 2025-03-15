@@ -1,13 +1,12 @@
-
 <header class="fixed top-0 w-full flex justify-between items-center z-50 p-3 shadow-lg bg-white border-b border-secondary">
     <div class="hidden md:flex items-center px-3 pt-3 pb-2">
         <img loading="lazy" src="../assets/images/weblogo.png" alt="" class="-mt-4 -mb-4 -ml-4 h-20">
         <span class="text-sm md:text-lg">Knowledge Nexus</span>
-    </div>  
+    </div>
 
     <button id="openMenu" class="md:hidden p-2 rounded-lg hover-bg-gray-100">
         <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" viewBox="0 0 24 24" fill="none">
-            <path d="M4 6H20M4 12H20M4 18H20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 6H20M4 12H20M4 18H20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
     </button>
 
@@ -28,7 +27,7 @@
                 <div class="mt-2 space-y-4">
                     <div class="flex px-2 text-left space-x-2">
                         <img loading="lazy" src="../assets/images/user.png" alt="" class="h-8">
-                        
+
                         <div class="flex flex-col space-y-1">
                             <span>Users has sent you a message</span>
 
@@ -43,7 +42,7 @@
 
                     <div class="flex px-2 text-left space-x-2">
                         <img loading="lazy" src="../assets/images/user.png" alt="" class="h-8">
-                        
+
                         <div class="flex flex-col space-y-1">
                             <span>Users has sent you a message</span>
 
@@ -68,7 +67,7 @@
                 <a href="main.html.php?page=profile" class="flex items-center space-x-4 p-3 hover:bg-gray-200 cursor-pointer">
                     <img loading="lazy" src="../assets/images/profile.png" alt="" class="h-6">
                     <span>Profile</span>
-                </a> 
+                </a>
                 <a class="flex items-center space-x-4 p-3 hover:bg-gray-200">
                     <img loading="lazy" src="../assets/images/settings.png" alt="" class="h-6">
                     <span>Settings</span>
@@ -83,35 +82,35 @@
 </header>
 
 <!-- Menu mobile -->
-<aside id="menu" class="w-2/3 bg-white -translate-x-full h-full z-60 border-r border-gray-200 transition-all fixed md:hidden">  
-    <nav class="flex-1 bg-white md:h-full z-2">
-        <div class="flex flex-col mt-4 space-y-2">
-            <a href="main.html.php?page=home"  id="home-btn" class="flex items-center space-x-3 px-3 py-2 bg-gray-200">
+<aside id="menu" class="w-2/3 bg-white -translate-x-full  h-full z-60 border-r border-gray-200 transition-all fixed md:block md:fixed md:mt-23.5 md:w-46 md:-translate-x-0 lg:w-42 2xl:w-72">
+    <nav id="navbar" class="flex-1 bg-white md:h-full z-2">
+        <div class="flex flex-col mt-4 space-y-2 transition-all">
+            <a href="main.html.php?page=home" id="home-btn" class="flex items-center space-x-3 px-3 py-2 bg-gray-200 hover:bg-gray-200 transition-all">
                 <img loading="lazy" src="../assets/images/home.png" alt="" class="h-6">
                 <span>Home</span>
             </a>
 
-            <a href="main.html.php?page=question" id="ques-btn" class="flex items-center space-x-3 px-3 py-2">
+            <a href="main.html.php?page=question" id="ques-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 transition-all">
                 <img loading="lazy" src="../assets/images/question.png" alt="" class="h-6">
                 <span>Questions</span>
             </a>
 
-            <a href="main.html.php?page=tag" id="tag-btn" class="flex items-center space-x-3 px-3 py-2">
+            <a href="main.html.php?page=tag" id="tag-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 transition-all">
                 <img loading="lazy" src="../assets/images/tag.png" alt="" class="h-6">
                 <span>Tags</span>
             </a>
 
-            <a href="main.html.php?page=history" id="history-btn" class="flex items-center space-x-3 px-3 py-2">
+            <a href="main.html.php?page=history" id="history-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 transition-all">
                 <img loading="lazy" src="../assets/images/history.png" alt="" class="h-6">
                 <span>History</span>
             </a>
 
-            <a href="main.html.php?page=saved" id="saved-btn" class="flex items-center space-x-3 px-3 py-2">
+            <a href="main.html.php?page=saved" id="saved-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 transition-all">
                 <img loading="lazy" src="../assets/images/bookmark.png" alt="" class="h-6">
                 <span>Saved</span>
             </a>
 
-            <a href="main.html.php?page=findusers" id="findusers-btn" class="flex items-center space-x-3 px-3 py-2">
+            <a href="main.html.php?page=findusers" id="findusers-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 transition-all">
                 <img loading="lazy" src="../assets/images/group.png" alt="" class="h-6">
                 <span>Users</span>
             </a>
@@ -119,56 +118,11 @@
 
 
         <button id="closeMenu" class="absolute -right-8 top-[50%] bg-white p-4 border-1 border-text-light rounded-full -translate-y-1/2 z-10 hidden">
-            <img  loading="lazy" src="../assets/images/left-chevron.png" alt="" class="h-6">
+            <img loading="lazy" src="../assets/images/left-chevron.png" alt="" class="h-6">
         </button>
 
         <div class="flex justify-center items-center mt-6">
-            <a href="main.html.php?page=newpost" class="bg-black text-white font-medium rounded-xl py-1.5 px-8 mt-1 cursor-pointer">Add question</a>
-        </div>
-    </nav>
-</aside>
-
-<aside id="menu" class="bg-white h-full z-50 hidden mt-23 w-46 border-r-2 border-t-2 border-secondary md:block md:fixed lg:w-42 2xl:w-72">  
-    <nav id="navbar" class="flex-1 bg-white md:h-full z-2">
-        <div id="btn-wrapper" class="flex flex-col mt-4 space-y-2 transition-all">
-            <a href="main.html.php?page=home"  id="home-btn" class="flex items-center space-x-3 px-3 py-2 bg-gray-200 hover:bg-gray-200 cursor-pointer">
-                <img loading="lazy" src="../assets/images/home.png" alt="" class="h-6">
-                <span>Home</span>
-            </a>
-
-            <a href="main.html.php?page=question" id="ques-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 cursor-pointer">
-                <img loading="lazy" src="../assets/images/question.png" alt="" class="h-6">
-                <span>Questions</span>
-            </a>
-
-            <a href="main.html.php?page=tag" id="tag-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 cursor-pointer">
-                <img loading="lazy" src="../assets/images/tag.png" alt="" class="h-6">
-                <span>Tags</span>
-            </a>
-
-            <a href="main.html.php?page=history" id="history-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 cursor-pointer">
-                <img loading="lazy" src="../assets/images/history.png" alt="" class="h-6 ">
-                <span>History</span>
-            </a>
-
-            <a href="main.html.php?page=saved" id="saved-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 cursor-pointer">
-                <img loading="lazy" src="../assets/images/bookmark.png" alt="" class="h-6">
-                <span>Saved</span>
-            </a>
-
-            <a href="main.html.php?page=findusers" id="findusers-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 cursor-pointer">
-                <img loading="lazy" src="../assets/images/group.png" alt="" class="h-6">
-                <span>Users</span>
-            </a>
-        </div>
-
-
-        <button id="closeMenu" class="absolute -right-8 top-[50%] bg-white p-4 border-1 border-text-light rounded-full -translate-y-1/2 z-10 hidden">
-            <img  loading="lazy" src="../assets/images/left-chevron.png" alt="" class="h-6">
-        </button>
-
-        <div class="flex justify-center items-center mt-6">
-            <a href="main.html.php?page=newpost" class="bg-black text-white font-medium rounded-xl py-1.5 px-8 mt-1 lg:text-nowrap lg:px-4 2xl:px-8 cursor-pointer">Add question</a>
+            <a href="main.html.php?page=newpost" class="bg-black text-white font-medium rounded-xl py-1.5 px-8 mt-1 cursor-pointer w-fit text-center text-nowrap">Add question</a>
         </div>
     </nav>
 </aside>
