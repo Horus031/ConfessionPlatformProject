@@ -23,6 +23,123 @@ class QuestionRenderer {
         }
     }
 
+    renderSavedPosts(posts, userId) {
+        if (!this.container) return;
+        this.container.innerHTML = '';
+
+        const fragment = document.createDocumentFragment();
+
+        posts.forEach(async post => {
+            if (post.user_savedid == userId) {
+                const questionElement = document.createElement('div');
+                questionElement.id = `ques-${post.post_id}`;
+                questionElement.setAttribute('data-value', `${post.post_id}`);
+                questionElement.classList.add('mt-2', 'border-2', 'p-4', 'rounded-md', 'border-gray-200', 'hover:border-black', 'cursor-pointer');
+                questionElement.innerHTML = `
+                    <div class="flex flex-col">
+                        <input type="hidden" name="post_id" value="${post.post_id}">
+                        <div class="flex justify-between items-center">
+                            <span data-module="${post.module_id}" class="w-fit module-name rounded-full text-xs ${post.bg_class} ${post.text_class} px-2 font-medium">${post.module_name}</span>
+                            <div class="relative group">
+                                <img src="../assets/images/dots.png" class="h-10 hover:bg-gray-300 p-2 rounded-full">
+                                <div id="action-popup" class="absolute bg-white rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent">
+                                    <button type="button" id="view-btn" class="flex w-full items-center space-x-4 p-3 hover:bg-gray-200 cursor-pointer">
+                                        <span>View Details</span>
+                                    </button> 
+                                    <button type="button" id="edit-btn" class="flex w-full items-center space-x-4 p-3 ${post.user_id == userId ? 'block' : 'hidden'}  hover:bg-gray-200 cursor-pointer">
+                                        <span>Edit</span>
+                                    </button>
+                                    <form action="../controllers/deletepost.php" method="post" class="${post.user_id == userId ? 'block' : 'hidden'} ">
+                                        <input type="hidden" name="post_id" value="${post.post_id}">
+                                        <input type="submit" value="Delete" class="space-x-4 p-3 text-left cursor-pointer hover:bg-gray-200 text-red-400 w-full">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <h2 class="mt-3 font-semibold text-lg w-56 h-20">${post.post_title}</h2>
+                        <p class="mt-3 text-xs text-text-light font-medium line-clamp-1">${post.post_content}</p>
+                        <div>
+                            <div class="mt-3 border-2 border-gray-200 rounded-md">
+                                <img loading="lazy" src="${post.imageURL ?? ''}" alt="Post image" width="100%" height="100px" class="rounded-md lazy-load">
+                            </div>
+                            <div class="flex justify-between items-center mt-3">
+                                <div class="flex items-center space-x-2">
+                                    <img loading="lazy" src="${post.avatar ? post.avatar : '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+                                    <span class="text-xs">${post.username}</span>
+                                    <span class="text-xs">${new Date(post.created_at).toLocaleString()}</span>
+                                </div>
+                                <div id="tags-container-${post.post_id}" class="flex items-center space-x-2 text-sm"></div>
+                            </div>
+                            <div class="flex justify-between items-center mt-3">
+                                <div class="flex justify-between w-fit border-2 border-text-light rounded-md">
+                                    <button id="likes-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
+                                        <img loading="lazy" src="../assets/images/like.png" alt="" class="like-img h-10 p-2">
+                                        <span class="like-count" data-post-id="${post.post_id}">${post.like_count}</span>
+                                    </button>
+                                    <button id="comment-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
+                                        <img loading="lazy" src="../assets/images/comments.png" alt="" class="like-img h-10 p-2">
+                                        <span class="comment-count" data-post-id="${post.post_id}">${post.comment_count}</span>
+                                    </button>
+                                </div>
+                                <div class="flex items-center space-x-2 ">
+                                    <button id="save-btn" class="rounded-md hover:bg-gray-300 transition-all">
+                                        <img loading="lazy" src="../assets/images/saved.png" alt="" class="saved-img h-10 p-2">
+                                    </button>
+                                    <button id="link-btn" class="rounded-md hover:bg-gray-300 transition-all">
+                                        <img loading="lazy" src="../assets/images/link.png" alt="" class="link-img h-10 p-2">
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                fragment.appendChild(questionElement);
+
+                try {
+                    const data = await this.fetchData('../controllers/check_likes.php', {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ post_id: post.post_id })
+                    })
+
+                    const savedData = await this.fetchData('../controllers/check_savedposts.php', {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ post_id: post.post_id })
+                    })
+
+                    if (data.error) {
+                        console.log(error);
+                    } else {
+                        if (data.status == "yes") {
+                            questionElement.querySelector('.like-img').src = '../assets/images/like-on.png';
+                        } else {
+                            questionElement.querySelector('.like-img').src = '../assets/images/like.png';
+                        }
+                    }
+
+                    if (savedData.error) {
+                        console.log(error);
+                    } else {
+                        console.log(savedData);
+                        if (savedData.status == 'yes') {
+                            questionElement.querySelector('.saved-img').src = '../assets/images/saved-on.png';
+                        } else {
+                            questionElement.querySelector('.saved-img').src = '../assets/images/saved.png';
+                        }
+                    }
+
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        });
+
+        this.container.appendChild(fragment);
+        
+    }
+
     renderQuestions(questions, userId) {
         if (!this.container) return;
         this.container.innerHTML = '';
@@ -82,10 +199,10 @@ class QuestionRenderer {
                             </div>
                             <div class="flex items-center space-x-2 ">
                                 <button id="save-btn" class="rounded-md hover:bg-gray-300 transition-all">
-                                    <img loading="lazy" src="../assets/images/bookmark.png" alt="" class="h-10 p-2">
+                                    <img loading="lazy" src="../assets/images/saved.png" alt="" class="saved-img h-10 p-2">
                                 </button>
                                 <button id="link-btn" class="rounded-md hover:bg-gray-300 transition-all">
-                                    <img loading="lazy" src="../assets/images/link.png" alt="" class="h-10 p-2">
+                                    <img loading="lazy" src="../assets/images/link.png" alt="" class="link-img h-10 p-2">
                                 </button>
                             </div>
                         </div>
@@ -95,9 +212,14 @@ class QuestionRenderer {
 
             fragment.appendChild(questionElement);
 
-
             try {
                 const data = await this.fetchData('../controllers/check_likes.php', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ post_id: question.post_id })
+                })
+
+                const savedData = await this.fetchData('../controllers/check_savedposts.php', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ post_id: question.post_id })
@@ -110,6 +232,17 @@ class QuestionRenderer {
                         questionElement.querySelector('.like-img').src = '../assets/images/like-on.png';
                     } else {
                         questionElement.querySelector('.like-img').src = '../assets/images/like.png';
+                    }
+                }
+
+                if (savedData.error) {
+                    console.log(error);
+                } else {
+                    console.log(savedData);
+                    if (savedData.status == 'yes') {
+                        questionElement.querySelector('.saved-img').src = '../assets/images/saved-on.png';
+                    } else {
+                        questionElement.querySelector('.saved-img').src = '../assets/images/saved.png';
                     }
                 }
 
@@ -569,6 +702,8 @@ class QuestionRenderer {
             commentContainer.appendChild(commentElement);
         })
     }
+
+    
 }
 
 // Export the class

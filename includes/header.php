@@ -106,7 +106,7 @@
             </a>
 
             <a href="main.html.php?page=saved" id="saved-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 transition-all">
-                <img loading="lazy" src="../assets/images/bookmark.png" alt="" class="h-6">
+                <img loading="lazy" src="../assets/images/saved.png" alt="" class="h-6">
                 <span>Saved</span>
             </a>
 

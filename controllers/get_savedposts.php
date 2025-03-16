@@ -4,8 +4,10 @@ include '../includes/dbfunctions.php';
 $database = new Database($pdo);
 
 try {
-    $tagList = $database->fetchAllTags();
-    echo json_encode($tagList);
+    $savedPosts = $database->getAllSavedPosts();
+
+
+    echo json_encode($savedPosts);
 } catch (PDOException $e) {
-    echo json_encode(['error: ' . $e->getMessage()]);
+    echo json_encode(["error " . $e->getMessage()]);
 }

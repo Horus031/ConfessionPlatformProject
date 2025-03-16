@@ -363,4 +363,43 @@ class Database
             return false;
         }
     }
+
+    public function checkSavedPosts($post_id)
+    {
+        $sqlSelect = "SELECT 1 FROM user_saved_posts WHERE user_id = ? AND post_id = ?";
+        $stmtSelect = $this->pdo->prepare($sqlSelect);
+        $stmtSelect->execute([$_SESSION['user_id'], $post_id]);
+        $savedPost = $stmtSelect->fetch(PDO::FETCH_ASSOC);
+
+        return $savedPost;
+    }
+
+    public function handleSavedPosts($isSaved, $post_id)
+    {
+        if ($isSaved) {
+            $sqlDelete = "DELETE FROM user_saved_posts WHERE user_id = ? AND post_id = ?";
+            $stmtDelete = $this->pdo->prepare($sqlDelete);
+            $stmtDelete->execute([$_SESSION['user_id'], $post_id]);
+
+            return true;
+        } else {
+            $sqlInsert = "INSERT INTO user_saved_posts (user_id, post_id) VALUES (?, ?)";
+            $stmtInsert = $this->pdo->prepare($sqlInsert);
+            $stmtInsert->execute([$_SESSION['user_id'], $post_id]);
+
+            return false;
+        }
+    }
+
+    public function getAllSavedPosts()
+    {
+        $sql = 'SELECT user_saved_posts.user_id AS user_savedid,posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class FROM (((posts
+        INNER JOIN user_saved_posts ON posts.post_id = user_saved_posts.post_id)
+        INNER JOIN users ON posts.user_id = users.user_id)
+        INNER JOIN modules ON posts.module_id = modules.module_id)';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

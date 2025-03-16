@@ -31,7 +31,7 @@
 
             <div class="flex items-center mt-4 space-x-6">
                 <select name="tagList" id="tag-list" class="border-1 border-secondary rounded-lg py-1 px-4 overflow-y-scroll w-full  md:w-5/8 lg:w-4/9">
-                    
+
                 </select>
 
                 <div id="button-container" class="space-x-2 flex">
@@ -48,7 +48,7 @@
         <div class="mt-4 flex flex-col">
             <h2 class="text-lg">Select modules</h2>
             <select name="moduleValues" id="modules" class="border-1 border-secondary rounded-lg py-1 px-4 mt-4 md:w-5/8 lg:w-4/9">
-                
+
             </select>
         </div>
 
@@ -61,7 +61,7 @@
             </button>
         </div>
     </form>
-    
+
 </main>
 
 <script type="module">
@@ -69,7 +69,7 @@
     import EventListener from '../src/js/events.js';
     document.addEventListener('DOMContentLoaded', async function() {
         const postId = sessionStorage.getItem('editPostId');
-        const renderer = new QuestionRenderer('#modules');
+        const renderer = new QuestionRenderer(null, '#modules');
         const eventListener = new EventListener();
 
         try {
@@ -84,15 +84,19 @@
 
             const editPost = await renderer.fetchData('../controllers/get_postdetails.php', {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ post_id: postId })
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    post_id: postId
+                })
             })
             renderer.renderEditPosts(editPost, postId);
 
             renderer.renderTagsWithType();
 
 
-            
+
             eventListener.start();
         } catch (error) {
             console.error('Error loading data:', error);
@@ -111,10 +115,10 @@
         });
 
 
-        
 
-        
 
-        
+
+
+
     })
 </script>

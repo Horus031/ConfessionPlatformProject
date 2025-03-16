@@ -50,7 +50,7 @@
 
                 <div class="flex items-center space-x-2 ">
                     <button id="save-btn">
-                        <img loading="lazy" src="../assets/images/bookmark.png" alt="" class="h-10 p-2 rounded-md hover:bg-gray-300 transition-all">
+                        <img loading="lazy" src="../assets/images/saved.png" alt="" class="h-10 p-2 rounded-md hover:bg-gray-300 transition-all">
                     </button>
                     <button id="link-btn">
                         <img loading="lazy" src="../assets/images/link.png" alt="" class="h-10 p-2 rounded-md hover:bg-gray-300 transition-all">

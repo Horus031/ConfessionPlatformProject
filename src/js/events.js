@@ -86,38 +86,48 @@ class EventListener {
             }
         });
 
-        this.questionElement.forEach(question => {
-            question.addEventListener('click', function(e) {
-                const postId = question.getAttribute('data-value');
-                let button = e.target.closest('button');
-                if (!button) {
-                    window.location.href = `../views/main.html.php?page=postdetails&id=${postId}`;
-                }
-                switch (true) {
-                    case button.id == "likes-btn":
-                        const likeImage = question.querySelector('.like-img');
-                        const likeCountSpan = question.querySelector('.like-count');
-                        _this.handleLikes(postId, likeCountSpan, likeImage);
-                        break;
-                    case button.id == "comment-btn":
-                        console.log('comment');
-                        break;
-                    case button.id == "save-btn":
-                        console.log('bookmark');
-                        break;
-                    case button.id == "link-btn":
-                        console.log('link-btn');
-                        break;
-                    case button.id == "view-btn":
+        if (this.questionElement) {
+            this.questionElement.forEach(question => {
+                question.addEventListener('click', function(e) {
+                    const postId = question.getAttribute('data-value');
+                    let button = e.target.closest('button');
+                    if (!button) {
                         window.location.href = `../views/main.html.php?page=postdetails&id=${postId}`;
-                        break;
-                    case button.id == "edit-btn":
-                        sessionStorage.setItem('editPostId', postId);
-                        window.location.href = '../views/main.html.php?page=editpost';
-                        break;
-                }
+                    }
+                    switch (true) {
+                        case button.id == "likes-btn":
+                            const likeImage = question.querySelector('.like-img');
+                            const likeCountSpan = question.querySelector('.like-count');
+                            _this.handleLikes(postId, likeCountSpan, likeImage);
+                            break;
+                        case button.id == "comment-btn":
+                            console.log('comment');
+                            break;
+                        case button.id == "save-btn":
+                            const savedImage = question.querySelector('.saved-img');
+                            _this.handleSavedPosts(postId, savedImage);
+                            break;
+                        case button.id == "link-btn":
+                            console.log('link-btn');
+                            break;
+                        case button.id == "view-btn":
+                            window.location.href = `../views/main.html.php?page=postdetails&id=${postId}`;
+                            break;
+                        case button.id == "edit-btn":
+                            sessionStorage.setItem('editPostId', postId);
+                            window.location.href = '../views/main.html.php?page=editpost';
+                            break;
+                    }
+                })
             })
-        })
+
+
+            this.questionElement.forEach(question => {
+                const postId = question.getAttribute('data-value');
+                this.updateLikeCount(postId, question);
+                this.updateCommentCount(postId, question);
+            })
+        }
 
         if (this.filterTags) {
             this.filterTags.addEventListener('change', function() {
@@ -258,15 +268,28 @@ class EventListener {
             })
         }
 
-        
+    }
 
-        this.questionElement.forEach(question => {
-            const postId = question.getAttribute('data-value');
-            this.updateLikeCount(postId, question);
-            this.updateCommentCount(postId, question);
-        })
+    async handleSavedPosts(postId, savedImage) {
+        try {
+            const savedPosts = await this.renderer.fetchData('../controllers/handle_savedpost.php' ,{
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ post_id: postId })
+            })
 
-        
+            if (savedPosts.status == "saved") {
+                console.log(savedPosts)
+                console.log('save!')
+                savedImage.src = '../assets/images/saved-on.png';
+            } else {
+                console.log(savedPosts)
+                console.log('unsave');
+                savedImage.src = '../assets/images/saved.png';
+            }
+        } catch (error) {
+            console.error('Error handling saved post:', error);
+        }
     }
 
     async handleLikes(postId, likeCountSpan, likeImage) {
