@@ -18,6 +18,9 @@ try {
     if (empty($userInfo)) {
         echo json_encode(['error' => 'No user found with the given ID']);
     } else {
+        $socialLink = $database->fetchSocialLinks($_SESSION['user_id']);
+        $userInfo['socialLinks'] = $socialLink;
+
         echo json_encode($userInfo);
     }
 } catch (PDOException $e) {

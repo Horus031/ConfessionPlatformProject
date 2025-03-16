@@ -22,13 +22,16 @@ class EventListener {
         this.buttonContainer = document.querySelector('#button-container');
         this.tagList = document.querySelector('#tag-list');
         this.tagInput = document.querySelector('#tag-input');
+        this.selectTagType = document.querySelector('#select-tag-type');
+        this.fileInput = document.querySelector('#imageURL');
+        this.fileName = document.querySelector('#file-name');
         this.questionElement = document.querySelectorAll('div[id^="ques-"]');
         this.filterTags = document.querySelector('#filter-tags');
         this.tagElements = document.querySelectorAll('div[id^="tag-"]');
         this.postForm = document.querySelector('#post-form');
         this.postDetailContainer = document.querySelector('#postdetail-container');
         this.questionFilter = document.querySelector('#question-filter');
-        this.questionSearch = document.querySelector('#question-search');
+        this.questionContainer = document.querySelector('#question-container');
 
     }
 
@@ -266,6 +269,80 @@ class EventListener {
     
                 
             })
+        }
+
+         // Custom ô hình ảnh
+         if (this.fileInput) {
+            this.fileInput.addEventListener('change', function() {
+                if (_this.fileInput.files.length > 0) {
+                    _this.fileName.textContent = _this.fileInput.files[0].name;
+                } else {
+                    _this.fileName.textContent = 'Upload your image';
+                }
+            });
+        }
+
+        // Tạo logic chọn tag
+        if (this.selectTagType) {
+            this.selectTagType.addEventListener('change', function() {
+                let selectedValue = _this.selectTagType.value;
+                
+                while (_this.tagList.firstChild) {
+                    _this.tagList.removeChild(_this.tagList.firstChild);
+                }
+    
+                fetch('../controllers/tags_withtype.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ type: selectedValue })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        _this.tagList.innerHTML = `<option>${data.error}</option>`
+                    } else {
+                        if (selectedValue == '') {
+                            _this.tagList.classList.add('hidden');
+                            _this.buttonContainer.classList.add('hidden');
+                            _this.tagInput.classList.add('hidden');
+                        } else {
+                            _this.tagList.classList.remove('hidden');
+                            _this.buttonContainer.classList.remove('hidden');
+                            _this.tagInput.classList.remove('hidden');
+                            data.forEach(tag => {
+                                const tagElement = document.createElement('option');
+                                tagElement.value = `${tag.tag_name}`;
+                                tagElement.textContent = `${tag.tag_name}`;
+                                _this.tagList.appendChild(tagElement);
+                            })
+                        }
+                    }
+                })
+            });
+        }
+
+        // Tạo tương tác giữa nút thêm và xóa tag
+        if (this.buttonContainer) {
+            this.buttonContainer.addEventListener('click', function(e) {
+                if (e.target.closest('button[id="add-btn"]')) {
+                    const selectedTag = _this.tagList.value;
+                    const currentTags = _this.tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+    
+                    if (currentTags.includes(selectedTag)) {
+                        console.log('You cannot duplicate the tag!');
+                    } else {
+                        currentTags.push(selectedTag);
+                        _this.tagInput.value = currentTags.join(', ');
+                    }
+    
+                } else if (e.target.closest('button[id="remove-btn"]')) {
+                    const selectedTag = _this.tagList.value;
+                    let currentTags = _this.tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+    
+                    currentTags = currentTags.filter(tag => tag !== selectedTag);
+                    _this.tagInput.value = currentTags.join(', ');
+                }
+            });
         }
 
     }

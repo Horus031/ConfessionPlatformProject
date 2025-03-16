@@ -111,8 +111,6 @@
         try {
             const questions = await renderer.fetchData('../controllers/list_question.php');
             renderer.renderQuestions(questions, userId);
-            const tags = await renderer.fetchData('../controllers/get_posttags.php');
-            renderer.renderTagsForPost(tags);
 
 
             eventListener.start();

@@ -6,9 +6,13 @@ include '../includes/dbfunctions.php';
 
 $database = new Database($pdo);
 
-try {
-    $postTags = $database->fetchAllPostTags();
-    echo json_encode($postTags);
-} catch (PDOException $e) {
-    echo json_encode(['error' => $e->getMessage()]);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $data = json_decode(file_get_contents("php://input"), true);
+    $post_id = isset($data['post_id']) ? intval($data['post_id']) : null;
+    try {
+        $postTags = $database->fetchPostTagsWithId($post_id);
+        echo json_encode($postTags);
+    } catch (PDOException $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
 }

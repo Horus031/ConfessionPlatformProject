@@ -213,6 +213,56 @@ class QuestionRenderer {
             fragment.appendChild(questionElement);
 
             try {
+                const postTag = await this.fetchData(`../controllers/get_posttags.php`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ post_id: question.post_id })
+                })
+                
+                const tagContainer = questionElement.querySelector(`#tags-container-${question.post_id}`);
+
+                postTag.forEach(tag => {
+                    if (tagContainer) {
+                        const existingTags = tagContainer.querySelectorAll('span');
+                        if (existingTags.length === 0) {
+                            const tagElement = document.createElement('span');
+                            tagElement.classList.add('bg-tags', 'p-1', 'rounded-md');
+                            tagElement.textContent = `#${tag.tag_name}`;
+                            tagContainer.appendChild(tagElement);
+                        } else {
+                            const additionalTags = tagContainer.querySelector('.additional-tags');
+                            const tagPopup = document.querySelector('#tags-popup');
+                            if (additionalTags) {
+                                const count = parseInt(additionalTags.getAttribute('data-count')) + 1;
+                                const tagSpan = document.querySelector('#tag-count');
+                                additionalTags.setAttribute('data-count', count);
+                                tagSpan.textContent = `+${count}`;
+        
+        
+                                const additionalTagPopup = document.createElement('span');
+                                additionalTagPopup.classList.add('p-2')
+                                additionalTagPopup.textContent = `#${tag.tag_name}`
+                                tagPopup.appendChild(additionalTagPopup);
+        
+                            } else {
+                                const additionalTagElement = document.createElement('div');
+        
+                                additionalTagElement.classList.add('relative', 'group', 'bg-tags', 'p-1', 'rounded-md', 'additional-tags');
+                                additionalTagElement.setAttribute('data-count', 1);
+                                additionalTagElement.innerHTML = `
+                                    <span id="tag-count">+1</span>
+        
+                                    <div id="tags-popup" class="absolute space-y-2 bg-tags p-2 rounded-md right-1 top-8 shadow-lg hidden group-hover:block before:absolute before:content-[''] before:-top-2 before:w-6 before:h-3 before:right-0 before:bg-transparent">
+                                        <span class="p-2">#${tag.tag_name}</span>
+                                    </div>
+                                `;
+                                tagContainer.appendChild(additionalTagElement);
+                            }
+                        }
+                    }
+                })
+
+
                 const data = await this.fetchData('../controllers/check_likes.php', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -238,7 +288,6 @@ class QuestionRenderer {
                 if (savedData.error) {
                     console.log(error);
                 } else {
-                    console.log(savedData);
                     if (savedData.status == 'yes') {
                         questionElement.querySelector('.saved-img').src = '../assets/images/saved-on.png';
                     } else {
@@ -405,7 +454,6 @@ class QuestionRenderer {
         if (data.error) {
             profileContainer.innerHTML = `<p class="text-red-500">${data.error}</p>`;
         } else {
-            console.log(data);
             const profileElements = document.createElement('div');
             profileElements.classList.add('flex', 'flex-col', 'space-y-2');
 
@@ -434,18 +482,20 @@ class QuestionRenderer {
                 </div>
             `;
 
-            const socialContainer = document.createElement('div');
-            socialContainer.classList.add('space-x-2');
-            data.forEach(link => {
+            const socialContainer = document.querySelector('#social-container');
+
+            data.socialLinks.forEach(link => {
+                const socialElement = socialContainer.querySelector(`a[id^="${link.platform}"]`);
                 if (link.url && link.platform) {
-                    const socialLink = document.createElement('a');
-                    socialLink.href = link.url;
-                    socialLink.target = '_blank';
-                    socialLink.classList.add('border-1', 'border-secondary', 'rounded-xl', 'px-4', 'py-1', 'font-semibold');
-                    socialLink.textContent = `@${link.platform}`;
-                    socialContainer.appendChild(socialLink);
+                    socialElement.href = link.url;
+                    socialElement.target = '_blank';
+                    socialElement.classList.add('border-1', 'border-secondary', 'rounded-xl', 'px-4', 'py-1', 'font-semibold');
+                    socialElement.textContent = `@${link.platform}`;
+                    socialContainer.appendChild(socialElement);
+                } else {
+                    socialContainer.removeChild(socialElement);
                 }
-            });
+            })
 
             const bioContext = document.createElement('span');
             bioContext.classList.add('font-semibold', 'text-text-light');
@@ -463,7 +513,6 @@ class QuestionRenderer {
         if (posts.error) {
             mypostContainer.innerHTML = `<p class="text-red-500">${posts.error}</p>`;
         } else {
-            console.log(posts);
             posts.forEach(myPost => {
                 if (myPost.user_id == userId) {
                     hasPosts = true;
@@ -510,6 +559,7 @@ class QuestionRenderer {
         const accountInput = document.querySelector('#accountinfo-container');
         const bioInput = document.querySelector('#bio-container');
         const socialInput = document.querySelector('#social-container');
+        
 
         const imageElements = document.createElement('img');
         imageElements.id = 'image';
@@ -538,21 +588,20 @@ class QuestionRenderer {
         bioElement.cols = '40';
         bioElement.rows = '8';
         bioElement.classList.add('border-1', 'border-text', 'p-2', 'rounded-lg');
-        bioElement.value = `${userInfo[0].bio}`;
+        bioElement.value = `${userInfo[0].bio ?? ''}`;
 
         bioInput.appendChild(bioElement);
 
-        userInfo.forEach(link => {
-            const socialLinkBox = document.createElement('div');
-            socialLinkBox.classList.add('relative');
-            socialLinkBox.innerHTML = `
-                <img src="../assets/images/${link.platform.toLowerCase()}.png" alt="" class="absolute top-1/2 left-4 h-6">
-                <label for="${link.platform}">${link.platform}</label>
-                <input type="url" name="social_links[${link.platform}]" id="${link.platform}" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your ${link.platform.toUpperCase()}  Link" value="${link.url}">
-            `; 
 
-            socialInput.appendChild(socialLinkBox);
+        userInfo.socialLinks.forEach(link => {
+            socialInput.querySelector(`input[id="${link.platform}"]`).value = `${link.url ?? ''}`;
         })
+
+        
+
+        
+
+        
     }
 
     async renderPostDetail(post, userId) {
@@ -703,7 +752,36 @@ class QuestionRenderer {
         })
     }
 
-    
+    renderAllUsers(userList, userId) {
+        if (!this.container) return;
+        this.container.innerHTML = '';
+
+        const fragment = document.createDocumentFragment();
+
+        
+
+        userList.forEach(user => {
+            if (user.user_id !== userId) {
+                const userElement = document.createElement('div');
+                userElement.classList.add('flex', 'space-x-4', 'items-center');
+                userElement.innerHTML = `
+                    <img src="${user.avatar ?? '../assets/images/user.png'}" alt="" class="h-13 lg:h-28">
+
+                    <div>
+                        <h2 class="text-lg text-text font-semibold lg:text-2xl">${user.username}</h2>
+                        <h3 class="text-sm text-text-light font-medium lg:text-lg">${user.tag_name ?? ''}</h3>
+                        <h4 class="text-sm text-[#2691BF] font-medium lg:text-lg">${user.bio ?? ''}</h4>
+                    </div>
+                `;
+
+                fragment.appendChild(userElement);
+            }
+
+        })
+
+        this.container.appendChild(fragment);
+
+    }
 }
 
 // Export the class

@@ -1,17 +1,22 @@
 <main class="mt-28 w-full px-4 md:pl-[26%] lg:pl-[20%] xl:pl-[20%] 2xl:pl-[16%]">
     <div id="profile-container" class="flex flex-col md:flex-row md:items-center">
         <div class="flex  justify-between items-start px-2 space-y-4 md:flex-col md:items-center md:justify-start bg-white z-30">
-            <img src="<?= isset($_SESSION['avatarURL']) ? $_SESSION["avatarURL"] : '../assets/images/user.png';?>" alt="" aspect-ratio="1/1" class="h-30 w-30 rounded-full">
+            <img src="<?= isset($_SESSION['avatarURL']) ? $_SESSION["avatarURL"] : '../assets/images/user.png'; ?>" alt="" aspect-ratio="1/1" class="h-30 w-30 rounded-full">
 
             <a href="main.html.php?page=editprofile" class="border-1 border-secondary rounded-lg px-3 py-1 font-semibold cursor-pointer">Edit profile</a>
         </div>
 
         <div class="space-y-2 mt-1">
             <div id="info-container" class="flex flex-col space-y-2 animate-infoSlide">
-                <h2 class="text-2xl my-1"><?=$_SESSION['username']?></h2>
-                
+                <h2 class="text-2xl my-1"><?= $_SESSION['username'] ?></h2>
 
-                
+                <div id="social-container" class="space-x-2">
+                    <a id="Facebook-link" href=""></a>
+                    <a id="Github-link" href=""></a>
+                    <a id="LinkedIn-link" href=""></a>
+
+                </div>
+
             </div>
         </div>
     </div>
@@ -43,13 +48,13 @@
             </div>
             <span class="absolute w-8/12 h-[2px] border-2 border-[#4CAF50] left-1.5 rounded-2xl -bottom-0.5"></span>
         </div>
-        
+
     </div>
 
-    <div  class="mt-4 font-medium">
+    <div class="mt-4 font-medium">
         <h2 class="animate-fadeIn">Your posts</h2>
         <div id="mypost-container" class="grid w-full lg:grid-cols-2 2xl:grid-cols-3 gap-4">
-            
+
         </div>
     </div>
 </main>

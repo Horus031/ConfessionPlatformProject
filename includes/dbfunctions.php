@@ -228,9 +228,18 @@ class Database
 
     public function fetchUserInfo($user_id)
     {
-        $sql = 'SELECT users.username, users.tag_name, users.email, users.bio, users.avatar, users.created_at, user_social_links.platform, user_social_links.url
+        $sql = 'SELECT users.username, users.tag_name, users.email, users.bio, users.avatar, users.created_at
                 FROM users
-                LEFT JOIN user_social_links ON users.user_id = user_social_links.user_id
+                WHERE users.user_id = ?';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$user_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function fetchSocialLinks($user_id)
+    {
+        $sql = 'SELECT user_social_links.platform, user_social_links.url FROM user_social_links
+                INNER JOIN users ON user_social_links.user_id = users.user_id
                 WHERE users.user_id = ?';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$user_id]);
@@ -400,6 +409,16 @@ class Database
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function fetchAllUsers($userId)
+    {
+        $sql = 'SELECT user_id, username, tag_name, avatar, bio FROM users
+                WHERE user_id <> ?
+        ';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

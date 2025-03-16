@@ -779,9 +779,6 @@
   .border-text-light {
     border-color: var(--color-text-light);
   }
-  .bg-\[\#CFF7D3\] {
-    background-color: #CFF7D3;
-  }
   .bg-\[\#EFB24F\]\/60 {
     background-color: color-mix(in oklab, #EFB24F 60%, transparent);
   }
@@ -1003,9 +1000,6 @@
   }
   .text-\[\#4E87F1\] {
     color: #4E87F1;
-  }
-  .text-\[\#02542D\] {
-    color: #02542D;
   }
   .text-\[\#2691BF\] {
     color: #2691BF;
@@ -1360,11 +1354,6 @@
   .md\:justify-start {
     @media (width >= 48rem) {
       justify-content: flex-start;
-    }
-  }
-  .md\:px-2 {
-    @media (width >= 48rem) {
-      padding-inline: calc(var(--spacing) * 2);
     }
   }
   .md\:py-4 {

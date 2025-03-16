@@ -24,7 +24,7 @@
                 <h2 class="text-xl font-semibold">Account Information</h2>
 
                 <div id="accountinfo-container" class="mt-2 space-y-4">
-                    
+
                 </div>
             </div>
 
@@ -42,8 +42,24 @@
                 <p class="text-text font-semibold">Let’s give us some links to connect with you</p>
 
                 <div id="social-container" class="mt-2 space-y-4">
-                    
-                    
+                    <div id="facebook-link" class="relative">
+                        <img src="../assets/images/facebook.png" alt="" class="absolute top-1/2 left-4 h-6">
+                        <label for="Facebook">Facebook</label>
+                        <input type="url" name="social_links[Facebook]" id="Facebook" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your Facebook  Link" value="">
+                    </div>
+
+                    <div id="github-link" class="relative">
+                        <img src="../assets/images/github.png" alt="" class="absolute top-1/2 left-4 h-6">
+                        <label for="Github">Github</label>
+                        <input type="url" name="social_links[Github]" id="Github" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your Github  Link" value="">
+                    </div>
+
+                    <div id="linkedin-link" class="relative">
+                        <img src="../assets/images/linkedin.png" alt="" class="absolute top-1/2 left-4 h-6">
+                        <label for="LinkedIn">LinkedIn</label>
+                        <input type="url" name="social_links[LinkedIn]" id="LinkedIn" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your LinkedIn  Link" value="">
+                    </div>
+
                 </div>
             </div>
 
@@ -60,7 +76,7 @@
     import QuestionRenderer from '../src/js/render.js';
     document.addEventListener('DOMContentLoaded', async function() {
         const renderer = new QuestionRenderer('#edit-container');
-        const username = "<?=$_SESSION['username']?>";
+        const username = "<?= $_SESSION['username'] ?>";
         const avatarURL = "<?= isset($_SESSION['avatarURL']) ? $_SESSION["avatarURL"] : '../assets/images/user.png'; ?>";
 
         try {
@@ -69,7 +85,7 @@
         } catch (error) {
             console.error('Error loading data:', error);
         }
-        
-        
+
+
     })
 </script>
