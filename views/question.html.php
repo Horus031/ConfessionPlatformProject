@@ -47,9 +47,6 @@
 
             // Add a delay to ensure the elements are rendered before calling renderTags
             setTimeout(async () => {
-                const tags = await renderer.fetchData('../controllers/get_posttags.php');
-                renderer.renderTagsForPost(tags);
-
                 const modules = await renderer.fetchData('../controllers/list_modules.php');
                 renderer.renderModules(modules);
             }, 100); // Adjust the delay as needed

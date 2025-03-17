@@ -6,18 +6,18 @@
         <span class="font-semibold text-xl">Back to home</span>
     </div>
 
-    <div id="postdetail-container" class="mt-2 border-2 p-4 rounded-md border-secondary">
+    <div id="postdetail-container" class="mt-2 border-2 p-4 rounded-md border-secondary animate-postScaleTopLeft transition-all">
         <div class="flex flex-col">
             <input type="hidden" name="post_id" id="post_id" value="">
 
-            <div id="module-container" class="flex justify-between items-center">
+            <div id="module-container" class="flex justify-between items-center h-10">
                 <span id="module-name" class="w-fit rounded-full text-xs px-2 font-medium"></span>
 
 
             </div>
 
-            <div class="flex flex-col space-y-4">
-                <h2 id="post-title" class="font-semibold text-lg lg:text-2xl"></h2>
+            <div class="flex flex-col space-y-2">
+                <h2 id="post-title" class="text-lg lg:text-2xl"></h2>
                 <div id="user-tag" class="flex items-center justify-between space-x-2">
                     <div class="flex items-center space-x-2">
                         <img id="user-avatar" loading="lazy" src="../assets/images/user.png" alt="" class="h-10 rounded-full md:h-14 2xl:h-16">
@@ -33,7 +33,7 @@
 
             <hr class="mt-4 text-secondary">
 
-            <p id="post-content" class="mt-3 text-xl text-text"></p>
+            <p id="post-content" class="mt-3 text-md text-text"></p>
 
             <div id="post-image-container" class="mt-3 border-2 border-gray-200 rounded-md lg:w-2/3 2xl:w-1/3">
                 <img id="post-image" loading="lazy" src="" alt="Post image" class="w-full rounded-md h-1/3">

@@ -155,7 +155,7 @@ class QuestionRenderer {
                 <div class="flex flex-col">
                     <input type="hidden" name="post_id" value="${question.post_id}">
                     <div class="flex justify-between items-center">
-                        <span data-module="${question.module_id}" class="w-fit module-name rounded-full text-xs ${question.bg_class} ${question.text_class} px-2 font-medium">${question.module_name}</span>
+                        <span data-module="${question.module_id}" class="font-semibold w-fit module-name rounded-full text-xs ${question.bg_class} ${question.text_class} px-2">${question.module_name}</span>
                         <div class="relative group">
                             <img src="../assets/images/dots.png" class="h-10 hover:bg-gray-300 p-2 rounded-full">
                             <div id="action-popup" class="absolute bg-white rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent">
@@ -172,19 +172,19 @@ class QuestionRenderer {
                             </div>
                         </div>
                     </div>
-                    <h2 class="mt-3 font-semibold text-lg w-56 h-20">${question.post_title}</h2>
-                    <p class="mt-3 text-xs text-text-light font-medium line-clamp-1">${question.post_content}</p>
+                    <h2 class="mt-3 font-bold text-lg w-56 h-16 line-clamp-2">${question.post_title}</h2>
+                    <p class="font-roboto mt-3 text-md text-text font-normal line-clamp-1">${question.post_content}</p>
                     <div>
                         <div class="mt-3 border-2 border-gray-200 rounded-md">
                             <img loading="lazy" src="${question.imageURL ?? ''}" alt="Post image" width="100%" height="100px" class="rounded-md lazy-load">
                         </div>
                         <div class="flex justify-between items-center mt-3">
-                            <div class="flex items-center space-x-2">
+                            <div class="flex items-center space-x-2 font-normal  md:flex-wrap md:space-y-2 2xl:flex-nowrap 2xl:space-y-0">
                                 <img loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
                                 <span class="text-xs">${question.username}</span>
                                 <span class="text-xs">${new Date(question.created_at).toLocaleString()}</span>
                             </div>
-                            <div id="tags-container-${question.post_id}" class="flex items-center space-x-2 text-sm"></div>
+                            <div id="tags-container-${question.post_id}" class="flex items-center capitalize space-x-2 text-sm"></div>
                         </div>
                         <div class="flex justify-between items-center mt-3">
                             <div class="flex justify-between w-fit border-2 border-text-light rounded-md">

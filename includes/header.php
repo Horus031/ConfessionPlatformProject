@@ -1,23 +1,25 @@
-<header class="fixed top-0 w-full flex justify-between items-center z-50 p-3 shadow-lg bg-white border-b border-secondary">
+<header class="font-poppins fixed top-0 w-full flex justify-between items-center z-50 p-3 shadow-lg bg-white border-b border-secondary animate-postSlideIn">
     <div class="hidden md:flex items-center px-3 pt-3 pb-2">
         <img loading="lazy" src="../assets/images/weblogo.png" alt="" class="-mt-4 -mb-4 -ml-4 h-20">
         <span class="text-sm md:text-lg">Knowledge Nexus</span>
     </div>
 
-    <button id="openMenu" class="md:hidden p-2 rounded-lg hover-bg-gray-100">
-        <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" viewBox="0 0 24 24" fill="none">
-            <path d="M4 6H20M4 12H20M4 18H20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
+    <button id="openMenu" class="text-3xl rounded-lg hover-bg-gray-100 md:hidden p-2">
+        <span class="material-symbols-rounded custom-icon">
+            menu
+        </span>
     </button>
 
-    <div class="relative flex-1 md:mx-4">
-        <img src="../assets/images/magnify.png" alt="" class="absolute h-6 right-4 top-1/5">
-        <input type="text" name="searchInput" id="searchInput" class="text-black border-2 rounded-lg h-10 pl-3 border-secondary w-full flex-1" placeholder="Search question...">
+    <div class="relative flex-1 md:mx-4 text-3xl font-light">
+        <span class="material-symbols-rounded custom-icon absolute right-4 top-1/6">search</span>
+        <input type="text" name="searchInput" id="searchInput" class="text-black border-2 text-lg font-normal rounded-lg h-10 pl-3 border-secondary w-full flex-1" placeholder="Search question...">
     </div>
 
     <div class="flex items-center space-x-4">
         <button class="relative group">
-            <img id="notify-btn" loading="lazy" src="../assets/images/bell.png" alt="" class="h-10 p-2">
+            <div class="text-3xl font-light">
+                <span class="material-symbols-rounded custom-icon">notifications</span>
+            </div>
             <div id="notify-popup" class="absolute -right-16 top-10 shadow-[0_5px_12px_-6px] z-10 rounded-lg bg-white w-90 group-hover:block hidden before:content-[''] before:absolute before:right-13 before:-top-4 before:w-12 before:h-4 before:bg-transparent">
                 <div class="flex w-full justify-between items-center p-2 px-4 space-x-8 border-b border-secondary">
                     <span class="text-sm text-text-light font-bold">Notification</span>
@@ -69,8 +71,10 @@
                     <span>Profile</span>
                 </a>
                 <a class="flex items-center space-x-4 p-3 hover:bg-gray-200">
-                    <img loading="lazy" src="../assets/images/settings.png" alt="" class="h-6">
-                    <span>Settings</span>
+                    <div class="text-3xl font-light transition-all">
+                        <span class="material-symbols-rounded custom-icon">dark_mode</span>
+                    </div>
+                    <span>Dark Mode</span>
                 </a>
                 <a href="../controllers/logout.php" class="flex items-center space-x-4 p-3 hover:bg-gray-200">
                     <img loading="lazy" src="../assets/images/logout.png" alt="" class="h-6">
@@ -82,38 +86,40 @@
 </header>
 
 <!-- Menu mobile -->
-<aside id="menu" class="w-2/3 bg-white -translate-x-full  h-full z-60 border-r border-gray-200 transition-all fixed md:block md:fixed md:mt-23.5 md:w-46 md:-translate-x-0 lg:w-42 2xl:w-72">
-    <nav id="navbar" class="flex-1 bg-white md:h-full z-2">
-        <div class="flex flex-col mt-4 space-y-2 transition-all">
+<aside id="menu" class="font-poppins w-2/3 bg-white -translate-x-full  h-full z-60 border-r border-gray-200 transition-all fixed md:block md:fixed md:mt-23.5 md:w-46 md:-translate-x-0 lg:w-42 2xl:w-72">
+    <nav id="navbar" class="flex-1 bg-white md:h-full z-2 animate-slideRight">
+        <div class="flex flex-col mt-4 space-y-2 text-3xl font-light transition-all">
             <a href="main.html.php?page=home" id="home-btn" class="flex items-center space-x-3 px-3 py-2 bg-gray-200 hover:bg-gray-200 transition-all">
-                <img loading="lazy" src="../assets/images/home.png" alt="" class="h-6">
-                <span>Home</span>
+                <span class="material-symbols-rounded custom-icon">home</span>
+                <span class="text-lg font-normal">Home</span>
             </a>
 
             <a href="main.html.php?page=question" id="ques-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 transition-all">
-                <img loading="lazy" src="../assets/images/question.png" alt="" class="h-6">
-                <span>Questions</span>
+                <span class="material-symbols-rounded custom-icon">quiz</span>
+                <span class="text-lg font-normal">Questions</span>
             </a>
 
             <a href="main.html.php?page=tag" id="tag-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 transition-all">
-                <img loading="lazy" src="../assets/images/tag.png" alt="" class="h-6">
-                <span>Tags</span>
+                <span class="material-symbols-rounded custom-icon">sell</span>
+                <span class="text-lg font-normal">Tags</span>
             </a>
 
             <a href="main.html.php?page=history" id="history-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 transition-all">
-                <img loading="lazy" src="../assets/images/history.png" alt="" class="h-6">
-                <span>History</span>
+                <span class="material-symbols-rounded custom-icon">history</span>
+                <span class="text-lg font-normal">History</span>
             </a>
 
             <a href="main.html.php?page=saved" id="saved-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 transition-all">
-                <img loading="lazy" src="../assets/images/saved.png" alt="" class="h-6">
-                <span>Saved</span>
+                <span class="material-symbols-rounded custom-icon">bookmark</span>
+                <span class="text-lg font-normal">Saved</span>
             </a>
 
             <a href="main.html.php?page=findusers" id="findusers-btn" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-200 transition-all">
-                <img loading="lazy" src="../assets/images/group.png" alt="" class="h-6">
-                <span>Users</span>
+                <span class="material-symbols-rounded custom-icon">groups</span>
+                <span class="text-lg font-normal">Users</span>
             </a>
+
+
         </div>
 
 

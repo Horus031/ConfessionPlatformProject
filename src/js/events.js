@@ -468,7 +468,7 @@ class EventListener {
         } catch (error) {
             console.error('Error updating comments:', error);
         } finally {
-            setTimeout(() => this.updateComments(postId), 5000); // Long polling
+            setTimeout(() => this.updateComments(postId), 5000);
         }
     }
 
