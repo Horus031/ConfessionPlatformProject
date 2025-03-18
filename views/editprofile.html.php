@@ -75,13 +75,20 @@
 <script type="module">
     import QuestionRenderer from '../src/js/render.js';
     document.addEventListener('DOMContentLoaded', async function() {
+        const tagName = sessionStorage.getItem('editUserTagName');
         const renderer = new QuestionRenderer('#edit-container');
-        const username = "<?= $_SESSION['username'] ?>";
-        const avatarURL = "<?= isset($_SESSION['avatarURL']) ? $_SESSION["avatarURL"] : '../assets/images/user.png'; ?>";
 
         try {
-            const editUserInfo = await renderer.fetchData('../controllers/get_userinfo.php');
-            renderer.renderEditUser(editUserInfo, username, avatarURL);
+            const editUserInfo = await renderer.fetchData(`../controllers/get_userinfo.php?tag_name=${tagName}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    tag_name: tagName
+                })
+            });
+            renderer.renderEditUser(editUserInfo);
         } catch (error) {
             console.error('Error loading data:', error);
         }

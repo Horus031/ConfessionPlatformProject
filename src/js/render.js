@@ -140,6 +140,37 @@ class QuestionRenderer {
         
     }
 
+    timeAgo(date) {
+        const now = new Date();
+        const seconds = Math.floor((now - new Date(date)) / 1000);
+    
+        if (seconds < 5) {
+            return "Just posted";
+        }
+    
+        let interval = Math.floor(seconds / 31536000);
+        if (interval > 1) {
+            return interval + " years ago";
+        }
+        interval = Math.floor(seconds / 2592000);
+        if (interval > 1) {
+            return interval + " months ago";
+        }
+        interval = Math.floor(seconds / 86400);
+        if (interval > 1) {
+            return interval + " days ago";
+        }
+        interval = Math.floor(seconds / 3600);
+        if (interval > 1) {
+            return interval + " hours ago";
+        }
+        interval = Math.floor(seconds / 60);
+        if (interval > 1) {
+            return interval + " minutes ago";
+        }
+        return Math.floor(seconds) + " seconds ago";
+    }
+
     renderQuestions(questions, userId) {
         if (!this.container) return;
         this.container.innerHTML = '';
@@ -179,10 +210,12 @@ class QuestionRenderer {
                             <img loading="lazy" src="${question.imageURL ?? ''}" alt="Post image" width="100%" height="100px" class="rounded-md lazy-load">
                         </div>
                         <div class="flex justify-between items-center mt-3">
-                            <div class="flex items-center space-x-2 font-normal  md:flex-wrap md:space-y-2 2xl:flex-nowrap 2xl:space-y-0">
-                                <img loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
-                                <span class="text-xs">${question.username}</span>
-                                <span class="text-xs">${new Date(question.created_at).toLocaleString()}</span>
+                            <div class="flex items-center space-x-2 font-normal md:space-y-2 md:flex-wrap 2xl:flex-nowrap 2xl:space-y-0">
+                                <div class="flex items-center space-x-2">
+                                    <img loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+                                    <span class="text-xs">${question.username}</span>
+                                </div>
+                                <span class="text-xs">${this.timeAgo(question.created_at)}</span>
                             </div>
                             <div id="tags-container-${question.post_id}" class="flex items-center capitalize space-x-2 text-sm"></div>
                         </div>
@@ -451,18 +484,26 @@ class QuestionRenderer {
     renderUserProfile(data) {
         const profileContainer = document.querySelector('#info-container');
         const bioContainer = document.querySelector('#bio-container');
+        const profileAction = document.querySelector('#profile-actions');
         if (data.error) {
             profileContainer.innerHTML = `<p class="text-red-500">${data.error}</p>`;
         } else {
+            console.log(data);
+            document.querySelector('#user-img').src = data.avatar ?? '../assets/images/user.png';
+            document.querySelector('#username').textContent = data.username;
+
+
+            profileAction.setAttribute('data-value', data.user_id);
+            profileAction.setAttribute('data-tagname', data.tag_name);
             const profileElements = document.createElement('div');
             profileElements.classList.add('flex', 'flex-col', 'space-y-2');
 
-            const createdAt = new Date(data[0].created_at);
+            const createdAt = new Date(data.created_at);
             const formattedDate = createdAt.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 
             profileElements.innerHTML = `
                 <div>
-                    <span class="text-text font-medium">@${data[0].tag_name ?? ''}</span>
+                    <span class="text-text font-medium">@${data.tag_name ?? ''}</span>
                     <span class="text-text">•</span>
                     <span class="text-text-light font-medium">Joined ${formattedDate}</span>
                 </div>
@@ -499,7 +540,7 @@ class QuestionRenderer {
 
             const bioContext = document.createElement('span');
             bioContext.classList.add('font-semibold', 'text-text-light');
-            bioContext.textContent = `${data[0].bio}`;
+            bioContext.textContent = data.bio ?? '';
 
             bioContainer.appendChild(bioContext);
             profileElements.appendChild(socialContainer);
@@ -513,6 +554,9 @@ class QuestionRenderer {
         if (posts.error) {
             mypostContainer.innerHTML = `<p class="text-red-500">${posts.error}</p>`;
         } else {
+
+
+
             posts.forEach(myPost => {
                 if (myPost.user_id == userId) {
                     hasPosts = true;
@@ -552,7 +596,7 @@ class QuestionRenderer {
         }
     }
 
-    renderEditUser(userInfo, username, avatarURL) {
+    renderEditUser(userInfo) {
         const imageInput = document.querySelector('#uploadimg-container');
         const imageChildren = document.querySelector('#img-child');
 
@@ -564,21 +608,21 @@ class QuestionRenderer {
         const imageElements = document.createElement('img');
         imageElements.id = 'image';
         imageElements.classList.add('h-20', 'rounded-full');
-        imageElements.src = avatarURL;
+        imageElements.src = userInfo.avatar;
         imageInput.insertBefore(imageElements, imageChildren);
 
         accountInput.innerHTML = `
             <div class="relative">
                 <img src="../assets/images/name.png" alt="" class="absolute top-1/4 left-4 h-6">
-                <input type="text" name="usernameValue" id="" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your username" value="${username}">
+                <input type="text" name="usernameValue" id="" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your username" value="${userInfo.username}">
             </div>
             <div class="relative">
                 <img src="../assets/images/username.png" alt="" class="absolute top-1/4 left-4 h-6">
-                <input type="text" name="tagnameValue" id="" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your tagname" value="${userInfo[0].tag_name ?? ''}">
+                <input type="text" name="tagnameValue" id="" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your tagname" value="${userInfo.tag_name ?? ''}">
             </div>
             <div class="relative">
                 <img src="../assets/images/email.png" alt="" class="absolute top-1/4 left-4 h-6">
-                <input type="text" name="emailValue" id="" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your email" value="${userInfo[0].email ?? ''}">
+                <input type="text" name="emailValue" id="" class="border-1 border-text rounded-lg p-2 py-3 pl-12 w-full" placeholder="Your email" value="${userInfo.email ?? ''}">
             </div>
         `;
 
@@ -588,7 +632,7 @@ class QuestionRenderer {
         bioElement.cols = '40';
         bioElement.rows = '8';
         bioElement.classList.add('border-1', 'border-text', 'p-2', 'rounded-lg');
-        bioElement.value = `${userInfo[0].bio ?? ''}`;
+        bioElement.value = `${userInfo.bio ?? ''}`;
 
         bioInput.appendChild(bioElement);
 
@@ -596,12 +640,6 @@ class QuestionRenderer {
         userInfo.socialLinks.forEach(link => {
             socialInput.querySelector(`input[id="${link.platform}"]`).value = `${link.url ?? ''}`;
         })
-
-        
-
-        
-
-        
     }
 
     async renderPostDetail(post, userId) {
@@ -612,7 +650,7 @@ class QuestionRenderer {
         document.querySelector('#post-title').textContent = post.post_title;
         document.querySelector('#user-avatar').src = post.avatar ?? '../assets/images/user.png';
         document.querySelector('#username').textContent = post.username;
-        document.querySelector('#created-at').textContent = new Date(post.created_at).toLocaleString();
+        document.querySelector('#created-at').textContent = this.timeAgo(post.created_at);
         document.querySelector('#post-content').textContent = post.post_content;
         document.querySelector('#post-image').src = post.imageURL ?? '';
         document.querySelector('.comment-count').textContent = `(${post.comments})`;
@@ -763,13 +801,14 @@ class QuestionRenderer {
         userList.forEach(user => {
             if (user.user_id !== userId) {
                 const userElement = document.createElement('div');
-                userElement.classList.add('flex', 'space-x-4', 'items-center');
+                userElement.id = `user-${user.user_id}`
+                userElement.classList.add('flex', 'space-x-4', 'items-center', 'p-4', 'rounded-lg', 'hover:bg-gray-200');
                 userElement.innerHTML = `
                     <img src="${user.avatar ?? '../assets/images/user.png'}" alt="" class="h-13 lg:h-28">
 
                     <div>
                         <h2 class="text-lg text-text font-semibold lg:text-2xl">${user.username}</h2>
-                        <h3 class="text-sm text-text-light font-medium lg:text-lg">${user.tag_name ?? ''}</h3>
+                        <h3 id="user-tagname${user.user_id}" class="text-sm text-text-light font-medium lg:text-lg">${user.tag_name ?? ''}</h3>
                         <h4 class="text-sm text-[#2691BF] font-medium lg:text-lg">${user.bio ?? ''}</h4>
                     </div>
                 `;

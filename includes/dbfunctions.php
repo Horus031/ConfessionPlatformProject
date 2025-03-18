@@ -226,14 +226,14 @@ class Database
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function fetchUserInfo($user_id)
+    public function fetchUserInfo($tag_name)
     {
-        $sql = 'SELECT users.username, users.tag_name, users.email, users.bio, users.avatar, users.created_at
+        $sql = 'SELECT users.user_id, users.username, users.tag_name, users.email, users.bio, users.avatar, users.created_at
                 FROM users
-                WHERE users.user_id = ?';
+                WHERE tag_name = ?';
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$user_id]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->execute([$tag_name]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function fetchSocialLinks($user_id)
@@ -256,7 +256,7 @@ class Database
 
     public function fetchUserByUsername($username)
     {
-        $sql = "SELECT user_id, password, avatar FROM users WHERE username = ?";
+        $sql = "SELECT user_id, password, avatar, tag_name FROM users WHERE username = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$username]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -276,21 +276,21 @@ class Database
         $stmt->execute([$user_id]);
     }
 
-    public function checkUsernameExists($username)
+    public function checkEmailExists($email)
     {
-        $sql = "SELECT COUNT(*) FROM users WHERE username = ?";
+        $sql = "SELECT user_id FROM users WHERE email = ?";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$username]);
+        $stmt->execute([$email]);
         return $stmt->fetchColumn();
     }
 
-    public function registerUser($username, $password)
-    {
-        $hash = password_hash($password, PASSWORD_DEFAULT);
-        $sql = "INSERT INTO users (username, password) VALUES (?, ?)";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$username, $hash]);
-    }
+    // public function registerUser($username, $password)
+    // {
+    //     $hash = password_hash($password, PASSWORD_DEFAULT);
+    //     $sql = "INSERT INTO users (username, password) VALUES (?, ?)";
+    //     $stmt = $this->pdo->prepare($sql);
+    //     $stmt->execute([$username, $hash]);
+    // }
 
     public function fetchTagsByType($type)
     {

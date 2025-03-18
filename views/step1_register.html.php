@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
+
 <body class="font-poppins h-screen overflow-hidden bg-no-repeat bg-linear-to-br from-gradient1 to-gradient2">
     <div class="absolute right- top-0 animate-slideLeft transition-all">
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="visual" viewBox="0 0 1919 1024" width="1919" height="1024" version="1.1">
@@ -21,12 +22,12 @@
             <path d="M1042 1024L1034 995.5C1026 967 1010 910 1025 853.2C1040 796.3 1086 739.7 1088 682.8C1090 626 1048 569 1014.2 512C980.3 455 954.7 398 978.2 341.2C1001.7 284.3 1074.3 227.7 1083.5 170.8C1092.7 114 1038.3 57 1011.2 28.5L984 0L1919 0L1919 28.5C1919 57 1919 114 1919 170.8C1919 227.7 1919 284.3 1919 341.2C1919 398 1919 455 1919 512C1919 569 1919 626 1919 682.8C1919 739.7 1919 796.3 1919 853.2C1919 910 1919 967 1919 995.5L1919 1024Z" fill="#FFFFFF" stroke-linecap="round" stroke-linejoin="miter" />
         </svg>
 
-        <div class="absolute top-[30%] right-[14%] w-[26%] animate-slideLeft transition-all">
+        <div class="absolute top-[5%] right-[14%] w-[26%] animate-slideLeft transition-all">
             <div class="text-[#3ea29a] space-y-4">
                 <h1 class="text-4xl font-semibold">
-                    Login
+                    Register
                 </h1>
-                <p>Sign in to your account</p>
+                <p>Let's connect together from everywhere, start here!</p>
             </div>
             <form action="../controllers/login.php" method="post" class="font-poppins mx-auto ml-8 mt-8 space-y-8 w-full">
                 <div class="relative text-gray-500">
@@ -43,22 +44,13 @@
                     <input type="password" name="password" id="password" placeholder="Password" class="border-b-1 border-[#3ea29a] px-10 w-full text-lg text-black">
                 </div>
 
-                <div class="text-[#3ea29a] flex justify-between items-center ">
-                    <div class="flex space-x-2">
-                        <input type="checkbox" name="remember_me" id="remember_me">
-                        <label for="remember_me" class="text-sm">Remember me</label>
-                    </div>
 
-                    <h4 class="text-right text-sm underline  decoration-solid font-medium">
-                        Forgot your password?
-                    </h4>
-                </div>
 
                 <div class="flex flex-col justify-center items-center">
-                    <input type="submit" name="login" value="Login" class="bg-linear-to-br from-gradient1 to-gradient2 rounded-full mt-9 p-3 pl-8 w-72 text-white text-xl text-center font-semibold shadow-text shadow-[0_6px_16px_-6px]">
+                    <input type="submit" name="signup" value="Register" class="bg-linear-to-br from-gradient1 to-gradient2 rounded-full mt-9 p-3 pl-8 w-72 text-white text-xl text-center font-semibold shadow-text shadow-[0_6px_16px_-6px]">
                     <div class="mt-8">
                         <span class="text-text-light">Don't have account?</span>
-                        <a href="/mywebsite/views/step1_register.html.php" class="text-form-btn">Sign up</a>
+                        <a href="./login.html.php" class="text-form-btn">Sign up</a>
                     </div>
                 </div>
             </form>
@@ -154,5 +146,50 @@
 
 
 </body>
+
+<!-- <body class="font-poppins h-screen overflow-hidden bg-no-repeat bg-linear-to-br from-gradient1 to-gradient2">
+    <div class="mt-20">
+        <h1 class="text-4xl font-semibold text-center text-white">
+            Signup
+        </h1>
+        <form id="step1-register" action="/mywebsite/controllers/step1_register.php" method="post" class="w-fit mx-auto">
+            <div class="">
+                <img src="" alt="">
+                <input type="text" name="username" id="username" placeholder="Username" class="bg-white rounded-full mt-9 p-3 pl-8 w-72 text-text text-xl shadow-[0_6px_16px_-6px]">
+            </div>
+
+            <div>
+                <img src="" alt="">
+                <input type="email" name="email" id="email" placeholder="Email" class="bg-white rounded-full mt-9 p-3 pl-8 w-72 text-text text-xl shadow-[0_6px_16px_-6px]">
+            </div>
+
+            <div>
+                <img src="" alt="">
+                <input type="password" name="password" id="password" placeholder="Password" class="bg-white rounded-full mt-9 p-3 pl-8 w-72 text-text text-xl shadow-[0_6px_16px_-6px]">
+            </div>
+
+
+
+            <div>
+                <input type="submit" name="signup" value="Signup" class="bg-form-btn rounded-full mt-9 p-3 pl-8 w-72 text-white text-xl text-center font-semibold shadow-text shadow-[0_6px_16px_-6px]">
+                <h4 class="text-center text-xs text-white font-medium mt-4">
+                    Forgot your password?
+                </h4>
+            </div>
+        </form>
+
+
+
+        <div class="relative bg-transparent top-0">
+            <div class="absolute top-40 w-full flex flex-col justify-center items-center">
+                <div class="mt-8">
+                    <span class="text-text-light">Already have account?</span>
+                    <a href="./login.html.php" class="text-form-btn">Log in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body> -->
 
 </html>

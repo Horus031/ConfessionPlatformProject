@@ -8,20 +8,26 @@ include '../includes/dbfunctions.php';
 $database = new Database($pdo);
 
 try {
-    if (!isset($_SESSION['user_id'])) {
-        echo json_encode(['error' => 'User ID not set in session']);
-        exit;
-    }
+    if ($_SERVER['REQUEST_METHOD'] === 'GET' || $_SERVER['REQUEST_METHOD'] === 'POST') {
+        $tagName = $_GET['tag_name'] ?? null;
 
-    $userInfo = $database->fetchUserInfo($_SESSION['user_id']);
+        if (!$tagName) {
+            echo json_encode(['error' => 'Tag name not provided']);
+            exit;
+        }
 
-    if (empty($userInfo)) {
-        echo json_encode(['error' => 'No user found with the given ID']);
+        $userInfo = $database->fetchUserInfo($tagName);
+
+        if (empty($userInfo)) {
+            echo json_encode(['error' => 'No user found with the given tag name']);
+        } else {
+            $socialLink = $database->fetchSocialLinks($userInfo['user_id']);
+            $userInfo['socialLinks'] = $socialLink;
+
+            echo json_encode($userInfo);
+        }
     } else {
-        $socialLink = $database->fetchSocialLinks($_SESSION['user_id']);
-        $userInfo['socialLinks'] = $socialLink;
-
-        echo json_encode($userInfo);
+        echo json_encode(['error' => 'Invalid request method']);
     }
 } catch (PDOException $e) {
     echo json_encode(['error' => $e->getMessage()]);

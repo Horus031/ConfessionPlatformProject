@@ -32,12 +32,17 @@ class EventListener {
         this.postDetailContainer = document.querySelector('#postdetail-container');
         this.questionFilter = document.querySelector('#question-filter');
         this.questionContainer = document.querySelector('#question-container');
+        this.profileActions = document.querySelector('#profile-actions');
+        this.userContainer = document.querySelector('#user-container');
+        if (this.userContainer) {
+            this.userList = this.userContainer.querySelectorAll('div[id^=user-]')
+        }
 
     }
 
     handleEvents() {
         const _this = this;
-        setTimeout(this.initElements(), 100);
+        this.initElements();
 
         // Bật menu
         this.menuBtn.addEventListener('click', () => {
@@ -73,6 +78,7 @@ class EventListener {
         this.userBtn.addEventListener('click', () => {
             this.userPopup.classList.toggle('hidden');
         });
+
 
         this.notifyBtn.addEventListener('click', () => {
             this.notifyPopup.classList.toggle('hidden');
@@ -343,6 +349,43 @@ class EventListener {
                     _this.tagInput.value = currentTags.join(', ');
                 }
             });
+        }
+
+
+        // Xử lý các event liên quan đến profile
+        if (this.profileActions) {
+            const editButton = this.profileActions.querySelector('#edit-profile');
+            const followButton = this.profileActions.querySelector('#follow-btn');
+            const userTagName = this.profileActions.getAttribute('data-tagname');
+
+            if (this.userId == this.profileActions.getAttribute('data-value')) {
+                this.profileActions.removeChild(followButton);
+                editButton.classList.remove('hidden');
+            } else {
+                this.profileActions.removeChild(editButton)
+                followButton.classList.remove('hidden');
+            }
+
+            this.profileActions.addEventListener('click', function(e) {
+                if (e.target.closest('a#edit-profile')) {
+                    sessionStorage.setItem('editUserTagName', userTagName);
+                    window.location.href = "../views/main.html.php?page=editprofile"
+                    
+                } else if (e.target.closest('a#follow-btn')) {
+                    console.log(e.target);
+                }
+            })
+        }
+        
+
+        if (this.userContainer && this.userList) {
+            this.userList.forEach(user => {
+                const userTagName = user.querySelector('h3[id^="user-tagname"]')
+                console.log(userTagName);
+                user.addEventListener('click', function() {
+                    window.location.href = `main.html.php?page=profile&tag_name=${userTagName.textContent}`;
+                })
+            })
         }
 
     }

@@ -39,13 +39,13 @@ try {
                 $_SESSION['avatarURL'] = $avatarURL;
 
                 $pdo->commit();
-                header('Location: ../views/main.html.php?page=profile');
+                header('Location: ../views/main.html.php?page=profile&tag_name=' . $_POST['tagnameValue']);
             } catch (Exception $e) {
                 $pdo->rollBack();
                 echo json_encode(['error' => $e->getMessage()]);
             }
         } else if ($action == "Cancel") {
-            header('Location: ../views/main.html.php?page=profile');
+            header('Location: ../views/main.html.php?page=profile&tag_name=' . $_POST['tagnameValue']);
         }
     }
 } catch (PDOException $e) {
