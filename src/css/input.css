@@ -3,6 +3,18 @@
 
 
 
+@layer components {
+    .material-symbols-outlined {
+      font-size: 30px;
+  }
+
+  .custom-icon {
+      font-size: inherit !important;
+      display: inherit !important;
+      font-weight: inherit !important;
+  }
+}
+
 @theme {
     --font-poppins: 'Poppins', 'sans-serif';
     --font-roboto: 'Roboto', 'sans-serif';
@@ -18,6 +30,7 @@
     --color-border: #666666;
 
 
+    --animate-slideAndFadeOut: fadeOut 1s ease forwards, slideOut 1s ease forwards;
     --animate-menuTransition: menuTransition 0.5s ease forwards;
     --animate-menuOut: menuOut 0.5s ease forwards;
     --animate-postSlideIn: fadeIn 1s ease forwards, postTransition 1s ease forwards;
@@ -32,35 +45,51 @@
     --animate-wave-medium: wave-animation 30s linear infinite;
     --animate-wave-reverse: wave-animation-reverse 30s linear infinite;
     --animate-wave-very-slow: wave-animation 20s linear infinite;
+    --animate-turnErrorColor: turnErrorColor 0.8s ease forwards;
+    --animate-toastSlide: toastSlide 1s ease forwards;
+    --animate-toastSlideOut: toastSlideOut 1s ease forwards;
 
     @keyframes wave-animation {
       0% {
-        transform: translateY(0);
+        transform: translate(0, 0);
       }
       50% {
-        transform: translateY(-50%);
+        transform: translate(-3%, -50%);
       }
 
       100% {
-        transform:translateY(0);
+        transform:translateY(0, 0);
       }
     }
     
     @keyframes wave-animation-reverse {
       0% {
-        transform: translateY(-50%);
+        transform: translate(-3%, -50%);
       }
       
       50% {
-        transform: translateY(0);
+        transform: translate(0, 0);
       }
 
       100% {
-        transform: translateY(-50%)
+        transform: translate(-3%, -50%)
       }
     }
 
-    
+    @keyframes turnErrorColor {
+      0% {
+        border-bottom: #3ea29a;
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+        transform-origin: left;
+      }
+      100% {
+        border-bottom: red;
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+        transform-origin: left;
+      }
+    }
 
 
     @keyframes menuTransition {
@@ -86,6 +115,24 @@
 
       100% {
         opacity: 1;
+      }
+    }
+
+    @keyframes fadeOut {
+      0% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    @keyframes slideOut {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(100%);
       }
     }
 
@@ -126,6 +173,24 @@
 
       100% {
         transform: translateX(0);
+      }
+    }
+
+    @keyframes toastSlide {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform:translateX(-100%);
+      }
+    }
+
+    @keyframes toastSlideOut {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform:translateX(0);
       }
     }
 

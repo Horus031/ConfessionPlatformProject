@@ -14,15 +14,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
     <style>
-        .material-symbols-outlined {
-            font-size: 30px;
-        }
 
-        .custom-icon {
-            font-size: inherit !important;
-            display: inherit !important;
-            font-weight: inherit !important;
-        }
     </style>
 </head>
 

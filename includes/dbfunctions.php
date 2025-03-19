@@ -11,6 +11,48 @@ class Database
         $this->pdo = $pdo;
     }
 
+    public function validateLogin($data)
+    {
+        $errors = [];
+
+        if (empty($data['username'])) {
+            $errors['username'] = 'Username is required';
+        }
+
+        if (empty($data['password'])) {
+            $errors['password'] = 'Password is required';
+        }
+
+        return $errors;
+    }
+
+    public function validateRegistration($data, $user, $count)
+    {
+        $errors = [];
+
+        if (isset($user['user_id'])) {
+            $errors['userExist'] = 'User is already exists, please try another name';
+        } elseif (strlen($data['username']) < 6) {
+            $errors['userLength'] = 'Username must be at least 6 characters long';
+        }
+
+        if (isset($count['user_id'])) {
+            $errors['emailExist'] = 'Email is already exists, please try another email';
+        } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors['emailInvalid'] = 'Invalid email format';
+        }
+
+        if (strlen($data['password']) < 6) {
+            $errors['passwordLength'] = 'Password must be at least 6 characters long';
+        }
+
+        if ($data['password'] !== $data['confirm_password']) {
+            $errors['confirm_password'] = 'Passwords do not match, please try again';
+        }
+
+        return $errors;
+    }
+
     public function fetchExistingImageURL($post_id)
     {
         $sql = "SELECT imageURL FROM posts WHERE post_id = ?";
@@ -281,16 +323,16 @@ class Database
         $sql = "SELECT user_id FROM users WHERE email = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$email]);
-        return $stmt->fetchColumn();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // public function registerUser($username, $password)
-    // {
-    //     $hash = password_hash($password, PASSWORD_DEFAULT);
-    //     $sql = "INSERT INTO users (username, password) VALUES (?, ?)";
-    //     $stmt = $this->pdo->prepare($sql);
-    //     $stmt->execute([$username, $hash]);
-    // }
+
+    public function insertUser($firstName, $lastName, $username, $tagName, $email, $password)
+    {
+        $sql = "INSERT INTO users (first_name, last_name, username, tag_name, email, password) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([$firstName, $lastName, $username, $tagName, $email, $password]);
+    }
 
     public function fetchTagsByType($type)
     {

@@ -8,9 +8,10 @@ include '../includes/dbfunctions.php';
 $database = new Database($pdo);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_SPECIAL_CHARS);
-    $password = filter_input(INPUT_POST, "password", FILTER_SANITIZE_NUMBER_INT);
-    $remember = isset($_POST['remember_me']);
+    $data = json_decode(file_get_contents("php://input"), true);
+    $username = isset($data['username']) ? $data['username'] : null;
+    $password = isset($data['password']) ? $data['password'] : null;
+    $remember = isset($data['remember_me']) ? $data['remember_me'] : null;
 
     $user = $database->fetchUserByUsername($username);
 
@@ -30,11 +31,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 setcookie("remember_token", "", time() - 3600, "/");
             }
 
-            header("Location: ../views/main.html.php?page=home");
+            echo json_encode(['success' => 'Login successful']);
         } else {
-            echo json_encode(['error' => 'Password is incorrect']);
+            echo json_encode(['wrongPassword' => 'Password is incorrect']);
         }
     } else {
-        echo json_encode(['error' => 'Username is not found, please try again']);
+        echo json_encode(['userNotFound' => 'Username is not found, please try again']);
     }
 }

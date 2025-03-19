@@ -15,7 +15,16 @@
             <g transform="translate(-50, 0)">
                 <path class="animate-wave-medium" opacity="0.5" xmlns="http://www.w3.org/2000/svg" d="M1081 1600L1072.7 1555.5C1064.3 1511 1047.7 1422 1063.3 1333.2C1079 1244.3 1127 1155.7 1129.2 1066.8C1131.3 978 1087.7 889 1052.5 800C1017.3 711 990.7 622 1015 533.2C1039.3 444.3 1114.7 355.7 1124.2 266.8C1133.7 178 1077.3 89 1049.2 44.5L1021 0L1991 0L1991 44.5C1991 89 1991 178 1991 266.8C1991 355.7 1991 444.3 1991 533.2C1991 622 1991 711 1991 800C1991 889 1991 978 1991 1066.8C1991 1155.7 1991 1244.3 1991 1333.2C1991 1422 1991 1511 1991 1555.5L1991 1600Z" fill="#ffffff" stroke-linecap="round" stroke-linejoin="miter" />
             </g>
+
+            <g transform="translate(-100, 0)">
+                <path class="animate-wave-medium" opacity="0.5" xmlns="http://www.w3.org/2000/svg" d="M1081 1600L1072.7 1555.5C1064.3 1511 1047.7 1422 1063.3 1333.2C1079 1244.3 1127 1155.7 1129.2 1066.8C1131.3 978 1087.7 889 1052.5 800C1017.3 711 990.7 622 1015 533.2C1039.3 444.3 1114.7 355.7 1124.2 266.8C1133.7 178 1077.3 89 1049.2 44.5L1021 0L1991 0L1991 44.5C1991 89 1991 178 1991 266.8C1991 355.7 1991 444.3 1991 533.2C1991 622 1991 711 1991 800C1991 889 1991 978 1991 1066.8C1991 1155.7 1991 1244.3 1991 1333.2C1991 1422 1991 1511 1991 1555.5L1991 1600Z" fill="#ffffff" stroke-linecap="round" stroke-linejoin="miter" />
+            </g>
+
             <g transform="translate(-50, -200)">
+                <path class="animate-wave-reverse" opacity="0.5" xmlns="http://www.w3.org/2000/svg" d="M1081 1600L1072.7 1555.5C1064.3 1511 1047.7 1422 1063.3 1333.2C1079 1244.3 1127 1155.7 1129.2 1066.8C1131.3 978 1087.7 889 1052.5 800C1017.3 711 990.7 622 1015 533.2C1039.3 444.3 1114.7 355.7 1124.2 266.8C1133.7 178 1077.3 89 1049.2 44.5L1021 0L1991 0L1991 44.5C1991 89 1991 178 1991 266.8C1991 355.7 1991 444.3 1991 533.2C1991 622 1991 711 1991 800C1991 889 1991 978 1991 1066.8C1991 1155.7 1991 1244.3 1991 1333.2C1991 1422 1991 1511 1991 1555.5L1991 1600Z" fill="#ffffff" stroke-linecap="round" stroke-linejoin="miter" />
+            </g>
+
+            <g transform="translate(-100, -200)">
                 <path class="animate-wave-reverse" opacity="0.5" xmlns="http://www.w3.org/2000/svg" d="M1081 1600L1072.7 1555.5C1064.3 1511 1047.7 1422 1063.3 1333.2C1079 1244.3 1127 1155.7 1129.2 1066.8C1131.3 978 1087.7 889 1052.5 800C1017.3 711 990.7 622 1015 533.2C1039.3 444.3 1114.7 355.7 1124.2 266.8C1133.7 178 1077.3 89 1049.2 44.5L1021 0L1991 0L1991 44.5C1991 89 1991 178 1991 266.8C1991 355.7 1991 444.3 1991 533.2C1991 622 1991 711 1991 800C1991 889 1991 978 1991 1066.8C1991 1155.7 1991 1244.3 1991 1333.2C1991 1422 1991 1511 1991 1555.5L1991 1600Z" fill="#ffffff" stroke-linecap="round" stroke-linejoin="miter" />
             </g>
             <path d="M1042 1024L1034 995.5C1026 967 1010 910 1025 853.2C1040 796.3 1086 739.7 1088 682.8C1090 626 1048 569 1014.2 512C980.3 455 954.7 398 978.2 341.2C1001.7 284.3 1074.3 227.7 1083.5 170.8C1092.7 114 1038.3 57 1011.2 28.5L984 0L1919 0L1919 28.5C1919 57 1919 114 1919 170.8C1919 227.7 1919 284.3 1919 341.2C1919 398 1919 455 1919 512C1919 569 1919 626 1919 682.8C1919 739.7 1919 796.3 1919 853.2C1919 910 1919 967 1919 995.5L1919 1024Z" fill="#FFFFFF" stroke-linecap="round" stroke-linejoin="miter" />
@@ -28,24 +37,26 @@
                 </h1>
                 <p>Sign in to your account</p>
             </div>
-            <form action="../controllers/login.php" method="post" class="font-poppins mx-auto ml-8 mt-8 space-y-8 w-full">
-                <div class="relative text-gray-500">
-                    <span class="absolute left-2 material-symbols-rounded custom-icon">
+            <form id="login-form" action="../controllers/login.php" method="post" class="font-poppins mx-auto ml-8 mt-8 space-y-8 w-full">
+                <div class="relative text-gray-500 text-3xl">
+                    <span class="absolute left-2 bottom-2 material-symbols-rounded custom-icon">
                         person
                     </span>
-                    <input type="text" name="username" id="username" placeholder="Username" class="border-b-1 border-[#3ea29a] px-10 w-full text-lg text-black">
+                    <input type="text" name="username" id="username" placeholder="Username" class="border-b-1 border-[#3ea29a] px-12 pb-2 w-full text-lg text-black focus:outline-0 valid:border-[#3ea29a]">
+                    <span class="error-message absolute text-red-500 -bottom-6 left-0 text-xs"></span>
                 </div>
 
-                <div class="relative text-gray-500">
-                    <span class="absolute left-2 material-symbols-rounded custom-icon">
+                <div class="relative text-gray-500 text-3xl">
+                    <span class="absolute left-2 bottom-2 material-symbols-rounded custom-icon">
                         lock
                     </span>
-                    <input type="password" name="password" id="password" placeholder="Password" class="border-b-1 border-[#3ea29a] px-10 w-full text-lg text-black">
+                    <input type="password" name="password" id="password" placeholder="Password" class="border-b-1 border-[#3ea29a] px-12 pb-2 w-full text-lg text-black focus:outline-0">
+                    <span class="error-message absolute text-red-500 -bottom-6 left-0 text-xs"></span>
                 </div>
 
                 <div class="text-[#3ea29a] flex justify-between items-center ">
                     <div class="flex space-x-2">
-                        <input type="checkbox" name="remember_me" id="remember_me">
+                        <input type="checkbox" name="remember_me" id="remember_me" class="accent-[#3ea29a]">
                         <label for="remember_me" class="text-sm">Remember me</label>
                     </div>
 
@@ -58,7 +69,7 @@
                     <input type="submit" name="login" value="Login" class="bg-linear-to-br from-gradient1 to-gradient2 rounded-full mt-9 p-3 pl-8 w-72 text-white text-xl text-center font-semibold shadow-text shadow-[0_6px_16px_-6px]">
                     <div class="mt-8">
                         <span class="text-text-light">Don't have account?</span>
-                        <a href="/mywebsite/views/step1_register.html.php" class="text-form-btn">Sign up</a>
+                        <a href="/mywebsite/views/register.html.php" class="text-form-btn">Sign up</a>
                     </div>
                 </div>
             </form>
@@ -154,5 +165,17 @@
 
 
 </body>
+
+
+<script type="module">
+    import EventListener from '../src/js/events.js';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const eventListener = new EventListener();
+
+
+        eventListener.start();
+    })
+</script>
 
 </html>
