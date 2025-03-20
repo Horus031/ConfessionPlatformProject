@@ -1,7 +1,7 @@
 <main class="font-poppins flex flex-col overflow-hidden px-2 mt-24 items-end w-full md:pl-[2%] lg:mt-28 2xl:pl-0">
     <div class="flex justify-between w-full items-center rounded-xl p-3 bg-linear-160 z-30 from-[#4CAF50] via-[#A5B82C] to-[#FFC107] md:w-3/4 lg:w-5/6 lg:px-8 animate-postSlideIn transition-all">
-        <div class="md:w-72 lg:w-96 animate-fadeIn">
-            <h1 class="text-2xl text-white font-bold leading-10 lg:leading-15 lg:text-6xl">Welcome to Knowledge Nexus, <?= isset($_SESSION['username']) ? $_SESSION["username"] : 'Users'; ?></h1>
+        <div class="md:w-72 lg:w-96 2xl:w-2xl animate-fadeIn">
+            <h1 class="text-2xl text-white font-bold leading-10 lg:leading-15 lg:text-6xl">Welcome to Knowledge Nexus, <?= isset($_SESSION['fullname']) ? $_SESSION["fullname"] : 'Users'; ?></h1>
             <button id="addques-btn" class="bg-black text-white font-medium rounded-xl py-1.5 px-8 mt-4 cursor-pointer">Add question</button>
         </div>
         <div class="animate-fadeIn">

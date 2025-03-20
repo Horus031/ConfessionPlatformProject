@@ -270,7 +270,7 @@ class Database
 
     public function fetchUserInfo($tag_name)
     {
-        $sql = 'SELECT users.user_id, users.username, users.tag_name, users.email, users.bio, users.avatar, users.created_at
+        $sql = 'SELECT users.user_id, CONCAT(first_name, " ", last_name) AS fullname , users.username, users.tag_name, users.email, users.bio, users.avatar, users.created_at
                 FROM users
                 WHERE tag_name = ?';
         $stmt = $this->pdo->prepare($sql);
@@ -298,7 +298,7 @@ class Database
 
     public function fetchUserByUsername($username)
     {
-        $sql = "SELECT user_id, password, avatar, tag_name FROM users WHERE username = ?";
+        $sql = "SELECT user_id, CONCAT(first_name, ' ', last_name) AS fullname, password, avatar, tag_name FROM users WHERE username = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$username]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -456,11 +456,69 @@ class Database
 
     public function fetchAllUsers($userId)
     {
-        $sql = 'SELECT user_id, username, tag_name, avatar, bio FROM users
+        $sql = 'SELECT user_id, CONCAT(first_name, " ", last_name) AS fullname, username, tag_name, avatar, bio FROM users
                 WHERE user_id <> ?
         ';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+    public function searchPostsAndUsers($query)
+    {
+        $sql = "
+        SELECT 'post' AS type, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
+        FROM ((((posts 
+        INNER JOIN users ON posts.user_id = users.user_id)
+        INNER JOIN modules ON posts.module_id = modules.module_id)
+        LEFT JOIN likes ON posts.post_id = likes.post_id)
+        LEFT JOIN comments ON posts.post_id = comments.post_id)
+        WHERE posts.post_title LIKE :query
+        GROUP BY posts.post_id
+        UNION
+        SELECT 'tag' AS type, tags.tag_id, NULL AS user_id, tags.tag_name AS post_title, NULL AS post_content, NULL AS created_at, NULL AS imageURL, NULL AS like_count, NULL AS comment_count, NULL AS avatar, NULL AS username, NULL AS module_id, NULL AS module_name, NULL AS bg_class, NULL AS text_class
+        FROM tags
+        WHERE tags.tag_name LIKE :query
+        UNION
+        SELECT 'user' AS type, users.user_id, NULL AS post_id, users.username AS post_title, NULL AS post_content, NULL AS created_at, NULL AS imageURL, NULL AS like_count, NULL AS comment_count, users.avatar, users.username, NULL AS module_id, NULL AS module_name, NULL AS bg_class, NULL AS text_class
+        FROM users
+        WHERE users.username LIKE :query OR users.tag_name LIKE :query
+    ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['query' => '%' . $query . '%']);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function searchTags($query)
+    {
+        $stmt = $this->pdo->prepare("
+        SELECT 'post' AS type, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
+        FROM ((((posts 
+        INNER JOIN posttags ON posts.post_id = posttags.post_id)
+        INNER JOIN tags ON posttags.tag_id = tags.tag_id)
+        INNER JOIN users ON posts.user_id = users.user_id)
+        INNER JOIN modules ON posts.module_id = modules.module_id)
+        WHERE tags.tag_name LIKE :query
+        GROUP BY posts.post_id
+    ");
+        $stmt->execute(['query' => '%' . $query . '%']);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function searchUsersByTagName($query)
+    {
+        $stmt = $this->pdo->prepare("
+        SELECT 'post' AS type, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
+        FROM ((((posts 
+        INNER JOIN users ON posts.user_id = users.user_id)
+        INNER JOIN modules ON posts.module_id = modules.module_id)
+        LEFT JOIN likes ON posts.post_id = likes.post_id)
+        LEFT JOIN comments ON posts.post_id = comments.post_id)
+        WHERE users.tag_name LIKE :query
+        GROUP BY posts.post_id
+    ");
+        $stmt->execute(['query' => '%' . $query . '%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

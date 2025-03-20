@@ -23,6 +23,7 @@
     --color-white: #fff;
     --spacing: 0.25rem;
     --container-xs: 20rem;
+    --container-2xl: 42rem;
     --text-xs: 0.75rem;
     --text-xs--line-height: calc(1 / 0.75);
     --text-sm: 0.875rem;
@@ -461,9 +462,6 @@
   }
   .mt-28 {
     margin-top: calc(var(--spacing) * 28);
-  }
-  .mt-56 {
-    margin-top: calc(var(--spacing) * 56);
   }
   .-mb-4 {
     margin-bottom: calc(var(--spacing) * -4);
@@ -1724,6 +1722,11 @@
   .\32 xl\:w-1\/3 {
     @media (width >= 96rem) {
       width: calc(1/3 * 100%);
+    }
+  }
+  .\32 xl\:w-2xl {
+    @media (width >= 96rem) {
+      width: var(--container-2xl);
     }
   }
   .\32 xl\:w-40 {

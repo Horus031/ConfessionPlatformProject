@@ -13,6 +13,9 @@
     <div class="relative flex-1 md:mx-4 text-3xl font-light">
         <span class="material-symbols-rounded custom-icon absolute right-4 top-1/6">search</span>
         <input type="text" name="searchInput" id="searchInput" class="text-black border-2 text-lg font-normal rounded-lg h-10 pl-3 border-secondary w-full flex-1" placeholder="Search question...">
+        <div id="searchSuggestions" class="absolute bg-white border border-gray-200 rounded-lg shadow-lg mt-1 w-full hidden">
+            <!-- Suggestions will be appended here -->
+        </div>
     </div>
 
     <div class="flex items-center space-x-4">
@@ -70,12 +73,6 @@
                     <img loading="lazy" src="../assets/images/profile.png" alt="" class="h-6">
                     <span>Profile</span>
                 </a>
-                <a class="flex items-center space-x-4 p-3 hover:bg-gray-200">
-                    <div class="text-3xl font-light transition-all">
-                        <span class="material-symbols-rounded custom-icon">dark_mode</span>
-                    </div>
-                    <span>Dark Mode</span>
-                </a>
                 <a href="../controllers/logout.php" class="flex items-center space-x-4 p-3 hover:bg-gray-200">
                     <img loading="lazy" src="../assets/images/logout.png" alt="" class="h-6">
                     <span>Logout</span>
@@ -121,6 +118,18 @@
                 </a>
 
 
+                <a href="main.html.php?page=contact" id="home-btn" class="flex items-center space-x-3 px-3 py-2 bg-gray-200 hover:bg-gray-200 transition-all">
+                    <span class="material-symbols-rounded custom-icon">contact_support</span>
+                    <span class="text-lg font-normal">Contact</span>
+                </a>
+
+                <button class="text-3xl w-full flex items-center space-x-3 px-3 py-2 transition-all">
+                    <div class="font-light transition-all">
+                        <span class="material-symbols-rounded custom-icon">dark_mode</span>
+                    </div>
+                    <span class="text-lg font-normal">Dark Mode</span>
+                </button>
+
             </div>
 
 
@@ -132,12 +141,13 @@
                 <a href="main.html.php?page=newpost" class="bg-black text-white font-medium rounded-xl py-1.5 px-8 mt-1 cursor-pointer w-fit text-center text-nowrap">Add question</a>
             </div>
 
-            <div class="mt-56 text-3xl font-light">
-                <a href="main.html.php?page=contact" id="home-btn" class="flex items-center space-x-3 px-3 py-2 bg-gray-200 hover:bg-gray-200 transition-all">
-                    <span class="material-symbols-rounded custom-icon">contact_support</span>
-                    <span class="text-lg font-normal">Contact</span>
-                </a>
+            <div class="text-3xl font-light">
+
             </div>
         </div>
     </nav>
 </aside>
+
+<script type="module">
+
+</script>

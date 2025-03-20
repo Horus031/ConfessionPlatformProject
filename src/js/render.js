@@ -250,7 +250,7 @@ class QuestionRenderer {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ post_id: question.post_id })
-                })
+                });
                 
                 const tagContainer = questionElement.querySelector(`#tags-container-${question.post_id}`);
 
@@ -271,10 +271,9 @@ class QuestionRenderer {
                                 additionalTags.setAttribute('data-count', count);
                                 tagSpan.textContent = `+${count}`;
         
-        
                                 const additionalTagPopup = document.createElement('span');
-                                additionalTagPopup.classList.add('p-2')
-                                additionalTagPopup.textContent = `#${tag.tag_name}`
+                                additionalTagPopup.classList.add('p-2');
+                                additionalTagPopup.textContent = `#${tag.tag_name}`;
                                 tagPopup.appendChild(additionalTagPopup);
         
                             } else {
@@ -293,23 +292,22 @@ class QuestionRenderer {
                             }
                         }
                     }
-                })
-
+                });
 
                 const data = await this.fetchData('../controllers/check_likes.php', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ post_id: question.post_id })
-                })
+                });
 
                 const savedData = await this.fetchData('../controllers/check_savedposts.php', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ post_id: question.post_id })
-                })
+                });
 
                 if (data.error) {
-                    console.log(error);
+                    console.log(data.error);
                 } else {
                     if (data.status == "yes") {
                         questionElement.querySelector('.like-img').src = '../assets/images/like-on.png';
@@ -319,7 +317,7 @@ class QuestionRenderer {
                 }
 
                 if (savedData.error) {
-                    console.log(error);
+                    console.log(savedData.error);
                 } else {
                     if (savedData.status == 'yes') {
                         questionElement.querySelector('.saved-img').src = '../assets/images/saved-on.png';
@@ -490,7 +488,7 @@ class QuestionRenderer {
         } else {
             console.log(data);
             document.querySelector('#user-img').src = data.avatar ?? '../assets/images/user.png';
-            document.querySelector('#username').textContent = data.username;
+            document.querySelector('#username').textContent = data.fullname;
 
 
             profileAction.setAttribute('data-value', data.user_id);
@@ -608,7 +606,7 @@ class QuestionRenderer {
         const imageElements = document.createElement('img');
         imageElements.id = 'image';
         imageElements.classList.add('h-20', 'rounded-full');
-        imageElements.src = userInfo.avatar;
+        imageElements.src = userInfo.avatar ?? '../assets/images/user.png';
         imageInput.insertBefore(imageElements, imageChildren);
 
         accountInput.innerHTML = `
@@ -804,10 +802,10 @@ class QuestionRenderer {
                 userElement.id = `user-${user.user_id}`
                 userElement.classList.add('flex', 'space-x-4', 'items-center', 'p-4', 'rounded-lg', 'hover:bg-gray-200');
                 userElement.innerHTML = `
-                    <img src="${user.avatar ?? '../assets/images/user.png'}" alt="" class="h-13 lg:h-28">
+                    <img src="${user.avatar ?? '../assets/images/user.png'}" alt="" class="h-13 lg:h-28 rounded-full">
 
                     <div>
-                        <h2 class="text-lg text-text font-semibold lg:text-2xl">${user.username}</h2>
+                        <h2 class="text-lg text-text font-semibold lg:text-2xl">${user.fullname}</h2>
                         <h3 id="user-tagname${user.user_id}" class="text-sm text-text-light font-medium lg:text-lg">${user.tag_name ?? ''}</h3>
                         <h4 class="text-sm text-[#2691BF] font-medium lg:text-lg">${user.bio ?? ''}</h4>
                     </div>

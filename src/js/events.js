@@ -9,6 +9,8 @@ class EventListener {
     }
 
     initElements() {
+        this.searchInput = document.getElementById('searchInput');
+        this.searchSuggestions = document.getElementById('searchSuggestions');
         this.registerNextButton = document.querySelector('#registerNextBtn');
         this.step1Register = document.querySelector('#step1-container');
         this.step2Register = document.querySelector('#step2-container');
@@ -199,6 +201,64 @@ class EventListener {
                     }
                 } catch (error) {
                     console.error('Error registering user:', error);
+                }
+            });
+        }
+
+
+        if (this.searchInput) {
+            const debouncedSearch = this.debounce(async function() {
+                const query = _this.searchInput.value.trim();
+        
+                if (query.length > 2) {
+                    try {
+                        const response = await fetch(`../controllers/search_question.php?query=${encodeURIComponent(query)}`);
+                        const results = await response.json();
+        
+                        _this.searchSuggestions.innerHTML = '';
+                        _this.searchSuggestions.classList.remove('hidden');
+        
+                        console.log(results);
+                        results.forEach(result => {
+                            const suggestion = document.createElement('div');
+                            suggestion.classList.add('p-2', 'hover:bg-gray-200', 'cursor-pointer');
+                            suggestion.textContent = result.post_title;
+        
+                            suggestion.addEventListener('click', function() {
+                                if (result.type === 'post') {
+                                    window.location.href = `main.html.php?page=postdetails&id=${result.post_id}`;
+                                } else if (result.type === 'tag') {
+                                    window.location.href = `main.html.php?page=tag&id=${result.post_id}`;
+                                } else if (result.type === 'user') {
+                                    window.location.href = `main.html.php?page=profile&tag_name=${result.tag_name}`;
+                                }
+                            });
+        
+                            _this.searchSuggestions.appendChild(suggestion);
+                        });
+                    } catch (error) {
+                        console.error('Error fetching search results:', error);
+                    }
+                } else {
+                    _this.searchSuggestions.classList.add('hidden');
+                }
+            }, 300);
+        
+            this.searchInput.addEventListener('input', debouncedSearch);
+        
+            this.searchInput.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    const query = _this.searchInput.value.trim();
+                    if (query.length > 2) {
+                        window.location.href = `main.html.php?page=question&query=${encodeURIComponent(query)}`;
+                    }
+                }
+            });
+        
+            document.addEventListener('click', function(event) {
+                if (!_this.searchInput.contains(event.target) && !_this.searchSuggestions.contains(event.target)) {
+                    searchSuggestions.classList.add('hidden');
                 }
             });
         }
@@ -525,6 +585,8 @@ class EventListener {
                 const followButton = this.profileActions.querySelector('#follow-btn');
                 const userTagName = this.profileActions.getAttribute('data-tagname');
 
+                console.log(editButton, followButton);
+
                 if (this.userId == this.profileActions.getAttribute('data-value')) {
                     this.profileActions.removeChild(followButton);
                     editButton.classList.remove('hidden');
@@ -778,6 +840,23 @@ class EventListener {
         let inputElement = document.getElementById(inputId);
         let errorElement = inputElement.nextElementSibling;
         errorElement.innerText = "";
+    }
+
+
+    debounce(fn, ms) {
+        let timer;
+        
+        return function() {
+            // Nhận các đối số
+            const args = arguments;
+            const context = this;
+            
+            if(timer) clearTimeout(timer);
+            
+            timer = setTimeout(() => {
+                fn.apply(context, args);
+            }, ms)
+        }
     }
 
     

@@ -37,13 +37,23 @@
         const renderer = new QuestionRenderer('#question-container', '#question-filter');
         const eventListener = new EventListener();
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('query');
+
         try {
-            const questions = await renderer.fetchData('../controllers/list_question.php');
+            let questions;
+            if (query) {
+                questions = await renderer.fetchData(`../controllers/search_question.php?query=${encodeURIComponent(query)}`);
+                console.log(questions);
+            } else {
+                questions = await renderer.fetchData('../controllers/list_question.php');
+            }
+
             renderer.renderQuestions(questions, userId);
             document.querySelector('#total-question').textContent = `${questions.length}`;
             document.querySelectorAll('div[id^="question-"]').forEach(question => {
                 question.classList.add('animate-postScale');
-            })
+            });
 
             // Add a delay to ensure the elements are rendered before calling renderTags
             setTimeout(async () => {
