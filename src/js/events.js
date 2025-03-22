@@ -45,14 +45,13 @@ class EventListener {
         if (this.userContainer) {
             this.userList = this.userContainer.querySelectorAll('div[id^=user-]')
         }
+        this.darkModeToggle = document.querySelector('#darkmode-btn');
 
     }
 
     handleEvents() {
         const _this = this;
         this.initElements();
-
-
         if (this.loginForm) {
             this.loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -139,7 +138,7 @@ class EventListener {
                             }
 
                             if (errorObj.confirm_password) {
-                                _this.step1Register.querySelector('input[id="confirm_password"]').classList.add('animate-turnErrorColor');
+                                _this.step1Register.querySelector('input[id="confirm-password"]').classList.add('animate-turnErrorColor');
                                 _this.showError("confirm-password", `${errorObj.confirm_password}`);
                             } else {
                                 _this.clearError("confirm-password");
@@ -212,26 +211,41 @@ class EventListener {
         
                 if (query.length > 2) {
                     try {
-                        const response = await fetch(`../controllers/search_question.php?query=${encodeURIComponent(query)}`);
-                        const results = await response.json();
+                        const results = await _this.renderer.fetchData(`../controllers/check_searchvalues.php?query=${encodeURIComponent(query)}`);
         
                         _this.searchSuggestions.innerHTML = '';
                         _this.searchSuggestions.classList.remove('hidden');
+                        const searchTitle = document.createElement('h4');
+                        searchTitle.classList.add('text-sm', 'text-text-light', 'font-medium');
+                        _this.searchSuggestions.appendChild(searchTitle);
         
+                        console.log(query);
                         console.log(results);
                         results.forEach(result => {
                             const suggestion = document.createElement('div');
-                            suggestion.classList.add('p-2', 'hover:bg-gray-200', 'cursor-pointer');
-                            suggestion.textContent = result.post_title;
+                            suggestion.classList.add('py-2', 'px-4', 'text-xl', 'hover:bg-gray-200', 'cursor-pointer');
         
-                            suggestion.addEventListener('click', function() {
-                                if (result.type === 'post') {
-                                    window.location.href = `main.html.php?page=postdetails&id=${result.post_id}`;
-                                } else if (result.type === 'tag') {
-                                    window.location.href = `main.html.php?page=tag&id=${result.post_id}`;
-                                } else if (result.type === 'user') {
-                                    window.location.href = `main.html.php?page=profile&tag_name=${result.tag_name}`;
-                                }
+                            if (result.type === 'title') {
+                                searchTitle.textContent = `Result by posts' title with your search`;
+                                suggestion.innerHTML = `
+                                    <span>${result.post_title || query}</span>
+                                `;
+                            } else if (result.type === 'tag') {
+                                searchTitle.textContent = `Result by posts' tag`;
+                                suggestion.innerHTML = `
+                                    <span>#${result.tag_name || query.slice(1)}</span>
+                                `;
+                            } else if (result.type === 'user') {
+                                searchTitle.textContent = `Result by users' tag name`;
+                                suggestion.innerHTML = `
+                                    <span>@${result.tag_name || query.slice(1)}</span>
+                                `;
+                            }
+
+                        
+                            suggestion.addEventListener('click', function(e) {
+                                const suggestedQuery = e.target.textContent.trim();
+                                window.location.href = `main.html.php?page=question&query=${encodeURIComponent(suggestedQuery)}`;
                             });
         
                             _this.searchSuggestions.appendChild(suggestion);
@@ -242,7 +256,17 @@ class EventListener {
                 } else {
                     _this.searchSuggestions.classList.add('hidden');
                 }
-            }, 300);
+            }, 500);
+        
+            this.searchInput.addEventListener('focus', function() {
+                _this.searchSuggestions.classList.remove('hidden');
+            });
+        
+            this.searchInput.addEventListener('blur', function(e) {
+                if (e.target.id !== 'searchInput') {
+                    _this.searchSuggestions.classList.add('hidden');
+                }
+            });
         
             this.searchInput.addEventListener('input', debouncedSearch);
         
@@ -258,10 +282,18 @@ class EventListener {
         
             document.addEventListener('click', function(event) {
                 if (!_this.searchInput.contains(event.target) && !_this.searchSuggestions.contains(event.target)) {
-                    searchSuggestions.classList.add('hidden');
+                    _this.searchSuggestions.classList.add('hidden');
                 }
             });
         }
+
+        if (this.darkModeToggle) {
+            this.darkModeToggle.addEventListener('click', function() {
+                _this.toggleDarkMode();
+            });
+        }
+
+        this.applyDarkModePreference();
 
 
 
@@ -300,9 +332,19 @@ class EventListener {
             if (this.navbar) {
                 const buttons = this.navbar.querySelectorAll('a[id$="btn"]');
                 buttons.forEach(link => {
-                    link.classList.remove("bg-gray-200");
-                    if (link.href === this.currentURL) {
-                        link.classList.add("bg-gray-200");
+                    const theme = localStorage.getItem('darkMode');
+                    console.log(theme)
+                    console.log(this.currentURL);
+                    if (theme === 'enabled') {
+                        link.classList.remove("bg-gray-100");
+                        if (link.href === this.currentURL) {
+                            link.classList.add("bg-gray-100");
+                        }
+                    } else {
+                        link.classList.remove("dark:bg-gray-600");
+                        if (link.href === this.currentURL) {
+                            link.classList.add("dark:bg-gray-600");
+                        }
                     }
                 });
             }
@@ -859,19 +901,49 @@ class EventListener {
         }
     }
 
-    
+    async toggleDarkMode() {
+        const isDarkMode = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
 
+        // Save the preference to the server
+        await this.renderer.fetchData('../controllers/update_darkmode.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: this.userId, dark_mode: isDarkMode ? 1 : 0 })
+        })
+        
+    }
+
+    async applyDarkModePreference() {
+        try {
+            const response = await fetch(`../controllers/get_darkmode.php?user_id=${this.userId}`);
+            const data = await response.json();
+            const darkMode = data.dark_mode;
+
+            if (darkMode === '1') {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        } catch (error) {
+            console.error('Error fetching dark mode preference:', error);
+        }
+    }
+    
+    
     start() {
         this.handleEvents();
+
+        // Apply dark mode preference on page load
+        this.applyDarkModePreference();
 
         const postId = this.postDetailContainer ? this.postDetailContainer.getAttribute('data-value') : null;
         if (postId) {
             this.updateLikeCount(postId, this.postDetailContainer);
             this.updateComments(postId);
         }
-
-        
-
         
     }
 }

@@ -73,6 +73,7 @@
 </main>
 
 <script type="module">
+    const userId = <?= $_SESSION['user_id'] ?>;
     import QuestionRenderer from '../src/js/render.js';
     document.addEventListener('DOMContentLoaded', async function() {
         const tagName = sessionStorage.getItem('editUserTagName');

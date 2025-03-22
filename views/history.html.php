@@ -76,18 +76,3 @@
         </div>
     </div>
 </main>
-
-<script type="module">
-    import EventListener from '../src/js/events.js';
-    document.addEventListener('DOMContentLoaded', function() {
-        const eventListner = new EventListener();
-
-        try {
-
-
-            eventListner.start();
-        } catch (error) {
-            console.log(error);
-        }
-    })
-</script>

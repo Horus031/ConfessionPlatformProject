@@ -53,6 +53,22 @@ class Database
         return $errors;
     }
 
+    public function updateDarkModePreference($userId, $darkMode)
+    {
+        $sql = "UPDATE users SET dark_mode = ? WHERE user_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$darkMode, $userId]);
+    }
+
+    public function getDarkModePreference($userId)
+    {
+        $sql = "SELECT dark_mode FROM users WHERE user_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$userId]);
+        return $stmt->fetchColumn();
+    }
+
+
     public function fetchExistingImageURL($post_id)
     {
         $sql = "SELECT imageURL FROM posts WHERE post_id = ?";
@@ -465,10 +481,34 @@ class Database
     }
 
 
+    public function checkSearchValue($query)
+    {
+        if ($query[0] === '#') {
+            $sqltags = "SELECT DISTINCT 'tag' AS type, tags.tag_name FROM tags WHERE tags.tag_name LIKE ?";
+            $stmt = $this->pdo->prepare($sqltags);
+            $stmt->execute(['%' . substr($query, 1) . '%']);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return !empty($results) ? $results : [['type' => 'tag', 'tag_name' => '']];
+        } elseif ($query[0] === '@') {
+            $sqlusers = "SELECT DISTINCT 'user' AS type, users.tag_name FROM users WHERE users.tag_name LIKE ?";
+            $stmt = $this->pdo->prepare($sqlusers);
+            $stmt->execute(['%' . substr($query, 1) . '%']);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return !empty($results) ? $results : [['type' => 'user', 'tag_name' => '']];
+        } else {
+            $sqltitle = "SELECT 'title' AS type, posts.post_title FROM posts WHERE posts.post_title LIKE ?";
+            $stmt = $this->pdo->prepare($sqltitle);
+            $stmt->execute(['%' . $query . '%']);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return !empty($results) ? $results : [['type' => 'title', 'post_title' => '']];
+        }
+    }
+
+
     public function searchPostsAndUsers($query)
     {
         $sql = "
-        SELECT 'post' AS type, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
+        SELECT 'title' AS type, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
         FROM ((((posts 
         INNER JOIN users ON posts.user_id = users.user_id)
         INNER JOIN modules ON posts.module_id = modules.module_id)
@@ -490,10 +530,10 @@ class Database
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function searchTags($query)
+    public function searchPostByTags($query)
     {
         $stmt = $this->pdo->prepare("
-        SELECT 'post' AS type, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
+        SELECT DISTINCT 'tag' AS type, tags.tag_name, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
         FROM ((((posts 
         INNER JOIN posttags ON posts.post_id = posttags.post_id)
         INNER JOIN tags ON posttags.tag_id = tags.tag_id)
@@ -506,10 +546,10 @@ class Database
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function searchUsersByTagName($query)
+    public function searchPostByTagName($query)
     {
         $stmt = $this->pdo->prepare("
-        SELECT 'post' AS type, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
+        SELECT DISTINCT 'user' AS type, users.tag_name, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
         FROM ((((posts 
         INNER JOIN users ON posts.user_id = users.user_id)
         INNER JOIN modules ON posts.module_id = modules.module_id)

@@ -175,13 +175,21 @@ class QuestionRenderer {
         if (!this.container) return;
         this.container.innerHTML = '';
 
+        if (!questions || questions.length === 0) {
+            const noResultsMessage = document.createElement('div');
+            noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4');
+            noResultsMessage.textContent = 'No results found.';
+            this.container.appendChild(noResultsMessage);
+            return;
+        }
+
         const fragment = document.createDocumentFragment();
 
         questions.forEach(async question => {
             const questionElement = document.createElement('div');
             questionElement.id = `ques-${question.post_id}`;
             questionElement.setAttribute('data-value', `${question.post_id}`);
-            questionElement.classList.add('mt-2', 'border-2', 'p-4', 'rounded-md', 'border-gray-200', 'hover:border-black', 'cursor-pointer');
+            questionElement.classList.add('mt-2', 'border-1', 'p-4', 'rounded-md', 'border-gray-200', 'hover:border-black', 'cursor-pointer', 'dark:border-gray-700', 'dark:hover:border-gray-500', 'dark:bg-gray-800');
             questionElement.innerHTML = `
                 <div class="flex flex-col">
                     <input type="hidden" name="post_id" value="${question.post_id}">
@@ -203,19 +211,19 @@ class QuestionRenderer {
                             </div>
                         </div>
                     </div>
-                    <h2 class="mt-3 font-bold text-lg w-56 h-16 line-clamp-2">${question.post_title}</h2>
-                    <p class="font-roboto mt-3 text-md text-text font-normal line-clamp-1">${question.post_content}</p>
+                    <h2 class="mt-3 font-bold text-lg w-56 h-16 line-clamp-2 dark:text-white">${question.post_title}</h2>
+                    <p class="font-roboto mt-3 text-md text-text font-normal line-clamp-1 dark:text-gray-400">${question.post_content}</p>
                     <div>
-                        <div class="mt-3 border-2 border-gray-200 rounded-md">
+                        <div class="mt-3 rounded-md">
                             <img loading="lazy" src="${question.imageURL ?? ''}" alt="Post image" width="100%" height="100px" class="rounded-md lazy-load">
                         </div>
                         <div class="flex justify-between items-center mt-3">
                             <div class="flex items-center space-x-2 font-normal md:space-y-2 md:flex-wrap 2xl:flex-nowrap 2xl:space-y-0">
                                 <div class="flex items-center space-x-2">
                                     <img loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
-                                    <span class="text-xs">${question.username}</span>
+                                    <span class="text-xs dark:text-gray-400">${question.username}</span>
                                 </div>
-                                <span class="text-xs">${this.timeAgo(question.created_at)}</span>
+                                <span class="text-xs dark:text-gray-400">${this.timeAgo(question.created_at)}</span>
                             </div>
                             <div id="tags-container-${question.post_id}" class="flex items-center capitalize space-x-2 text-sm"></div>
                         </div>
@@ -259,7 +267,7 @@ class QuestionRenderer {
                         const existingTags = tagContainer.querySelectorAll('span');
                         if (existingTags.length === 0) {
                             const tagElement = document.createElement('span');
-                            tagElement.classList.add('bg-tags', 'p-1', 'rounded-md');
+                            tagElement.classList.add('bg-gray-400', 'p-1', 'rounded-md', 'dark:bg-transparent', 'dark:text-gray-400', 'dark:border-1', 'dark:border-1' ,'dark:border-gray-500');
                             tagElement.textContent = `#${tag.tag_name}`;
                             tagContainer.appendChild(tagElement);
                         } else {
@@ -279,12 +287,12 @@ class QuestionRenderer {
                             } else {
                                 const additionalTagElement = document.createElement('div');
         
-                                additionalTagElement.classList.add('relative', 'group', 'bg-tags', 'p-1', 'rounded-md', 'additional-tags');
+                                additionalTagElement.classList.add('relative', 'group', 'bg-tags', 'p-1', 'rounded-md', 'additional-tags', 'dark:border-gray-800');
                                 additionalTagElement.setAttribute('data-count', 1);
                                 additionalTagElement.innerHTML = `
                                     <span id="tag-count">+1</span>
         
-                                    <div id="tags-popup" class="absolute space-y-2 bg-tags p-2 rounded-md right-1 top-8 shadow-lg hidden group-hover:block before:absolute before:content-[''] before:-top-2 before:w-6 before:h-3 before:right-0 before:bg-transparent">
+                                    <div id="tags-popup" class="absolute space-y-2 bg-tags  p-2 rounded-md right-1 top-8 shadow-lg hidden group-hover:block before:absolute before:content-[''] before:-top-2 before:w-6 before:h-3 before:right-0 before:bg-transparent dark:border-1 dark:border-gray-800">
                                         <span class="p-2">#${tag.tag_name}</span>
                                     </div>
                                 `;

@@ -17,15 +17,7 @@ try {
 
         $queryType = $database->checkSearchValue($query);
 
-        if ($queryType[0]['type'] === 'tag') {
-            $results = $database->searchPostByTags(substr($query, 1));
-        } elseif ($queryType[0]['type'] === 'user') {
-            $results = $database->searchPostByTagName(substr($query, 1));
-        } else {
-            $results = $database->searchPostsAndUsers($query);
-        }
-
-        echo json_encode($results);
+        echo json_encode($queryType);
     } else {
         echo json_encode(['error' => 'Invalid request method']);
     }

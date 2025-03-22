@@ -13,18 +13,33 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
     <link rel="stylesheet" href="/mywebsite/src/css/output.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
-    <style>
 
-    </style>
 </head>
 
-<body>
-    <div class="relative flex h-full w-full overflow-x-hidden transition-all">
+<body class="">
+    <div class="dark:bg-gray-900  relative flex h-full w-full overflow-x-hidden transition-all">
         <?php include '../includes/overlay.php' ?>
         <?php include '../includes/header.php' ?>
 
         <?php include "./" . $page . ".html.php"; ?>
     </div>
 </body>
+
+
+<script type="module">
+    const userId = <?= $_SESSION['user_id'] ?>;
+    import EventListener from '../src/js/events.js';
+    document.addEventListener('DOMContentLoaded', function() {
+        const eventListener = new EventListener(userId);
+
+        try {
+            setTimeout(function() {
+                eventListener.start();
+            }, 100)
+        } catch (error) {
+            console.log(error)
+        }
+    })
+</script>
 
 </html>
