@@ -76,3 +76,15 @@
         </div>
     </div>
 </main>
+
+<script type="module">
+    const userId = <?= $_SESSION['user_id'] ?>;
+    import EventListener from '../src/js/events.js';
+    document.addEventListener('DOMContentLoaded', function() {
+        const eventListener = new EventListener(userId);
+
+
+
+        eventListener.start();
+    })
+</script>

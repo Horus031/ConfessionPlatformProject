@@ -1,5 +1,5 @@
 <main class="dark:bg-gray-900 font-poppins flex flex-col overflow-hidden px-2 mt-24 items-end w-full md:pl-[2%] lg:mt-28 2xl:pl-0">
-    <div class="flex justify-between w-full items-center rounded-xl p-3 bg-linear-160 z-30 from-[#4CAF50] via-[#A5B82C] to-[#FFC107] md:w-3/4 lg:w-5/6 lg:px-8 animate-postSlideIn transition-all">
+    <div class="flex justify-between w-full items-center rounded-xl p-3 bg-linear-160 z-30 from-gradient1 via-[#3ea29a] to-gradient2 md:w-3/4 lg:w-5/6 lg:px-8 animate-postSlideIn transition-all">
         <div class="md:w-72 lg:w-96 2xl:w-2xl animate-fadeIn">
             <h1 class="text-2xl text-white font-bold leading-10 lg:leading-15 lg:text-6xl">Welcome to Knowledge Nexus, <?= isset($_SESSION['fullname']) ? $_SESSION["fullname"] : 'Users'; ?></h1>
             <button id="addques-btn" class="bg-black text-white font-medium rounded-xl py-1.5 px-8 mt-4 cursor-pointer">Add question</button>
@@ -57,16 +57,16 @@
                 </line>
 
                 <!-- Outer ring -->
-                <circle cx="200" cy="200" r="110" fill="none" stroke="#2196F3" stroke-width="4" stroke-opacity="0.3" />
+                <circle cx="200" cy="200" r="110" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-opacity="0.3" />
 
                 <!-- Middle ring with pulse animation -->
-                <circle cx="200" cy="200" r="90" fill="none" stroke="#2196F3" stroke-width="3" stroke-opacity="0.5">
+                <circle cx="200" cy="200" r="90" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-opacity="0.5">
                     <animate attributeName="r" values="85;95;85" dur="4s" repeatCount="indefinite" />
                     <animate attributeName="stroke-opacity" values="0.3;0.6;0.3" dur="4s" repeatCount="indefinite" />
                 </circle>
 
                 <!-- Inner ring -->
-                <circle cx="200" cy="200" r="75" fill="none" stroke="#2196F3" stroke-width="2" stroke-opacity="0.7" />
+                <circle cx="200" cy="200" r="75" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-opacity="0.7" />
 
                 <!-- Nodes (representing knowledge sources) -->
                 <circle cx="150" cy="150" r="28" fill="url(#node1Gradient)" filter="url(#glow)" />
@@ -100,6 +100,7 @@
     document.addEventListener('DOMContentLoaded', async function() {
         const renderer = new QuestionRenderer('#question-container');
         const addQuestionButton = document.querySelector('#addques-btn');
+        const eventListener = new EventListener(userId);
 
         if (addQuestionButton) {
             addQuestionButton.addEventListener('click', function() {
@@ -112,6 +113,7 @@
             renderer.renderQuestions(questions, userId);
 
 
+            eventListener.start();
         } catch (error) {
             console.error('Error loading data:', error);
         }

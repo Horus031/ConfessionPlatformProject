@@ -195,18 +195,20 @@ class QuestionRenderer {
                     <input type="hidden" name="post_id" value="${question.post_id}">
                     <div class="flex justify-between items-center">
                         <span data-module="${question.module_id}" class="font-semibold w-fit module-name rounded-full text-xs ${question.bg_class} ${question.text_class} px-2">${question.module_name}</span>
-                        <div class="relative group">
-                            <img src="../assets/images/dots.png" class="h-10 hover:bg-gray-300 p-2 rounded-full">
+                        <div class="relative group rounded-md text-4xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600">
+                            <span class="material-symbols-rounded custom-icon">
+                                more_horiz
+                            </span>
                             <div id="action-popup" class="absolute bg-white rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent">
-                                <button type="button" id="view-btn" class="flex w-full items-center space-x-4 p-3 hover:bg-gray-200 cursor-pointer">
-                                    <span>View Details</span>
+                                <button type="button" id="view-btn" class="flex w-full items-center rounded-md space-x-4 p-3 hover:bg-gray-200 cursor-pointer">
+                                    <span class="text-lg">View Details</span>
                                 </button> 
-                                <button type="button" id="edit-btn" class="flex w-full items-center space-x-4 p-3 ${question.user_id == userId ? 'block' : 'hidden'}  hover:bg-gray-200 cursor-pointer">
-                                    <span>Edit</span>
+                                <button type="button" id="edit-btn" class="flex w-full items-center rounded-md space-x-4 p-3 ${question.user_id == userId ? 'block' : 'hidden'}  hover:bg-gray-200 cursor-pointer">
+                                    <span class="text-lg">Edit</span>
                                 </button>
                                 <form action="../controllers/deletepost.php" method="post" class="${question.user_id == userId ? 'block' : 'hidden'} ">
                                     <input type="hidden" name="post_id" value="${question.post_id}">
-                                    <input type="submit" value="Delete" class="space-x-4 p-3 text-left cursor-pointer hover:bg-gray-200 text-red-400 w-full">
+                                    <input type="submit" value="Delete" class="space-x-4 p-3 text-left rounded-md text-lg cursor-pointer hover:bg-gray-200 text-red-400 w-full">
                                 </form>
                             </div>
                         </div>
@@ -228,22 +230,30 @@ class QuestionRenderer {
                             <div id="tags-container-${question.post_id}" class="flex items-center capitalize space-x-2 text-sm"></div>
                         </div>
                         <div class="flex justify-between items-center mt-3">
-                            <div class="flex justify-between w-fit border-2 border-text-light rounded-md">
-                                <button id="likes-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
-                                    <img loading="lazy" src="../assets/images/like.png" alt="" class="like-img h-10 p-2">
-                                    <span class="like-count" data-post-id="${question.post_id}">${question.like_count}</span>
+                            <div class="flex justify-between w-fit border-1 border-gray-400 dark:border-gray-700 rounded-md">
+                                <button id="likes-btn" class="flex items-center space-x-1 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
+                                    <span class="material-symbols-rounded custom-icon">
+                                        thumb_up
+                                    </span>
+                                    <span class="like-count text-lg" data-post-id="${question.post_id}">${question.like_count}</span>
                                 </button>
-                                <button id="comment-btn" class="flex items-center px-2 rounded-md hover:bg-gray-300 w-full transition-all">
-                                    <img loading="lazy" src="../assets/images/comments.png" alt="" class="like-img h-10 p-2">
-                                    <span class="comment-count" data-post-id="${question.post_id}">${question.comment_count}</span>
+                                <button id="comment-btn" class="flex items-center space-x-2 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
+                                    <span class="material-symbols-rounded custom-icon">
+                                        comment
+                                    </span>
+                                    <span class="comment-count text-lg" data-post-id="${question.post_id}">${question.comment_count}</span>
                                 </button>
                             </div>
                             <div class="flex items-center space-x-2 ">
-                                <button id="save-btn" class="rounded-md hover:bg-gray-300 transition-all">
-                                    <img loading="lazy" src="../assets/images/saved.png" alt="" class="saved-img h-10 p-2">
+                                <button id="save-btn" class="rounded-md text-4xl p-1 font-light hover:bg-gray-300 dark:text-gray-400 dark:hover:bg-gray-600 transition-all">
+                                    <span class="material-symbols-rounded custom-icon">
+                                        bookmark
+                                    </span>
                                 </button>
-                                <button id="link-btn" class="rounded-md hover:bg-gray-300 transition-all">
-                                    <img loading="lazy" src="../assets/images/link.png" alt="" class="link-img h-10 p-2">
+                                <button id="link-btn" class="rounded-md text-4xl p-1 font-light hover:bg-gray-300 dark:text-gray-400 dark:hover:bg-gray-600 transition-all">
+                                    <span class="material-symbols-rounded custom-icon">
+                                        link
+                                    </span>
                                 </button>
                             </div>
                         </div>
@@ -267,7 +277,7 @@ class QuestionRenderer {
                         const existingTags = tagContainer.querySelectorAll('span');
                         if (existingTags.length === 0) {
                             const tagElement = document.createElement('span');
-                            tagElement.classList.add('bg-gray-400', 'p-1', 'rounded-md', 'dark:bg-transparent', 'dark:text-gray-400', 'dark:border-1', 'dark:border-1' ,'dark:border-gray-500');
+                            tagElement.classList.add('bg-gray-300', 'p-1','text-black' , 'rounded-md', 'dark:bg-transparent', 'dark:text-gray-400', 'dark:border-1', 'dark:border-1' ,'dark:border-gray-500');
                             tagElement.textContent = `#${tag.tag_name}`;
                             tagContainer.appendChild(tagElement);
                         } else {
@@ -569,7 +579,7 @@ class QuestionRenderer {
                     const mypostElements = document.createElement('div');
                     mypostElements.classList.add('flex', 'items-center', 'justify-between', 'border-2', 'border-secondary', 'mt-2', 'p-4', 'rounded-lg', 'w-full', 'hover:border-black', 'cursor-pointer', 'animate-slideRight', 'transition-all');
                     mypostElements.innerHTML = `
-                        <div class="space-y-2">
+                        <div class="space-y-2 w-full">
                             <h2 class="font-semibold text-xl line-clamp-2">${myPost.post_title}</h2>
                             <p class="text-sm text-text-light font-medium">${myPost.post_content}</p>
                             <div class="flex items-center w-fit justify-around border-2 border-secondary rounded-xl p-2 ">

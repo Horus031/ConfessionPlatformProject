@@ -7,26 +7,13 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
-    --color-red-100: oklch(0.936 0.032 17.717);
     --color-red-400: oklch(0.704 0.191 22.216);
     --color-red-500: oklch(0.637 0.237 25.331);
-    --color-orange-100: oklch(0.954 0.038 75.164);
-    --color-orange-500: oklch(0.705 0.213 47.604);
     --color-amber-300: oklch(0.879 0.169 91.605);
-    --color-yellow-100: oklch(0.973 0.071 103.193);
-    --color-yellow-500: oklch(0.795 0.184 86.047);
-    --color-green-100: oklch(0.962 0.044 156.743);
-    --color-green-500: oklch(0.723 0.219 149.579);
     --color-blue-100: oklch(0.932 0.032 255.585);
     --color-blue-200: oklch(0.882 0.059 254.128);
     --color-blue-500: oklch(0.623 0.214 259.815);
     --color-blue-800: oklch(0.424 0.199 265.638);
-    --color-indigo-100: oklch(0.93 0.034 272.788);
-    --color-indigo-500: oklch(0.585 0.233 277.117);
-    --color-purple-100: oklch(0.946 0.033 307.174);
-    --color-purple-500: oklch(0.627 0.265 303.9);
-    --color-pink-100: oklch(0.948 0.028 342.258);
-    --color-pink-500: oklch(0.656 0.241 354.308);
     --color-gray-100: oklch(0.967 0.003 264.542);
     --color-gray-200: oklch(0.928 0.006 264.531);
     --color-gray-300: oklch(0.872 0.01 258.338);
@@ -36,8 +23,6 @@
     --color-gray-700: oklch(0.373 0.034 259.733);
     --color-gray-800: oklch(0.278 0.033 256.848);
     --color-gray-900: oklch(0.21 0.034 264.665);
-    --color-stone-100: oklch(0.97 0.001 106.424);
-    --color-stone-500: oklch(0.553 0.013 58.071);
     --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
@@ -817,6 +802,13 @@
       margin-block-end: calc(calc(var(--spacing) * 8) * calc(1 - var(--tw-space-y-reverse)));
     }
   }
+  .space-x-1 {
+    :where(& > :not(:last-child)) {
+      --tw-space-x-reverse: 0;
+      margin-inline-start: calc(calc(var(--spacing) * 1) * var(--tw-space-x-reverse));
+      margin-inline-end: calc(calc(var(--spacing) * 1) * calc(1 - var(--tw-space-x-reverse)));
+    }
+  }
   .space-x-2 {
     :where(& > :not(:last-child)) {
       --tw-space-x-reverse: 0;
@@ -966,35 +958,17 @@
   .bg-gray-100 {
     background-color: var(--color-gray-100);
   }
+  .bg-gray-200 {
+    background-color: var(--color-gray-200);
+  }
   .bg-gray-300 {
     background-color: var(--color-gray-300);
   }
   .bg-gray-400 {
     background-color: var(--color-gray-400);
   }
-  .bg-green-100 {
-    background-color: var(--color-green-100);
-  }
-  .bg-indigo-100 {
-    background-color: var(--color-indigo-100);
-  }
-  .bg-orange-100 {
-    background-color: var(--color-orange-100);
-  }
-  .bg-pink-100 {
-    background-color: var(--color-pink-100);
-  }
-  .bg-purple-100 {
-    background-color: var(--color-purple-100);
-  }
-  .bg-red-100 {
-    background-color: var(--color-red-100);
-  }
   .bg-red-500 {
     background-color: var(--color-red-500);
-  }
-  .bg-stone-100 {
-    background-color: var(--color-stone-100);
   }
   .bg-tags {
     background-color: var(--color-tags);
@@ -1007,9 +981,6 @@
   }
   .bg-white {
     background-color: var(--color-white);
-  }
-  .bg-yellow-100 {
-    background-color: var(--color-yellow-100);
   }
   .bg-linear-160 {
     --tw-gradient-position: 160deg in oklab;
@@ -1029,6 +1000,11 @@
   .from-gradient1 {
     --tw-gradient-from: var(--color-gradient1);
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+  .via-\[\#3ea29a\] {
+    --tw-gradient-via: #3ea29a;
+    --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-via-stops);
   }
   .via-\[\#A5B82C\] {
     --tw-gradient-via: #A5B82C;
@@ -1232,26 +1208,17 @@
   .text-gray-100 {
     color: var(--color-gray-100);
   }
+  .text-gray-200 {
+    color: var(--color-gray-200);
+  }
   .text-gray-500 {
     color: var(--color-gray-500);
   }
+  .text-gray-600 {
+    color: var(--color-gray-600);
+  }
   .text-gray-700 {
     color: var(--color-gray-700);
-  }
-  .text-green-500 {
-    color: var(--color-green-500);
-  }
-  .text-indigo-500 {
-    color: var(--color-indigo-500);
-  }
-  .text-orange-500 {
-    color: var(--color-orange-500);
-  }
-  .text-pink-500 {
-    color: var(--color-pink-500);
-  }
-  .text-purple-500 {
-    color: var(--color-purple-500);
   }
   .text-red-400 {
     color: var(--color-red-400);
@@ -1261,9 +1228,6 @@
   }
   .text-secondary {
     color: var(--color-secondary);
-  }
-  .text-stone-500 {
-    color: var(--color-stone-500);
   }
   .text-text {
     color: var(--color-text);
@@ -1276,9 +1240,6 @@
   }
   .text-white\/70 {
     color: color-mix(in oklab, var(--color-white) 70%, transparent);
-  }
-  .text-yellow-500 {
-    color: var(--color-yellow-500);
   }
   .capitalize {
     text-transform: capitalize;
@@ -1500,6 +1461,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-gray-300);
+      }
+    }
+  }
+  .hover\:bg-gray-400 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-gray-400);
       }
     }
   }
@@ -1739,9 +1707,9 @@
       width: calc(5/6 * 100%);
     }
   }
-  .lg\:w-42 {
+  .lg\:w-46 {
     @media (width >= 64rem) {
-      width: calc(var(--spacing) * 42);
+      width: calc(var(--spacing) * 46);
     }
   }
   .lg\:w-80 {
@@ -1838,6 +1806,11 @@
           display: block;
         }
       }
+    }
+  }
+  .xl\:w-56 {
+    @media (width >= 80rem) {
+      width: calc(var(--spacing) * 56);
     }
   }
   .xl\:pl-\[20\%\] {
@@ -2027,6 +2000,15 @@
 @layer components {
   .material-symbols-outlined {
     font-size: 30px;
+  }
+  .material-symbols-rounded {
+    font-variation-settings: 'wght' 200,;
+  }
+  .darkmode-icon {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .lightweight-icon {
+    font-variation-settings: 'wght' 200,;
   }
   .custom-icon {
     font-size: inherit !important;

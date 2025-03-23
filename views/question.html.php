@@ -31,10 +31,11 @@
 <script type="module">
     const userId = <?= $_SESSION['user_id'] ?>;
     import QuestionRenderer from '../src/js/render.js';
+    import EventListener from '../src/js/events.js';
 
     document.addEventListener('DOMContentLoaded', async function() {
         const renderer = new QuestionRenderer('#question-container', '#question-filter');
-
+        const eventListener = new EventListener(userId);
         const urlParams = new URLSearchParams(window.location.search);
         const query = urlParams.get('query');
 
@@ -53,11 +54,12 @@
                 question.classList.add('animate-postScale');
             });
 
-            // Add a delay to ensure the elements are rendered before calling renderTags
             setTimeout(async () => {
                 const modules = await renderer.fetchData('../controllers/list_modules.php');
                 renderer.renderModules(modules);
-            }, 100); // Adjust the delay as needed
+            }, 100);
+
+            eventListener.start();
         } catch (error) {
             console.error('Error loading data:', error);
         }

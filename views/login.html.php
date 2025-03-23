@@ -66,7 +66,7 @@
                 </div>
 
                 <div class="flex flex-col justify-center items-center">
-                    <input type="submit" name="login" value="Login" class="bg-linear-to-br from-gradient1 to-gradient2 rounded-full mt-9 p-3 pl-8 w-72 text-white text-xl text-center font-semibold shadow-text shadow-[0_6px_16px_-6px]">
+                    <input type="submit" name="login" value="Login" class="bg-linear-to-br from-gradient1 to-gradient2 rounded-full mt-9 p-3 w-72 text-white text-xl text-center font-semibold shadow-text shadow-[0_6px_16px_-6px]">
                     <div class="mt-8">
                         <span class="text-text-light">Don't have account?</span>
                         <a href="/mywebsite/views/register.html.php" class="text-form-btn">Sign up</a>

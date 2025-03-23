@@ -26,20 +26,4 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 </body>
 
 
-<script type="module">
-    const userId = <?= $_SESSION['user_id'] ?>;
-    import EventListener from '../src/js/events.js';
-    document.addEventListener('DOMContentLoaded', function() {
-        const eventListener = new EventListener(userId);
-
-        try {
-            setTimeout(function() {
-                eventListener.start();
-            }, 100)
-        } catch (error) {
-            console.log(error)
-        }
-    })
-</script>
-
 </html>

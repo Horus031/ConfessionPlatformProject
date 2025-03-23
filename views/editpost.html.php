@@ -70,6 +70,7 @@
     document.addEventListener('DOMContentLoaded', async function() {
         const postId = sessionStorage.getItem('editPostId');
         const renderer = new QuestionRenderer(null, '#modules');
+        const eventListener = new EventListener();
 
         try {
             const modules = await renderer.fetchData('../controllers/list_modules.php');
@@ -95,7 +96,7 @@
             renderer.renderTagsWithType();
 
 
-
+            eventListener.start();
         } catch (error) {
             console.error('Error loading data:', error);
         }

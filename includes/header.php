@@ -102,7 +102,7 @@
 </header>
 
 <!-- Menu mobile -->
-<aside id="menu" class="font-poppins w-2/3 bg-white dark:bg-gray-900  -translate-x-full  h-full z-50 border-r border-gray-400 dark:border-gray-700  transition-all fixed md:block md:fixed md:mt-23.5 md:w-46 md:-translate-x-0 lg:w-42 2xl:w-72">
+<aside id="menu" class="font-poppins w-2/3 bg-white dark:bg-gray-900  -translate-x-full  h-full z-50 border-r border-gray-400 dark:border-gray-700  transition-all fixed md:block md:fixed md:mt-23.5 md:w-46 md:-translate-x-0 lg:w-46 xl:w-56 2xl:w-72">
     <nav id="navbar" class="flex-1 bg-white dark:bg-gray-900  md:h-full z-2 animate-slideRight">
         <div>
             <div class="flex flex-col mt-4 space-y-2 text-3xl font-light transition-all">
@@ -144,7 +144,7 @@
 
                 <button id="darkmode-btn" class="text-3xl w-full flex text-gray-700 dark:text-gray-400 items-center space-x-3 px-3 py-2 transition-all">
                     <div class="font-light transition-all dark:text-amber-300 dark:fill-amber-300">
-                        <span class="material-symbols-rounded custom-icon">dark_mode</span>
+                        <span class="material-symbols-rounded custom-icon darkmode-icon">dark_mode</span>
                     </div>
                     <span class="text-lg font-normal">Dark Mode</span>
                 </button>

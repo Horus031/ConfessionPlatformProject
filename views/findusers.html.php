@@ -17,15 +17,18 @@
 
 <script type="module">
     import QuestionRenderer from '../src/js/render.js';
+    import EventListener from '../src/js/events.js';
 
     const userId = <?= $_SESSION['user_id'] ?>;
     document.addEventListener('DOMContentLoaded', async function() {
         const renderer = new QuestionRenderer('#user-container');
+        const eventListener = new EventListener(userId);
 
         try {
             const users = await renderer.fetchData('../controllers/list_users.php');
             renderer.renderAllUsers(users, userId);
 
+            eventListener.start();
         } catch (error) {
             console.log(error);
         }

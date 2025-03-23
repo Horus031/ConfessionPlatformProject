@@ -75,9 +75,11 @@
 <script type="module">
     const userId = <?= $_SESSION['user_id'] ?>;
     import QuestionRenderer from '../src/js/render.js';
+    import EventListener from '../src/js/events.js';
     document.addEventListener('DOMContentLoaded', async function() {
         const tagName = sessionStorage.getItem('editUserTagName');
         const renderer = new QuestionRenderer('#edit-container');
+        const eventListener = new EventListener(userId);
 
         try {
             const editUserInfo = await renderer.fetchData(`../controllers/get_userinfo.php?tag_name=${tagName}`, {
@@ -90,6 +92,8 @@
                 })
             });
             renderer.renderEditUser(editUserInfo);
+
+            eventListener.start();
         } catch (error) {
             console.error('Error loading data:', error);
         }

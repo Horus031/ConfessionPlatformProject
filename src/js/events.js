@@ -332,18 +332,15 @@ class EventListener {
             if (this.navbar) {
                 const buttons = this.navbar.querySelectorAll('a[id$="btn"]');
                 buttons.forEach(link => {
+                    link.classList.remove("bg-gray-100");
+                    link.classList.remove("dark:bg-gray-600");
                     const theme = localStorage.getItem('darkMode');
-                    console.log(theme)
-                    console.log(this.currentURL);
-                    if (theme === 'enabled') {
-                        link.classList.remove("bg-gray-100");
-                        if (link.href === this.currentURL) {
-                            link.classList.add("bg-gray-100");
-                        }
-                    } else {
-                        link.classList.remove("dark:bg-gray-600");
-                        if (link.href === this.currentURL) {
+                    if (link.href === this.currentURL) {
+                        if (theme === 'enabled') {
                             link.classList.add("dark:bg-gray-600");
+                        } else {
+                            link.classList.add("bg-gray-100");
+
                         }
                     }
                 });
@@ -627,25 +624,35 @@ class EventListener {
                 const followButton = this.profileActions.querySelector('#follow-btn');
                 const userTagName = this.profileActions.getAttribute('data-tagname');
 
-                console.log(editButton, followButton);
 
-                if (this.userId == this.profileActions.getAttribute('data-value')) {
-                    this.profileActions.removeChild(followButton);
-                    editButton.classList.remove('hidden');
-                } else {
-                    this.profileActions.removeChild(editButton)
-                    followButton.classList.remove('hidden');
+                try {
+                    const userIdValue = this.profileActions.getAttribute('data-value');
+
+                    console.log(this.userId, userIdValue);
+
+                    if (this.userId == userIdValue) {
+                        editButton.classList.remove('hidden');
+                        this.profileActions.removeChild(followButton);
+                    } else {
+                        followButton.classList.remove('hidden');
+                        this.profileActions.removeChild(editButton)
+                    }
+
+                    this.profileActions.addEventListener('click', function(e) {
+                        if (e.target.closest('a#edit-profile')) {
+                            sessionStorage.setItem('editUserTagName', userTagName);
+                            window.location.href = "../views/main.html.php?page=editprofile"
+                            
+                        } else if (e.target.closest('a#follow-btn')) {
+                            console.log(e.target);
+                        }
+                    })
+                } catch (error) {
+                    console.log(error);
                 }
 
-                this.profileActions.addEventListener('click', function(e) {
-                    if (e.target.closest('a#edit-profile')) {
-                        sessionStorage.setItem('editUserTagName', userTagName);
-                        window.location.href = "../views/main.html.php?page=editprofile"
-                        
-                    } else if (e.target.closest('a#follow-btn')) {
-                        console.log(e.target);
-                    }
-                })
+
+                
             }
             
 
