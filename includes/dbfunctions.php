@@ -196,7 +196,7 @@ class Database
 
     public function fetchAllComments($post_id)
     {
-        $sql = 'SELECT comments.comment_id, comments.user_id, comments.post_id, comments.content, users.username, users.avatar
+        $sql = 'SELECT comments.comment_id, comments.user_id, comments.post_id, comments.content, comments.created_at,users.username, users.avatar
                 FROM ((comments
                 INNER JOIN posts ON comments.post_id = posts.post_id)
                 INNER JOIN users ON comments.user_id = users.user_id)
@@ -272,7 +272,7 @@ class Database
 
     public function fetchAllPosts()
     {
-        $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class 
+        $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, users.tag_name, users.created_at AS userJoinedTime, modules.module_id, modules.module_name, modules.bg_class, modules.text_class 
                 FROM ((((posts 
                 INNER JOIN users ON posts.user_id = users.user_id)
                 INNER JOIN modules ON posts.module_id = modules.module_id)
@@ -560,5 +560,95 @@ class Database
     ");
         $stmt->execute(['query' => '%' . $query . '%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function addReadingHistory($userId, $postId)
+    {
+        $sql = "INSERT INTO reading_history (user_id, post_id, read_date) VALUES (:user_id, :post_id, CURDATE())
+            ON DUPLICATE KEY UPDATE read_date = CURDATE()";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['user_id' => $userId, 'post_id' => $postId]);
+    }
+
+    public function getReadingHistory($userId)
+    {
+        $sql = "SELECT posts.*, users.avatar, users.tag_name, reading_history.read_date FROM ((reading_history
+                JOIN posts ON reading_history.post_id = posts.post_id)
+                JOIN users ON posts.user_id = users.user_id)
+                WHERE reading_history.user_id = :user_id
+                ORDER BY reading_history.read_date DESC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function followUser($followerId, $followingId)
+    {
+        $sql = "INSERT INTO user_follows (follower_id, following_id) VALUES (:follower_id, :following_id)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['follower_id' => $followerId, 'following_id' => $followingId]);
+    }
+
+    public function unfollowUser($followerId, $followingId)
+    {
+        $sql = "DELETE FROM user_follows WHERE follower_id = :follower_id AND following_id = :following_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['follower_id' => $followerId, 'following_id' => $followingId]);
+    }
+
+    public function getFollowerCount($userId)
+    {
+        $sql = "SELECT COUNT(*) FROM user_follows WHERE following_id = :user_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->fetchColumn();
+    }
+
+    public function getFollowingCount($userId)
+    {
+        $sql = "SELECT COUNT(*) FROM user_follows WHERE follower_id = :user_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->fetchColumn();
+    }
+
+    public function isFollowing($followerId, $followingId)
+    {
+        $sql = "SELECT COUNT(*) FROM user_follows WHERE follower_id = :follower_id AND following_id = :following_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['follower_id' => $followerId, 'following_id' => $followingId]);
+        return $stmt->fetchColumn() > 0;
+    }
+
+    public function getViewCount($userId)
+    {
+        $sql = "SELECT view_count FROM users WHERE user_id = :user_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->fetchColumn();
+    }
+
+    public function getLikeCount($userId)
+    {
+        $sql = "SELECT like_count FROM users WHERE user_id = :user_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->fetchColumn();
+    }
+
+    public function getTotalLikeCount($userId)
+    {
+        $sql = "SELECT SUM(like_count) FROM posts WHERE user_id = :user_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->fetchColumn();
+    }
+
+    public function getTotalViewCount($userId)
+    {
+        $sql = "SELECT SUM(view_count) FROM posts WHERE user_id = :user_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->fetchColumn();
     }
 }

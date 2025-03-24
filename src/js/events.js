@@ -295,9 +295,6 @@ class EventListener {
 
         this.applyDarkModePreference();
 
-
-
-
         if (this.currentURL != 'http://localhost/mywebsite/views/register.html.php' || this.currentURL != 'http://localhost/mywebsite/views/login.html.php') {
             
             // Bật menu
@@ -365,10 +362,32 @@ class EventListener {
                 this.questionElement.forEach(question => {
                     question.addEventListener('click', function(e) {
                         const postId = question.getAttribute('data-value');
+                        const moreButton = question.querySelector('span[id="post-actions"]');
+                        const profileShortCut = question.querySelector('img[id="profile-hover"]');
+                        const profilePopup = question.querySelector('div[id="profile-popup"]');
                         let button = e.target.closest('button');
+
+                        if (e.target.contains(moreButton)) {
+                            const actionPopup = question.querySelector('#action-popup');
+                            actionPopup.classList.toggle('hidden');
+                            document.addEventListener('click', function(e) {
+                                if (!moreButton.contains(e.target) && !actionPopup.contains(e.target)) {
+                                    actionPopup.classList.add('hidden');
+                                }
+                            });
+                            return;
+                        } else if (e.target.contains(profileShortCut)) {
+                            const tagNameValue = profilePopup.querySelector('.tagname').textContent;
+                            window.location.href = `main.html.php?page=profile&tag_name=${tagNameValue.slice(1)}`;
+                            return;
+                        }
+
+
                         if (!button) {
+                            _this.addReadingHistory(postId);
                             window.location.href = `../views/main.html.php?page=postdetails&id=${postId}`;
                         }
+
                         switch (true) {
                             case button.id == "likes-btn":
                                 const likeImage = question.querySelector('.like-img');
@@ -393,15 +412,14 @@ class EventListener {
                                 window.location.href = '../views/main.html.php?page=editpost';
                                 break;
                         }
-                    })
-                })
-
+                    });
+                });
 
                 this.questionElement.forEach(question => {
                     const postId = question.getAttribute('data-value');
                     this.updateLikeCount(postId, question);
                     this.updateCommentCount(postId, question);
-                })
+                });
             }
 
             if (this.filterTags) {
@@ -473,7 +491,7 @@ class EventListener {
 
                     switch(true) {
                         case button.id == "like-btn":
-                            const likeImage = _this.postDetailContainer.querySelector('#like-img');
+                            const likeImage = _this.postDetailContainer.querySelector('.like-img');
                             const likeCountSpan = _this.postDetailContainer.querySelector('.like-count');
                             _this.handleLikes(postId, likeCountSpan, likeImage);
                             break;
@@ -482,7 +500,8 @@ class EventListener {
                             window.location.href = '../views/main.html.php?page=editpost';
                             break;
                         case button.id == "save-btn":
-                            console.log('bookmark');
+                            const savedImage = _this.postDetailContainer.querySelector('.saved-img');
+                            _this.handleSavedPosts(postId, savedImage);
                             break;
                         case button.id == "link-btn":
                             console.log('link-btn');
@@ -497,7 +516,6 @@ class EventListener {
             if (this.postForm) {
                 this.postForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
-        
         
                     let postId = _this.postForm.dataset.postId;
                     let textarea = _this.postForm.querySelector('textarea');
@@ -521,14 +539,17 @@ class EventListener {
         
                         const newCommentElement = document.createElement('div');
                         newCommentElement.setAttribute('data-value', `${newComment.comment_id}`)
-                        newCommentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'animate-slideRight');
+                        newCommentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700' ,'animate-slideRight');
                         newCommentElement.innerHTML = `
                             <img src="${newComment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
         
-                                <div>
-                                    <h2 class="font-medium text-md">${newComment.username}</h2>
-                                    <p class="text-sm">${newComment.content}</p>
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    <h2 class="font-medium text-md dark:text-white">${newComment.username}</h2>
+                                    <span class="text-xs dark:text-gray-400">${_this.renderer.timeAgo(newComment.created_at)}</span>
                                 </div>
+                                <p class="text-sm dark:text-gray-400">${newComment.content}</p>
+                            </div>
                         `;
         
                         commentContainer.insertBefore(newCommentElement, firstChildElement);
@@ -537,9 +558,7 @@ class EventListener {
 
                         textarea.value = '';
                         document.querySelector('.comment-count').textContent = `(${_this.renderedComments.size})`;
-                    }
-        
-                    
+                    } 
                 })
             }
 
@@ -558,6 +577,7 @@ class EventListener {
             if (this.selectTagType) {
                 this.selectTagType.addEventListener('change', function() {
                     let selectedValue = _this.selectTagType.value;
+                    console.log(selectedValue);
                     
                     while (_this.tagList.firstChild) {
                         _this.tagList.removeChild(_this.tagList.firstChild);
@@ -573,6 +593,9 @@ class EventListener {
                         if (data.error) {
                             _this.tagList.innerHTML = `<option>${data.error}</option>`
                         } else {
+                            console.log(data);
+                            _this.tagList.innerHTML = '';
+
                             if (selectedValue == '') {
                                 _this.tagList.classList.add('hidden');
                                 _this.buttonContainer.classList.add('hidden');
@@ -583,6 +606,7 @@ class EventListener {
                                 _this.tagInput.classList.remove('hidden');
                                 data.forEach(tag => {
                                     const tagElement = document.createElement('option');
+                                    tagElement.classList.add('dark:text-gray-400', 'dark:bg-gray-900')
                                     tagElement.value = `${tag.tag_name}`;
                                     tagElement.textContent = `${tag.tag_name}`;
                                     _this.tagList.appendChild(tagElement);
@@ -623,36 +647,44 @@ class EventListener {
                 const editButton = this.profileActions.querySelector('#edit-profile');
                 const followButton = this.profileActions.querySelector('#follow-btn');
                 const userTagName = this.profileActions.getAttribute('data-tagname');
-
-
+    
                 try {
                     const userIdValue = this.profileActions.getAttribute('data-value');
-
+    
                     console.log(this.userId, userIdValue);
-
+    
                     if (this.userId == userIdValue) {
                         editButton.classList.remove('hidden');
                         this.profileActions.removeChild(followButton);
                     } else {
                         followButton.classList.remove('hidden');
-                        this.profileActions.removeChild(editButton)
+                        this.profileActions.removeChild(editButton);
+    
+                        followButton.addEventListener('click', async function() {
+                            try {
+                                const followResult = await _this.renderer.fetchData('../controllers/follow_user.php', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ follower_id: _this.userId, following_id: userIdValue })
+                                });
+    
+                                if (followResult.status === 'followed') {
+                                    followButton.textContent = 'Unfollow';
+                                    const followerCount = document.getElementById('follower-count');
+                                    followerCount.textContent = parseInt(followerCount.textContent) + 1;
+                                } else if (followResult.status === 'unfollowed') {
+                                    followButton.textContent = 'Follow';
+                                    const followerCount = document.getElementById('follower-count');
+                                    followerCount.textContent = parseInt(followerCount.textContent) - 1;
+                                }
+                            } catch (error) {
+                                console.error('Error following/unfollowing user:', error);
+                            }
+                        });
                     }
-
-                    this.profileActions.addEventListener('click', function(e) {
-                        if (e.target.closest('a#edit-profile')) {
-                            sessionStorage.setItem('editUserTagName', userTagName);
-                            window.location.href = "../views/main.html.php?page=editprofile"
-                            
-                        } else if (e.target.closest('a#follow-btn')) {
-                            console.log(e.target);
-                        }
-                    })
                 } catch (error) {
                     console.log(error);
                 }
-
-
-                
             }
             
 
@@ -695,11 +727,11 @@ class EventListener {
             if (savedPosts.status == "saved") {
                 console.log(savedPosts)
                 console.log('save!')
-                savedImage.src = '../assets/images/saved-on.png';
+                savedImage.classList.add('filled-icon');
             } else {
                 console.log(savedPosts)
                 console.log('unsave');
-                savedImage.src = '../assets/images/saved.png';
+                savedImage.classList.remove('filled-icon');
             }
         } catch (error) {
             console.error('Error handling saved post:', error);
@@ -714,10 +746,10 @@ class EventListener {
                 body: JSON.stringify({ post_id: postId })
             })
             if (likes.status == "like") {
-                likeImage.src = '../assets/images/like-on.png';
+                likeImage.classList.add('filled-icon');
                 likeCountSpan.textContent = parseInt(likeCountSpan.textContent) + 1;
             } else {
-                likeImage.src = '../assets/images/like.png';
+                likeImage.classList.remove('filled-icon');
                 likeCountSpan.textContent = parseInt(likeCountSpan.textContent) - 1;
             }
         } catch (error) {
@@ -781,18 +813,22 @@ class EventListener {
             if (comments.error) {
                 console.log(comments.error);
             } else {
+                console.log(comments);
                 const commentContainer = document.querySelector('#comment-container');
                 const firstChildElement = commentContainer.firstElementChild;
                 comments.forEach(comment => {
                     if (!this.renderedComments.has(comment.comment_id)) {
                         const commentElement = document.createElement('div');
                         commentElement.setAttribute('data-value', `${comment.comment_id}`);
-                        commentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'animate-slideRight');
+                        commentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700' ,'animate-slideRight');
                         commentElement.innerHTML = `
                             <img src="${comment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
                             <div>
-                                <h2 class="font-medium text-md">${comment.username}</h2>
-                                <p class="text-sm">${comment.content}</p>
+                                <div class="flex items-center space-x-2">
+                                    <h2 class="font-medium text-md dark:text-white">${comment.username}</h2>
+                                    <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(comment.created_at)}</span>
+                                </div>
+                                <p class="text-sm dark:text-gray-400">${comment.content}</p>
                             </div>
                         `;
                         commentContainer.insertBefore(commentElement, firstChildElement);
@@ -936,6 +972,18 @@ class EventListener {
             }
         } catch (error) {
             console.error('Error fetching dark mode preference:', error);
+        }
+    }
+
+    async addReadingHistory(postId) {
+        try {
+            await this.renderer.fetchData('../controllers/add_reading_history.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: this.userId, post_id: postId })
+            });
+        } catch (error) {
+            console.error('Error adding reading history:', error);
         }
     }
     

@@ -1,8 +1,8 @@
-<main class="dark:bg-gray-900 font-poppins flex flex-col overflow-hidden px-2 mt-24 items-end w-full md:pl-[2%] lg:mt-28 2xl:pl-0">
+<main class="dark:bg-gray-900 font-poppins flex flex-col overflow-hidden h-full px-2 mt-24 items-end w-full md:pl-[2%] lg:mt-28 2xl:pl-0">
     <div class="flex justify-between w-full items-center rounded-xl p-3 bg-linear-160 z-30 from-gradient1 via-[#3ea29a] to-gradient2 md:w-3/4 lg:w-5/6 lg:px-8 animate-postSlideIn transition-all">
         <div class="md:w-72 lg:w-96 2xl:w-2xl animate-fadeIn">
             <h1 class="text-2xl text-white font-bold leading-10 lg:leading-15 lg:text-6xl">Welcome to Knowledge Nexus, <?= isset($_SESSION['fullname']) ? $_SESSION["fullname"] : 'Users'; ?></h1>
-            <button id="addques-btn" class="bg-black text-white font-medium rounded-xl py-1.5 px-8 mt-4 cursor-pointer">Add question</button>
+            <button id="addques-btn" class="bg-black text-white dark:border-1 hover:bg-black/80 dark:border-white dark:bg-transparent dark:hover:bg-white/20 font-medium rounded-xl py-1.5 px-8 mt-4 cursor-pointer">Add question</button>
         </div>
         <div class="animate-fadeIn">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="-m-10 h-44 md:h-72 lg:h-96">

@@ -16,14 +16,16 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 
 </head>
 
-<body class="">
-    <div class="dark:bg-gray-900  relative flex h-full w-full overflow-x-hidden transition-all">
+<body class="h-screen">
+    <div class="dark:bg-gray-900  relative flex h-full w-full overflow-x-hidden overflow-y-auto transition-all">
         <?php include '../includes/overlay.php' ?>
         <?php include '../includes/header.php' ?>
 
         <?php include "./" . $page . ".html.php"; ?>
     </div>
 </body>
+
+
 
 
 </html>
