@@ -1,8 +1,8 @@
-<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[16%]">
-    <h1 class="text-2xl font-semibold lg:text-4xl dark:text-white">Edit your post</h1>
+<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[16%] transition-all">
+    <h1 class="text-2xl font-semibold lg:text-4xl dark:text-white animate-slideRight">Edit your post</h1>
 
 
-    <form id="edit-form" action="../controllers/editpost.php" method="post" enctype="multipart/form-data">
+    <form id="edit-form" action="../controllers/editpost.php" method="post" enctype="multipart/form-data" class="animate-slideRight">
         <input type="hidden" name="postValues" id="post-value">
         <div class="mt-2 space-y-4">
             <input type="text" name="titleValue" id="title" class="border-1 border-text rounded-lg p-2 q px-4 w-full md:w-5/8 lg:w-4/9 dark:border-gray-600 dark:text-gray-400" placeholder="Post title">
@@ -26,7 +26,7 @@
                 <option value="general" class="dark:bg-gray-900">General Subject</option>
                 <option value="prog&tech" class="dark:bg-gray-900">Programming & Technology</option>
                 <option value="study" class="dark:bg-gray-900">Study Tips</option>
-                <option value="carrer" class="dark:bg-gray-900">Career & Guidance</option>
+                <option value="career" class="dark:bg-gray-900">Career & Guidance</option>
             </select>
 
             <div class="flex items-center mt-4 space-x-6">
@@ -101,17 +101,5 @@
         } catch (error) {
             console.error('Error loading data:', error);
         }
-
-        // Custom ô hình ảnh
-        const fileInput = document.querySelector('#imageURL');
-        const fileName = document.querySelector('#file-name');
-
-        fileInput.addEventListener('change', function() {
-            if (fileInput.files.length > 0) {
-                fileName.textContent = fileInput.files[0].name;
-            } else {
-                fileName.textContent = 'Upload your image';
-            }
-        });
     })
 </script>

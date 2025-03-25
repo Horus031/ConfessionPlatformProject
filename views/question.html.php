@@ -1,7 +1,7 @@
 <main class="mt-24 px-4 w-full md:mt-28 md:pl-[26%] lg:pl-[20%] xl:pl-[20%] 2xl:pl-[16%]">
     <div class="flex justify-between items-center transition-all">
         <div class="animate-slideRight">
-            <h1 class="text-2xl font-semibold lg:text-4xl dark:text-gray-400">Questions</h1>
+            <h1 id="question-title" class="text-2xl font-semibold lg:text-4xl dark:text-gray-400">Questions</h1>
         </div>
 
         <div>
@@ -41,11 +41,15 @@
 
         try {
             let questions;
+            let questionType;
             if (query) {
+                questionType = await renderer.fetchData(`../controllers/check_searchvalues.php?query=${encodeURIComponent(query)}`);
                 questions = await renderer.fetchData(`../controllers/search_question.php?query=${encodeURIComponent(query)}`);
                 console.log(questions);
+                document.querySelector('#question-title').textContent = `Questions by ${questionType[0].type}`;
             } else {
                 questions = await renderer.fetchData('../controllers/list_question.php');
+                document.querySelector('#question-title').textContent = `Question`;
             }
 
             renderer.renderQuestions(questions, userId);

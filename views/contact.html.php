@@ -21,6 +21,16 @@
 </main>
 
 <script type="module">
+    import EventListener from '../src/js/events.js';
+
+    const userId = <?= $_SESSION['user_id'] ?>;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const eventListener = new EventListener(userId);
+
+        eventListener.start();
+    })
+
     document.getElementById('contactForm').addEventListener('submit', async function(event) {
         event.preventDefault();
 
@@ -51,6 +61,8 @@
                 formFeedback.textContent = 'An error occurred. Please try again.';
                 formFeedback.classList.add('text-red-500');
             }
+
+
         } catch (error) {
             console.log(error);
             formFeedback.textContent = 'An error occurred. Please try again.';

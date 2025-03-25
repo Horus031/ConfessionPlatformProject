@@ -61,7 +61,7 @@
     --animate-menuOut: menuOut 0.5s ease forwards;
     --animate-postSlideIn: fadeIn 1s ease forwards, postTransition 1s ease forwards;
     --animate-postScale: fadeIn 1s ease forwards, postScale 1s ease forwards;
-    --animate-slideRight: fadeIn 1s ease forwards, slideRight 1s ease forwards;
+    --animate-slideRight: fadeIn 1.2s ease forwards, slideRight 1.2s ease forwards;
     --animate-slideLeft: fadeIn 1s ease forwards, slideLeft 1s ease forwards ;
     --animate-infoSlide: fadeIn 1s ease forwards, infoSlide 1s ease forwards ;
     --animate-fadeIn: fadeIn 1s ease forwards ;

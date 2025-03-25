@@ -1,7 +1,10 @@
+import EventListener from "../js/events.js";
+
 class QuestionRenderer {
-    constructor(containerId, filterId) {
+    constructor(containerId, filterId, userId) {
         this.container = document.querySelector(containerId);
         this.filterContainer = document.querySelector(filterId);
+        this.userId = userId;
     }
 
     async fetchData(url, options = {}) {
@@ -34,7 +37,7 @@ class QuestionRenderer {
                 const questionElement = document.createElement('div');
                 questionElement.id = `ques-${post.post_id}`;
                 questionElement.setAttribute('data-value', `${post.post_id}`);
-                questionElement.classList.add('font-poppins','mt-2', 'border-2', 'p-4', 'rounded-md', 'border-gray-200', 'hover:border-black', 'cursor-pointer', 'dark:border-gray-700', 'dark:hover:border-gray-500', 'dark:bg-gray-800');
+                questionElement.classList.add('font-poppins','mt-2', 'border-2', 'p-4', 'rounded-md', 'border-gray-200', 'hover:border-black', 'cursor-pointer', 'dark:border-gray-700', 'dark:hover:border-gray-500', 'dark:bg-gray-800', 'animate-postScale');
                 questionElement.innerHTML = `
                     <div class="flex flex-col">
                         <input type="hidden" name="post_id" value="${post.post_id}">
@@ -56,7 +59,7 @@ class QuestionRenderer {
                                 </div>
                             </div>
                         </div>
-                        <h2 class="mt-3 font-bold text-lg w-56 h-20 dark:text-white">${post.post_title}</h2>
+                        <h2 class="question-title mt-3 font-bold text-lg w-56 h-20 dark:text-white">${post.post_title}</h2>
                         <p class="mt-3 text-text-light text-sm dark:text-gray-400 font-medium line-clamp-1">${post.post_content}</p>
                         <div>
                             <div class="mt-3 rounded-md">
@@ -157,22 +160,22 @@ class QuestionRenderer {
                     const data = await this.fetchData('../controllers/check_likes.php', {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ post_id: question.post_id })
+                        body: JSON.stringify({ post_id: post.post_id })
                     });
     
                     const savedData = await this.fetchData('../controllers/check_savedposts.php', {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ post_id: question.post_id })
+                        body: JSON.stringify({ post_id: post.post_id })
                     });
     
                     if (data.error) {
                         console.log(data.error);
                     } else {
                         if (data.status == "yes") {
-
+                            questionElement.querySelector('.like-img').classList.add('filled-icon');
                         } else {
-
+                            questionElement.querySelector('.like-img').classList.remove('filled-icon');
                         }
                     }
     
@@ -180,9 +183,9 @@ class QuestionRenderer {
                         console.log(savedData.error);
                     } else {
                         if (savedData.status == 'yes') {
-
+                            questionElement.querySelector('.saved-img').classList.add('filled-icon');
                         } else {
-
+                            questionElement.querySelector('.saved-img').classList.add('filled-icon');
                         }
                     }
     
@@ -271,7 +274,7 @@ class QuestionRenderer {
 
         if (!questions || questions.length === 0) {
             const noResultsMessage = document.createElement('div');
-            noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4');
+            noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
             noResultsMessage.textContent = 'No results found.';
             this.container.appendChild(noResultsMessage);
             return;
@@ -285,7 +288,7 @@ class QuestionRenderer {
             const formattedDate = userJoinedTime.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
             questionElement.id = `ques-${question.post_id}`;
             questionElement.setAttribute('data-value', `${question.post_id}`);
-            questionElement.classList.add('mt-2', 'border-1', 'p-4', 'rounded-md', 'border-gray-200', 'hover:border-black', 'cursor-pointer', 'dark:border-gray-700', 'dark:hover:border-gray-500', 'dark:bg-gray-800');
+            questionElement.classList.add('mt-2', 'border-1', 'p-4', 'h-fit' , 'rounded-md', 'border-gray-200', 'hover:border-black', 'cursor-pointer', 'dark:border-gray-700', 'dark:hover:border-gray-500', 'dark:bg-gray-800');
             questionElement.innerHTML = `
                 <div class="flex flex-col">
                     <input type="hidden" name="post_id" value="${question.post_id}">
@@ -313,7 +316,7 @@ class QuestionRenderer {
                     <p class="font-roboto mt-3 text-md text-text font-normal line-clamp-1 dark:text-gray-400">${question.post_content}</p>
                     <div>
                         <div class="mt-3 rounded-md">
-                            <img loading="lazy" src="${question.imageURL ?? ''}" alt="Post image" width="100%" height="100px" class="rounded-md lazy-load">
+                            <img id="post-image" loading="lazy" src="${question.imageURL ?? ''}" alt="Post image" width="100%" height="100px" class="rounded-md lazy-load">
                         </div>
                         <div class="flex justify-between items-center mt-3">
                             <div class="flex items-center space-x-2 font-normal md:space-y-2 md:flex-wrap 2xl:flex-nowrap 2xl:space-y-0">
@@ -374,6 +377,11 @@ class QuestionRenderer {
             `;
 
             fragment.appendChild(questionElement);
+
+            const postImage = questionElement.querySelector('#post-image')
+            if (postImage.src.match('localhost')) {
+                postImage.classList.add('hidden')
+            }
 
             try {
                 const postTag = await this.fetchData(`../controllers/get_posttags.php`, {
@@ -515,7 +523,7 @@ class QuestionRenderer {
         tags.forEach(tag => {
             const tagElement = document.createElement('div');
             tagElement.id = `tag-${tag.tag_id}`;
-            tagElement.classList.add('border', 'border-gray-300', 'dark:border-gray-600' ,'rounded-md', 'p-4', 'tag-element', 'animate-postSlideIn');
+            tagElement.classList.add('border', 'border-gray-300', 'dark:border-gray-600' ,'rounded-md', 'p-4', 'tag-element', 'animate-postSlideIn', 'hover:border-gray-600', 'dark:hover:border-gray-400', 'cursor-pointer');
             tagElement.innerHTML = `
                 <input id="tag-value" type="hidden" value="${tag.tag_type}">
                 <span id="tagname-${tag.tag_id}" class="w-fit rounded-full bg-gray-300 px-2 text-sm font-medium">#${tag.tag_name}</span>
@@ -610,14 +618,14 @@ class QuestionRenderer {
         });
     }
 
-    renderUserProfile(data) {
+    async renderUserProfile(data) {
+        const _this = this;
         const profileContainer = document.querySelector('#info-container');
         const bioContainer = document.querySelector('#bio-container');
         const profileAction = document.querySelector('#profile-actions');
         if (data.error) {
             profileContainer.innerHTML = `<p class="text-red-500">${data.error}</p>`;
         } else {
-            console.log(data);
             const username = document.querySelector('#username');
             username.classList.add('dark:text-white');
             username.textContent = data.fullname;
@@ -652,6 +660,20 @@ class QuestionRenderer {
                     </div>
                 </div>
             `;
+
+            try {
+                setTimeout(async function() {
+                    const followCounts = await _this.fetchData(`../controllers/get_follow_counts.php?user_id=${data.user_id}`);
+                    document.getElementById('follower-count').textContent = followCounts.follower_count;
+                    document.getElementById('following-count').textContent = followCounts.following_count;
+
+                    const userPostCounts = await _this.fetchData(`../controllers/get_user_counts.php?user_id=${data.user_id}`);
+                    document.getElementById('view-count').textContent = userPostCounts.total_view_count;
+                    document.getElementById('like-count').textContent = userPostCounts.total_like_count;
+                }, 100)
+            } catch (error) {
+                console.error('Error loading follow and post counts:', error);
+            }
 
             const socialContainer = document.querySelector('#social-container');
 
@@ -713,7 +735,7 @@ class QuestionRenderer {
                             </div>
                         </div>
                         <div class="border-2 border-gray-200 rounded-md">
-                            <img loading="lazy" src="${myPost.imageURL}" alt="" class="rounded-md h-30 w-30 md:w-60 md:h-40 2xl:h-50">
+                            <img id="post-image" loading="lazy" src="${myPost.imageURL}" alt="Post image" class="rounded-md h-30 w-30 md:w-60 md:h-40 2xl:h-50">
                         </div>
                     `;
 
@@ -977,12 +999,12 @@ class QuestionRenderer {
             if (user.user_id !== userId) {
                 const userElement = document.createElement('div');
                 userElement.id = `user-${user.user_id}`
-                userElement.classList.add('flex', 'space-x-4', 'items-center', 'p-4', 'rounded-lg', 'hover:bg-gray-200', 'dark:hover:bg-gray-800');
+                userElement.classList.add('flex', 'space-x-4', 'items-center', 'p-4', 'rounded-lg', 'hover:bg-gray-200', 'dark:hover:bg-gray-800', 'cursor-pointer', 'animate-postSlideIn');
                 userElement.innerHTML = `
                     <img src="${user.avatar ?? '../assets/images/user.png'}" alt="" class="h-13 lg:h-28 rounded-full">
 
                     <div>
-                        <h2 class="text-lg text-text font-semibold lg:text-2xl dark:text-gray-400">${user.fullname}</h2>
+                        <h2 class="user-title text-lg text-text font-semibold lg:text-2xl dark:text-gray-400">${user.fullname}</h2>
                         <h3 id="user-tagname${user.user_id}" class="text-sm text-text-light font-medium lg:text-lg dark:text-gray-500">${user.tag_name ?? ''}</h3>
                         <h4 class="text-sm text-[#2691BF] font-medium lg:text-lg">${user.bio ?? ''}</h4>
                     </div>
@@ -1007,7 +1029,7 @@ class QuestionRenderer {
     sortedDates.forEach(date => {
         const posts = groupedHistory[date];
         const dateElement = document.createElement('h2');
-        dateElement.classList.add('lg:text-3xl');
+        dateElement.classList.add('lg:text-3xl', 'animate-postSlideIn');
         dateElement.textContent = date;
         this.container.appendChild(dateElement);
 
@@ -1018,14 +1040,15 @@ class QuestionRenderer {
                 postIds.add(post.post_id);
 
                 const postElement = document.createElement('div');
-                postElement.classList.add('flex', 'space-x-4', 'p-2', 'hover:bg-gray-200', 'dark:hover:bg-gray-700', 'cursor-pointer');
+                postElement.classList.add('history-element','flex', 'space-x-4', 'p-2', 'hover:bg-gray-200', 'dark:hover:bg-gray-700', 'cursor-pointer', 'animate-slideRight');
+                postElement.setAttribute('data-value', post.post_id);
                 postElement.innerHTML = `
                     <div class="relative flex items-center pl-4">
                         <img src="${post.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 absolute top-1/4 -left-2 border-1 border-black rounded-full lg:h-20 2xl:h-16">
                         <img src="${post.imageURL}" alt="" class="rounded-md w-40 h-20 lg:w-80 lg:h-40 2xl:w-60">
                     </div>
                     <div>
-                        <h2 class="line-clamp-3 leading-5 text-text lg:text-3xl lg:leading-8 dark:text-white">${post.post_title}</h2>
+                        <h2 class="history-title line-clamp-3 leading-5 text-text lg:text-3xl lg:leading-8 dark:text-white">${post.post_title}</h2>
                         <div class="text-sm font-medium text-text lg:text-2xl dark:text-white">
                             <span>${post.like_count}</span>
                             <span>likes</span>
@@ -1036,7 +1059,7 @@ class QuestionRenderer {
             }
         });
     });
-}y
+}
 
     // Hàm dùng để gom các ngày đọc bài viết trong lịch sử
     groupByDate(posts) {

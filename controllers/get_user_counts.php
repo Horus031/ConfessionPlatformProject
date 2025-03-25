@@ -1,6 +1,4 @@
 <?php
-// filepath: d:\xampp\htdocs\mywebsite\controllers\get_user_counts.php
-
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 include '../includes/dbconnection.php';
@@ -17,10 +15,10 @@ try {
             exit;
         }
 
-        $viewCount = $database->getViewCount($userId);
-        $likeCount = $database->getLikeCount($userId);
+        $totalLikeCount = $database->getTotalLikeCount($userId);
+        $totalViewCount = $database->getTotalViewCount($userId);
 
-        echo json_encode(['view_count' => $viewCount, 'like_count' => $likeCount]);
+        echo json_encode(['total_like_count' => $totalLikeCount, 'total_view_count' => $totalViewCount]);
     } else {
         echo json_encode(['error' => 'Invalid request method']);
     }

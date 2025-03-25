@@ -1,8 +1,8 @@
-<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[16%]">
-    <h1 class="text-2xl font-semibold lg:text-4xl dark:text-white">New post</h1>
+<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[16%] transition-all">
+    <h1 class="text-2xl font-semibold lg:text-4xl dark:text-white animate-slideRight">New post</h1>
 
 
-    <form id="newpost-form" action="../controllers/add_newpost.php" method="post" enctype="multipart/form-data">
+    <form id="newpost-form" action="../controllers/add_newpost.php" method="post" enctype="multipart/form-data" class="animate-slideRight">
         <div class="mt-2 space-y-4">
             <input type="text" name="titleValue" id="title" class="border-1 border-text rounded-lg p-2 q px-4 w-full md:w-5/8 lg:w-4/9 dark:border-gray-600 dark:text-gray-400" placeholder="Post title">
         </div>

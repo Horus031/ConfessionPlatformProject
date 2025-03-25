@@ -24,24 +24,29 @@ class EventListener {
         this.navbar = document.querySelector('#navbar');
         this.btnWrapper = document.querySelector('#btn-wrapper');
         this.userBtn = document.querySelector('#user-btn');
-        this.userPopup = document.querySelector('#user-popup');
+        this.userPopup = document.querySelector('#users-popup');
         this.notifyBtn = document.querySelector('#notify-btn');
         this.notifyPopup = document.querySelector('#notify-popup');
         this.buttonContainer = document.querySelector('#button-container');
         this.tagList = document.querySelector('#tag-list');
         this.tagInput = document.querySelector('#tag-input');
         this.selectTagType = document.querySelector('#select-tag-type');
+        this.savedPostSearch = document.querySelector('#saved-search');
         this.fileInput = document.querySelector('#imageURL');
         this.fileName = document.querySelector('#file-name');
         this.questionElement = document.querySelectorAll('div[id^="ques-"]');
+        this.historySearch = document.querySelector('#history-search');
+        this.userSeach = document.querySelector('#user-search')
+        this.historyElement = document.querySelectorAll('.history-element');
         this.filterTags = document.querySelector('#filter-tags');
+        this.tagContainer = document.querySelector('#tags-container');
         this.tagElements = document.querySelectorAll('div[id^="tag-"]');
         this.postForm = document.querySelector('#post-form');
         this.postDetailContainer = document.querySelector('#postdetail-container');
+        this.tagSearch = document.querySelector('#tag-search');
         this.questionFilter = document.querySelector('#question-filter');
-        this.questionContainer = document.querySelector('#question-container');
         this.profileActions = document.querySelector('#profile-actions');
-        this.userContainer = document.querySelector('#user-container');
+        this.userContainer = document.querySelector('#users-container');
         if (this.userContainer) {
             this.userList = this.userContainer.querySelectorAll('div[id^=user-]')
         }
@@ -52,6 +57,8 @@ class EventListener {
     handleEvents() {
         const _this = this;
         this.initElements();
+        
+
         if (this.loginForm) {
             this.loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -212,6 +219,7 @@ class EventListener {
                 if (query.length > 2) {
                     try {
                         const results = await _this.renderer.fetchData(`../controllers/check_searchvalues.php?query=${encodeURIComponent(query)}`);
+
         
                         _this.searchSuggestions.innerHTML = '';
                         _this.searchSuggestions.classList.remove('hidden');
@@ -219,7 +227,6 @@ class EventListener {
                         searchTitle.classList.add('text-sm', 'text-text-light', 'font-medium');
                         _this.searchSuggestions.appendChild(searchTitle);
         
-                        console.log(query);
                         console.log(results);
                         results.forEach(result => {
                             const suggestion = document.createElement('div');
@@ -259,11 +266,30 @@ class EventListener {
             }, 500);
         
             this.searchInput.addEventListener('focus', function() {
+                _this.searchSuggestions.innerHTML = `
+                    <h4 id="search-title" class="text-sm text-text-light font-medium">Several ways to find post:</h4>
+                    <hr class="bg-text-light border-text-light mb-4">
+                    <div class="text-sm flex flex-col">
+                        <span>
+                            <b class="text-black">Post title</b>
+                            Type anything and results will be displayed
+                        </span>
+                        <span>
+                            <b class="text-black">#example</b>
+                            Find post by tags
+                        </span>
+                        <span>
+                            <b class="text-black">@example</b>
+                            Find post by users' tag name
+                        </span>
+                    </div>
+                `;
                 _this.searchSuggestions.classList.remove('hidden');
             });
         
             this.searchInput.addEventListener('blur', function(e) {
                 if (e.target.id !== 'searchInput') {
+                    _this.searchSuggestions.innerHTML = '';
                     _this.searchSuggestions.classList.add('hidden');
                 }
             });
@@ -349,6 +375,52 @@ class EventListener {
                 });
             }
 
+            if (this.historySearch) {
+                this.historySearch.addEventListener('input', function() {
+                    const searchValue = _this.historySearch.value.trim().toLowerCase();
+                    _this.historyElement.forEach(history => {
+                        if (searchValue === '') {
+                            history.classList.remove('hidden');
+                            return;
+                        }
+
+                        const historyValue = history.querySelector('.history-title').textContent.toLowerCase();
+                        if (historyValue.includes(searchValue)) {
+                            history.classList.remove('hidden');
+                        } else {
+                            history.classList.add('hidden');
+                        }
+                    });
+                })
+
+
+                this.historyElement.forEach(question => {
+                    question.addEventListener('click', function(e) {
+                        const questionId = question.getAttribute('data-value');
+                        window.location.href = `../views/main.html.php?page=postdetails&id=${questionId}`;
+                    })
+                })
+            }
+
+            if (this.userSeach) {
+                this.userSeach.addEventListener('input', function() {
+                    const userSearch = _this.userSeach.value.trim().toLowerCase();
+                    console.log(_this.userElements)
+                    _this.userList.forEach(user => {
+                        if (userSearch === '') {
+                            user.classList.remove('hidden');
+                            return;
+                        }
+
+                        const userValue = user.querySelector('.user-title').textContent.toLowerCase();
+                        if (userValue.includes(userSearch)) {
+                            user.classList.remove('hidden');
+                        } else {
+                            user.classList.add('hidden');
+                        }
+                    });
+                })
+            }
 
             if (this.notifyBtn) {
                 this.notifyBtn.addEventListener('click', () => {
@@ -356,18 +428,18 @@ class EventListener {
                 });
             }
 
-            
-
             if (this.questionElement) {
+                console.log(this.questionElement)
                 this.questionElement.forEach(question => {
                     question.addEventListener('click', function(e) {
+                        console.log(e.target);
                         const postId = question.getAttribute('data-value');
                         const moreButton = question.querySelector('span[id="post-actions"]');
                         const profileShortCut = question.querySelector('img[id="profile-hover"]');
                         const profilePopup = question.querySelector('div[id="profile-popup"]');
                         let button = e.target.closest('button');
 
-                        if (e.target.contains(moreButton)) {
+                        if (e.target.id == moreButton.id) {
                             const actionPopup = question.querySelector('#action-popup');
                             actionPopup.classList.toggle('hidden');
                             document.addEventListener('click', function(e) {
@@ -376,7 +448,7 @@ class EventListener {
                                 }
                             });
                             return;
-                        } else if (e.target.contains(profileShortCut)) {
+                        } else if (e.target.id == profileShortCut.id) {
                             const tagNameValue = profilePopup.querySelector('.tagname').textContent;
                             window.location.href = `main.html.php?page=profile&tag_name=${tagNameValue.slice(1)}`;
                             return;
@@ -385,6 +457,7 @@ class EventListener {
 
                         if (!button) {
                             _this.addReadingHistory(postId);
+                            _this.incrementViewCounts(postId);
                             window.location.href = `../views/main.html.php?page=postdetails&id=${postId}`;
                         }
 
@@ -419,6 +492,34 @@ class EventListener {
                     const postId = question.getAttribute('data-value');
                     this.updateLikeCount(postId, question);
                     this.updateCommentCount(postId, question);
+                });
+            }
+
+            if (this.tagElements) {
+                this.tagElements.forEach(element => {
+                    element.addEventListener('click', function() {
+                        const tagValue = element.querySelector('span[id^="tagname-"]').textContent;
+                        window.location.href = `main.html.php?page=question&query=${encodeURIComponent(tagValue)}`;
+                    })
+                })
+            }
+
+            if (this.tagContainer) {
+                this.tagSearch.addEventListener('input', function() {
+                    const inputValue = _this.tagSearch.value.trim().toLowerCase();
+                    _this.tagElements.forEach(tag => {
+                        if (inputValue === '') {
+                            tag.classList.remove('hidden');
+                            return;
+                        }
+
+                        const tagValue = tag.querySelector('span[id^="tagname-"]').textContent.toLowerCase();
+                        if (tagValue.includes(inputValue)) {
+                            tag.classList.remove('hidden');
+                        } else {
+                            tag.classList.add('hidden');
+                        }
+                    });
                 });
             }
 
@@ -478,6 +579,25 @@ class EventListener {
                         }
                     }, 100)
                 });
+            }
+
+            if (this.savedPostSearch) {
+                this.savedPostSearch.addEventListener('input', function() {
+                    const savedValue = _this.savedPostSearch.value.trim().toLowerCase();
+                    _this.questionElement.forEach(savedPost => {
+                        if (savedValue === '') {
+                            savedPost.classList.remove('hidden');
+                            return;
+                        }
+
+                        const questionValue = savedPost.querySelector('.question-title').textContent.toLowerCase();
+                        if (questionValue.includes(savedValue)) {
+                            savedPost.classList.remove('hidden');
+                        } else {
+                            savedPost.classList.add('hidden');
+                        }
+                    });
+                })
             }
 
             if (this.postDetailContainer) {
@@ -577,43 +697,44 @@ class EventListener {
             if (this.selectTagType) {
                 this.selectTagType.addEventListener('change', function() {
                     let selectedValue = _this.selectTagType.value;
-                    console.log(selectedValue);
                     
-                    while (_this.tagList.firstChild) {
-                        _this.tagList.removeChild(_this.tagList.firstChild);
-                    }
+                    // Clear the tag list to prevent duplication
+                    _this.tagList.innerHTML = '';
         
-                    fetch('../controllers/tags_withtype.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: new URLSearchParams({ type: selectedValue })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.error) {
-                            _this.tagList.innerHTML = `<option>${data.error}</option>`
-                        } else {
-                            console.log(data);
-                            _this.tagList.innerHTML = '';
-
-                            if (selectedValue == '') {
-                                _this.tagList.classList.add('hidden');
-                                _this.buttonContainer.classList.add('hidden');
-                                _this.tagInput.classList.add('hidden');
+                    setTimeout(function() {
+                        fetch('../controllers/tags_withtype.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams({ type: selectedValue })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                _this.tagList.innerHTML = `<option>${data.error}</option>`
                             } else {
-                                _this.tagList.classList.remove('hidden');
-                                _this.buttonContainer.classList.remove('hidden');
-                                _this.tagInput.classList.remove('hidden');
-                                data.forEach(tag => {
-                                    const tagElement = document.createElement('option');
-                                    tagElement.classList.add('dark:text-gray-400', 'dark:bg-gray-900')
-                                    tagElement.value = `${tag.tag_name}`;
-                                    tagElement.textContent = `${tag.tag_name}`;
-                                    _this.tagList.appendChild(tagElement);
-                                })
+                                console.log(data);
+                                _this.tagList.innerHTML = '';
+    
+                                if (selectedValue == '') {
+                                    _this.tagList.classList.add('hidden');
+                                    _this.buttonContainer.classList.add('hidden');
+                                    _this.tagInput.classList.add('hidden');
+                                } else {
+                                    _this.tagList.classList.remove('hidden');
+                                    _this.buttonContainer.classList.remove('hidden');
+                                    _this.tagInput.classList.remove('hidden');
+                                    data.forEach(tag => {
+                                        console.log('done')
+                                        const tagElement = document.createElement('option');
+                                        tagElement.classList.add('dark:text-gray-400', 'dark:bg-gray-900')
+                                        tagElement.value = `${tag.tag_name}`;
+                                        tagElement.textContent = `${tag.tag_name}`;
+                                        _this.tagList.appendChild(tagElement);
+                                    })
+                                }
                             }
-                        }
-                    })
+                        })
+                    }, 100)
                 });
             }
 
@@ -659,6 +780,18 @@ class EventListener {
                     } else {
                         followButton.classList.remove('hidden');
                         this.profileActions.removeChild(editButton);
+    
+                        // Check follow status
+                        fetch(`../controllers/check_follow_status.php?follower_id=${this.userId}&following_id=${userIdValue}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.is_following) {
+                                    followButton.textContent = 'Unfollow';
+                                } else {
+                                    followButton.textContent = 'Follow';
+                                }
+                            })
+                            .catch(error => console.error('Error checking follow status:', error));
     
                         followButton.addEventListener('click', async function() {
                             try {
@@ -896,6 +1029,10 @@ class EventListener {
         }
     }
 
+    escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+    }
+
 
     showToastMessage() {
         const _this = this;
@@ -978,6 +1115,18 @@ class EventListener {
     async addReadingHistory(postId) {
         try {
             await this.renderer.fetchData('../controllers/add_reading_history.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: this.userId, post_id: postId })
+            });
+        } catch (error) {
+            console.error('Error adding reading history:', error);
+        }
+    }
+
+    async incrementViewCounts(postId) {
+        try {
+            await this.renderer.fetchData('../controllers/increment_view.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ user_id: this.userId, post_id: postId })

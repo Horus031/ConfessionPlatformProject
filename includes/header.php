@@ -17,22 +17,7 @@
         <div class="relative">
             <input type="text" name="searchInput" id="searchInput" class="text-black border-1 text-lg rounded-lg h-10 pl-3 border-secondary w-full flex-1 e dark:text-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search question..." autocomplete="off">
             <div id="searchSuggestions" class="absolute bg-white border border-gray-200 rounded-lg shadow-lg px-4 py-2 mt-1 w-full hidden group-focus:block">
-                <h4 id="search-title" class="text-sm text-text-light font-medium">Several ways to find post:</h4>
-                <hr class="bg-text-light border-text-light mb-4">
-                <div class="text-sm flex flex-col">
-                    <span>
-                        <b class="text-black">Post title</b>
-                        Type anything and results will be displayed
-                    </span>
-                    <span>
-                        <b class="text-black">#example</b>
-                        Find post by tags
-                    </span>
-                    <span>
-                        <b class="text-black">@example</b>
-                        Find post by users' tag name
-                    </span>
-                </div>
+
             </div>
         </div>
     </div>
@@ -87,7 +72,7 @@
         </button>
         <button class="relative group">
             <img id="user-btn" loading="lazy" src="<?= isset($_SESSION['avatarURL']) ? $_SESSION["avatarURL"] : '../assets/images/user.png'; ?>" alt="" class="h-10 rounded-full">
-            <div id="user-popup" class="absolute bg-white border-1 rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 z-70 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:border-gray-600">
+            <div id="users-popup" class="absolute bg-white border-1 rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 z-70 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:border-gray-600">
                 <a href="main.html.php?page=profile&tag_name=<?= $_SESSION['tag_name'] ?>" class="flex items-center rounded-md text-3xl font-light space-x-4 p-3 hover:bg-gray-200 cursor-pointer dark:text-gray-400">
                     <span class="material-symbols-rounded custom-icon">account_circle</span>
                     <span class="text-lg font-normal">Profile</span>

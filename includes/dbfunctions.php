@@ -516,14 +516,6 @@ class Database
         LEFT JOIN comments ON posts.post_id = comments.post_id)
         WHERE posts.post_title LIKE :query
         GROUP BY posts.post_id
-        UNION
-        SELECT 'tag' AS type, tags.tag_id, NULL AS user_id, tags.tag_name AS post_title, NULL AS post_content, NULL AS created_at, NULL AS imageURL, NULL AS like_count, NULL AS comment_count, NULL AS avatar, NULL AS username, NULL AS module_id, NULL AS module_name, NULL AS bg_class, NULL AS text_class
-        FROM tags
-        WHERE tags.tag_name LIKE :query
-        UNION
-        SELECT 'user' AS type, users.user_id, NULL AS post_id, users.username AS post_title, NULL AS post_content, NULL AS created_at, NULL AS imageURL, NULL AS like_count, NULL AS comment_count, users.avatar, users.username, NULL AS module_id, NULL AS module_name, NULL AS bg_class, NULL AS text_class
-        FROM users
-        WHERE users.username LIKE :query OR users.tag_name LIKE :query
     ";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['query' => '%' . $query . '%']);
@@ -620,22 +612,6 @@ class Database
         return $stmt->fetchColumn() > 0;
     }
 
-    public function getViewCount($userId)
-    {
-        $sql = "SELECT view_count FROM users WHERE user_id = :user_id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['user_id' => $userId]);
-        return $stmt->fetchColumn();
-    }
-
-    public function getLikeCount($userId)
-    {
-        $sql = "SELECT like_count FROM users WHERE user_id = :user_id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['user_id' => $userId]);
-        return $stmt->fetchColumn();
-    }
-
     public function getTotalLikeCount($userId)
     {
         $sql = "SELECT SUM(like_count) FROM posts WHERE user_id = :user_id";
@@ -650,5 +626,26 @@ class Database
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['user_id' => $userId]);
         return $stmt->fetchColumn();
+    }
+
+    public function incrementViewCount($postId, $userId)
+    {
+        // Check if the user has already viewed the post
+        $sql = "SELECT COUNT(*) FROM post_views WHERE user_id = :user_id AND post_id = :post_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['user_id' => $userId, 'post_id' => $postId]);
+        $viewed = $stmt->fetchColumn();
+
+        if ($viewed == 0) {
+            // Increment view count
+            $sql = "UPDATE posts SET view_count = view_count + 1 WHERE post_id = :post_id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['post_id' => $postId]);
+
+            // Add view record
+            $sql = "INSERT INTO post_views (user_id, post_id) VALUES (:user_id, :post_id)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['user_id' => $userId, 'post_id' => $postId]);
+        }
     }
 }

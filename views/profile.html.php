@@ -85,7 +85,7 @@
             document.getElementById('follower-count').textContent = followCounts.follower_count;
             document.getElementById('following-count').textContent = followCounts.following_count;
 
-            const userPostCounts = await renderer.fetchData(`../controllers/get_user_post_counts.php?user_id=${otherUserId}`);
+            const userPostCounts = await renderer.fetchData(`../controllers/get_user_counts.php?user_id=${otherUserId}`);
             document.getElementById('view-count').textContent = userPostCounts.total_view_count;
             document.getElementById('like-count').textContent = userPostCounts.total_like_count;
 

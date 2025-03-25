@@ -6,7 +6,7 @@
             <span class="material-symbols-rounded custom-icon absolute h-6 left-2 top-1/5">
                 search
             </span>
-            <input type="text" name="tagInput" id="question-search" placeholder="Search tags by name" class="border-1 border-secondary rounded-lg pl-12 p-2 flex-1 text-lg font-normal dark:border-gray-600 dark:text-gray-400">
+            <input type="text" name="tagInput" id="tag-search" placeholder="Search tags by name" class="border-1 border-secondary rounded-lg pl-12 p-2 flex-1 text-lg font-normal dark:border-gray-600 dark:text-gray-400">
         </div>
 
         <div class="flex flex-col items-end animate-postSlideIn">
