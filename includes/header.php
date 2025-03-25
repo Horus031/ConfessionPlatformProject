@@ -27,42 +27,14 @@
             <div id="notify-btn" class="text-3xl font-light dark:text-gray-400">
                 <span class="material-symbols-rounded custom-icon">notifications</span>
             </div>
-            <div id="notify-popup" class="absolute -right-16 top-10 shadow-[0_5px_12px_-6px] z-10 rounded-lg bg-white w-90 group-hover:block hidden before:content-[''] before:absolute before:right-13 before:-top-4 before:w-12 before:h-4 before:bg-transparent">
+            <div class="absolute -right-16 top-10 shadow-[0_5px_12px_-6px] z-10 rounded-lg bg-white w-90 group-hover:block hidden before:content-[''] before:absolute before:right-13 before:-top-4 before:w-12 before:h-4 before:bg-transparent">
                 <div class="flex w-full justify-between items-center p-2 px-4 space-x-8 border-b border-secondary">
                     <span class="text-sm text-text-light font-bold">Notification</span>
                     <span class="text-nowrap text-sm text-blue-500">Mark all as read</span>
                 </div>
 
-                <div class="mt-2 space-y-4">
-                    <div class="flex px-2 text-left space-x-2">
-                        <img loading="lazy" src="../assets/images/user.png" alt="" class="h-8">
+                <div id="notify-popup" class="py-2 space-y-4">
 
-                        <div class="flex flex-col space-y-1">
-                            <span>Users has sent you a message</span>
-
-                            <span class="text-text-light break-all line-clamp-1">This is an automatically message</span>
-                        </div>
-
-                        <div class="flex flex-col space-y-1 text-nowrap mt-1 text-right">
-                            <span class="text-xs">Feb 27</span>
-                            <span class="text-xs">12:43</span>
-                        </div>
-                    </div>
-
-                    <div class="flex px-2 text-left space-x-2">
-                        <img loading="lazy" src="../assets/images/user.png" alt="" class="h-8">
-
-                        <div class="flex flex-col space-y-1">
-                            <span>Users has sent you a message</span>
-
-                            <span class="text-text-light break-all line-clamp-1">This is an automatically message</span>
-                        </div>
-
-                        <div class="flex flex-col space-y-1 text-nowrap mt-1 text-right">
-                            <span class="text-xs">Feb 27</span>
-                            <span class="text-xs">12:43</span>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="border-t-1 border-text py-1">
@@ -153,5 +125,29 @@
 </aside>
 
 <script type="module">
+    import QuestionRenderer from '../src/js/render.js';
 
+    const userId = <?= $_SESSION['user_id'] ?>
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        const renderer = new QuestionRenderer('#notify-popup');
+
+        try {
+            const notifications = await renderer.fetchData('../controllers/get_notifications.php', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    userId: userId
+                })
+            })
+
+            renderer.renderNotifications(notifications, userId)
+
+
+        } catch (error) {
+            console.log('Error fetching data', error);
+        }
+    })
 </script>

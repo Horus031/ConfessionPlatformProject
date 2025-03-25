@@ -6,6 +6,71 @@ class EventListener {
         this.currentURL = window.location.href;
         this.userId = userId;
         this.renderedComments = new Set(); // Tạo Set lưu trữ các id của comment
+        this.socket = new WebSocket("ws://localhost:8080");
+
+
+        this.socket.onopen = () => {
+            console.log("WebSocket connected!");
+        };
+
+        this.socket.onmessage = (event) => {
+            let data = JSON.parse(event.data);
+        
+            if (data.type === "like") {
+                document.querySelector(`.like-count-${data.postId}`).innerText = data.likes;
+            } 
+            
+            if (data.type === "comment") {
+                let commentSection = document.querySelector(`div[id^="comment-container-"]`);
+                let firstChildComment = commentSection.firstElementChild;
+
+                const newCommentElement = document.createElement('div');
+                newCommentElement.setAttribute('data-value', `${data.comment_id}`)
+                newCommentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700' ,'animate-slideRight');
+                newCommentElement.innerHTML = `
+                    <img src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h2 class="font-medium text-md dark:text-white">${data.username}</h2>
+                            <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(data.createdTime)}</span>
+                        </div>
+                        <p class="text-sm dark:text-gray-400">${data.comment}</p>
+                    </div>
+                `;
+
+                commentSection.insertBefore(newCommentElement, firstChildComment);
+            }
+            
+            if (data.type === "notification") {
+                console.log(data);
+                const notifyContainer = document.querySelector('#notify-popup');
+                const notifyFirstChild = notifyContainer.firstElementChild;
+
+                const notifyElement = document.createElement('a');
+                notifyElement.classList.add('flex', 'justify-between' ,'px-2', 'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer');
+                notifyElement.href = `${data.url}`;
+                notifyElement.id = `notify-${data.notification_id}`;
+                const timeInMonth = new Date(data.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const timeInHour = new Date(data.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                console.log(timeInHour);
+                notifyElement.innerHTML = `
+                    <div class="flex space-x-2">
+                        <img loading="lazy" src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-8">
+
+                        <span>${data.message}.</span>
+                    </div>
+
+                    <div class="flex flex-col space-y-1 text-nowrap mt-1 text-right">
+                        <span class="text-xs">${timeInMonth}</span>
+                        <span class="text-xs">${timeInHour}</span>
+                    </div>
+                
+                `;
+
+                notifyContainer.insertBefore(notifyElement, notifyFirstChild);
+            }
+        };
     }
 
     initElements() {
@@ -429,10 +494,8 @@ class EventListener {
             }
 
             if (this.questionElement) {
-                console.log(this.questionElement)
                 this.questionElement.forEach(question => {
-                    question.addEventListener('click', function(e) {
-                        console.log(e.target);
+                    question.addEventListener('click', async function(e) {
                         const postId = question.getAttribute('data-value');
                         const moreButton = question.querySelector('span[id="post-actions"]');
                         const profileShortCut = question.querySelector('img[id="profile-hover"]');
@@ -464,8 +527,28 @@ class EventListener {
                         switch (true) {
                             case button.id == "likes-btn":
                                 const likeImage = question.querySelector('.like-img');
-                                const likeCountSpan = question.querySelector('.like-count');
+                                const likeCountSpan = question.querySelector(`.like-count-${postId}`);
+                                const receiverId = question.querySelector('img[class^="user-"]').getAttribute('data-value');
+                                const username = question.querySelector('#post-username').textContent;
+                                const messageNotify = `has liked your post!`;
+                                const urlNotify = `../views/main.html.php?page=postdetails&id=${postId}`;
+                                const createdTime = new Date();
                                 _this.handleLikes(postId, likeCountSpan, likeImage);
+                    
+
+                                setTimeout(async function() {
+                                    if (likeImage.classList.contains('filled-icon') && receiverId != _this.userId) {
+                                        await _this.renderer.fetchData('../controllers/add_notifications.php', {
+                                            method: "POST",
+                                            headers: { "Content-Type": "application/json" },
+                                            body: JSON.stringify({ receiverId: receiverId, senderId: _this.userId, type: 'like', message: messageNotify, url: urlNotify })
+                                        })
+
+                                        _this.sendNotification(receiverId, _this.userId, 'like', messageNotify, urlNotify, createdTime);
+                                    } else {
+                                        _this.notifyPopup.classList.remove('hidden');
+                                    }
+                                }, 100)
                                 break;
                             case button.id == "comment-btn":
                                 console.log('comment');
@@ -653,31 +736,28 @@ class EventListener {
                     if (newComment.error) {
                         console.log (newComment.error);
                     } else {
-                        console.log(newComment);
-                        const commentContainer = document.querySelector('#comment-container');
-                        const firstChildElement = commentContainer.firstElementChild;
+                        const commentContainer = document.querySelector('div[id^="comment-container-"]');
         
-                        const newCommentElement = document.createElement('div');
-                        newCommentElement.setAttribute('data-value', `${newComment.comment_id}`)
-                        newCommentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700' ,'animate-slideRight');
-                        newCommentElement.innerHTML = `
-                            <img src="${newComment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
-        
-                            <div>
-                                <div class="flex items-center space-x-2">
-                                    <h2 class="font-medium text-md dark:text-white">${newComment.username}</h2>
-                                    <span class="text-xs dark:text-gray-400">${_this.renderer.timeAgo(newComment.created_at)}</span>
-                                </div>
-                                <p class="text-sm dark:text-gray-400">${newComment.content}</p>
-                            </div>
-                        `;
-        
-                        commentContainer.insertBefore(newCommentElement, firstChildElement);
+                        // commentContainer.insertBefore(newCommentElement, firstChildElement);
                         _this.renderedComments.add(newComment.comment_id); // Thêm comment id vừa post vào Set
         
 
                         textarea.value = '';
                         document.querySelector('.comment-count').textContent = `(${_this.renderedComments.size})`;
+
+
+                        console.log(newComment.created_at, newComment.content)
+
+                        _this.socket.send(JSON.stringify({
+                            type: "comment",
+                            commentId: newComment.comment_id,
+                            postId: commentContainer.getAttribute('data-post-id'),
+                            userId: newComment.user_id,
+                            username: newComment.username,
+                            avatar: newComment.avatar,
+                            createdTime: newComment.created_at,
+                            comment: newComment.content
+                        }));
                     } 
                 })
             }
@@ -885,6 +965,12 @@ class EventListener {
                 likeImage.classList.remove('filled-icon');
                 likeCountSpan.textContent = parseInt(likeCountSpan.textContent) - 1;
             }
+
+            this.socket.send(JSON.stringify({
+                type: "like",
+                postId: postId,
+                likes: likeCountSpan.textContent
+            }));
         } catch (error) {
             console.error('Error handling likes:', error);
         }
@@ -908,8 +994,6 @@ class EventListener {
             }
         } catch (error) {
             console.error('Error updating like count:', error);
-        } finally {
-            setTimeout(() => this.updateLikeCount(postId, container), 5000);
         }
     }
 
@@ -930,8 +1014,6 @@ class EventListener {
             }
         } catch (error) {
             console.log('Error updating comment count:', error);
-        } finally {
-            setTimeout(() => this.updateCommentCount(postId, container), 5000);
         }
     }
 
@@ -946,8 +1028,7 @@ class EventListener {
             if (comments.error) {
                 console.log(comments.error);
             } else {
-                console.log(comments);
-                const commentContainer = document.querySelector('#comment-container');
+                const commentContainer = document.querySelector('div[id^="comment-container-"]');
                 const firstChildElement = commentContainer.firstElementChild;
                 comments.forEach(comment => {
                     if (!this.renderedComments.has(comment.comment_id)) {
@@ -973,8 +1054,6 @@ class EventListener {
             }
         } catch (error) {
             console.error('Error updating comments:', error);
-        } finally {
-            setTimeout(() => this.updateComments(postId), 5000);
         }
     }
 
@@ -1135,6 +1214,24 @@ class EventListener {
             console.error('Error adding reading history:', error);
         }
     }
+
+    sendNotification(userId, senderId, type, message, url, createdTime) {
+        const conditions = userId && senderId && type && message && url && createdTime;
+        if (conditions) {
+            let notificationData = {
+                type: "notification",
+                userId: userId,
+                senderId: senderId,
+                notification_type: type,
+                message: message,
+                url: url,
+                createdTime: createdTime
+    
+            };
+        
+            this.socket.send(JSON.stringify(notificationData));
+        }
+    }
     
     
     start() {
@@ -1145,7 +1242,6 @@ class EventListener {
 
         const postId = this.postDetailContainer ? this.postDetailContainer.getAttribute('data-value') : null;
         if (postId) {
-            this.updateLikeCount(postId, this.postDetailContainer);
             this.updateComments(postId);
         }
         

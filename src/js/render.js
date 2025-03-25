@@ -322,13 +322,13 @@ class QuestionRenderer {
                             <div class="flex items-center space-x-2 font-normal md:space-y-2 md:flex-wrap 2xl:flex-nowrap 2xl:space-y-0">
                                 <div class="flex items-center space-x-2">
                                     <div class="relative group">
-                                        <img id="profile-hover" loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+                                        <img id="profile-hover" data-value="${question.user_id}" loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" alt="" class="user-${question.user_id} h-10 rounded-full">
 
                                         <div id="profile-popup" class="absolute bg-white w-66 rounded-md p-2 -top-26 left-0 border-1 border-gray-600 before:content-[''] before:absolute before:w-full before:h-0 before:right-0 before:-bottom-2 before:border-4 before:border-transparent group-hover:block hidden transition-all dark:bg-gray-800 dark:border-gray-400">
                                             <div class="flex items_center space-x-4">
                                                 <img loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" class="h-20 rounded-full">
                                                 <div>
-                                                    <h4 class="text-lg font-medium dark:text-white">${question.username}</h4>
+                                                    <h4 id="post-username" class="text-lg font-medium dark:text-white">${question.username}</h4>
                                                     <div class="text-sm">
                                                         <span class="text-text tagname dark:text-gray-400">@${question.tag_name ?? ''}</span>
                                                         <span class="text-text dark:text-gray-400">•</span>
@@ -350,7 +350,7 @@ class QuestionRenderer {
                                     <span class="material-symbols-rounded custom-icon like-img">
                                         thumb_up
                                     </span>
-                                    <span class="like-count text-lg" data-post-id="${question.post_id}">${question.like_count}</span>
+                                    <span class="like-count-${question.post_id} text-lg" data-post-id="${question.post_id}">${question.like_count}</span>
                                 </button>
                                 <button id="comment-btn" class="flex items-center space-x-2 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
                                     <span class="material-symbols-rounded custom-icon ">
@@ -837,6 +837,7 @@ class QuestionRenderer {
         document.querySelector('.comment-count').textContent = `(${post.comments})`;
         document.querySelector('.like-count').textContent = `${post.likes}`;
         document.querySelector('#comment-container').setAttribute('data-post-id', `${post.post_id}`);
+        document.querySelector('#comment-container').id = `comment-container-${post.post_id}`;
         document.querySelector('#post-form').setAttribute('data-post-id', `${post.post_id}`);
 
         const usertagContainer = document.querySelector('#user-tag');
@@ -1059,7 +1060,50 @@ class QuestionRenderer {
             }
         });
     });
-}
+    }
+
+    renderNotifications(notifications) {
+        if (!this.container) return;
+        this.container.innerHTML = '';
+
+        if (!notifications || notifications.length === 0) {
+            const noResultsMessage = document.createElement('div');
+            noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
+            noResultsMessage.textContent = 'No results found.';
+            this.container.appendChild(noResultsMessage);
+            return;
+        }
+
+        console.log(notifications);
+
+        notifications.forEach(notify => {
+            const notifyElement = document.createElement('a');
+            notifyElement.classList.add('flex', 'justify-between' ,'px-2', 'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer');
+            notifyElement.href = `${notify.url}`;
+            notifyElement.id = `notify-${notify.notification_id}`;
+            const timeInMonth = new Date(notify.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const timeInHour = new Date(notify.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            console.log(timeInHour);
+            notifyElement.innerHTML = `
+                <div class="flex space-x-3">
+                    <img loading="lazy" src="${notify.avatar ?? '../assets/images/user.png'}" alt="" class="h-8">
+
+                    <div class="flex flex-col space-y-1">
+                        <span>${notify.username} ${notify.message}</span>
+
+                        <span class="text-text-light break-all line-clamp-1">Check it out!</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col space-y-1 text-nowrap mt-1 text-right">
+                    <span class="text-xs">${timeInMonth}</span>
+                    <span class="text-xs">${timeInHour}</span>
+                </div>
+            
+            `;
+            this.container.appendChild(notifyElement)
+        });
+    }
 
     // Hàm dùng để gom các ngày đọc bài viết trong lịch sử
     groupByDate(posts) {

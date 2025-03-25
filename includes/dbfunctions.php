@@ -221,7 +221,7 @@ class Database
     public function fetchNewComment($user_id, $post_id, $content)
     {
         $comment_id = $this->postComment($user_id, $post_id, $content);
-        $sql = 'SELECT users.username, users.avatar, comments.comment_id, comments.content, comments.created_at 
+        $sql = 'SELECT users.user_id, users.username, users.avatar, comments.comment_id, comments.content, comments.created_at 
         FROM comments 
         JOIN users ON comments.user_id = users.user_id 
         WHERE comments.comment_id = ?';
@@ -647,5 +647,25 @@ class Database
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute(['user_id' => $userId, 'post_id' => $postId]);
         }
+    }
+
+    public function sendNotifications($userId, $senderId, $type, $message, $url)
+    {
+        $sql = 'INSERT INTO notifications (user_id, sender_id, type , message, url) VALUES (?, ?, ?, ?, ?)';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$userId, $senderId, $type, $message, $url]);
+    }
+
+    public function getAllNotifications($userId)
+    {
+        $sql = "SELECT notifications.*, users.avatar, users.username 
+                FROM notifications
+                INNER JOIN users ON notifications.sender_id = users.user_id
+                WHERE notifications.user_id = ?
+                ORDER BY notifications.created_at DESC
+                ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

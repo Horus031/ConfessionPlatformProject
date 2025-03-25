@@ -1,0 +1,23 @@
+{
+  "name": "mywebsite",
+  "version": "1.0.0",
+  "main": "prettier.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Horus031/ConfessionPlatformProject.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Horus031/ConfessionPlatformProject/issues"
+  },
+  "homepage": "https://github.com/Horus031/ConfessionPlatformProject#readme",
+  "description": "",
+  "dependencies": {
+    "ws": "^8.18.1"
+  }
+}
