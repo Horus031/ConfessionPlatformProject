@@ -20,7 +20,7 @@
 
             <div class="flex flex-col space-y-2">
                 <h2 id="post-title" class="font-bold text-lg lg:text-2xl dark:text-white"></h2>
-                <div id="user-tag" class="flex items-center justify-between space-x-2">
+                <div id="usertags" class="flex items-center justify-between space-x-2">
                     <div class="flex items-center space-x-2">
                         <img id="user-avatar" loading="lazy" src="../assets/images/user.png" alt="" class="h-10 rounded-full md:h-14 2xl:h-16">
                         <span id="username" class="text-xs md:text-md lg:text-lg dark:text-gray-400"></span>
@@ -93,12 +93,14 @@
     import EventListener from '../src/js/events.js';
 
     const userId = <?= $_SESSION['user_id'] ?>;
+    const username = `<?= $_SESSION['username'] ?>`;
+    const avatar = `<?= $_SESSION['avatarURL'] ?>`;
 
     document.addEventListener('DOMContentLoaded', async function() {
         const urlParams = new URLSearchParams(window.location.search);
         const postId = urlParams.get('id');
         const renderer = new QuestionRenderer('#post-container');
-        const eventListener = new EventListener(userId);
+        const eventListener = new EventListener(userId, username, avatar);
 
         try {
             const postInfo = await renderer.fetchData(`../controllers/get_postdetails.php?id=${postId}`)

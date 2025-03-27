@@ -88,13 +88,13 @@
         const eventListener = new EventListener(userId);
 
         try {
-            const editUserInfo = await renderer.fetchData(`../controllers/get_userinfo.php?tag_name=${tagName}`, {
+            const editUserInfo = await renderer.fetchData(`../controllers/get_editinfo.php`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    tag_name: tagName
+                    userId: userId
                 })
             });
             renderer.renderEditUser(editUserInfo);

@@ -246,24 +246,24 @@ class QuestionRenderer {
         }
     
         let interval = Math.floor(seconds / 31536000);
-        if (interval > 1) {
-            return interval + " years ago";
+        if (interval >= 1) {
+            return interval === 1 ? "1 year ago" : interval + " years ago";
         }
         interval = Math.floor(seconds / 2592000);
-        if (interval > 1) {
-            return interval + " months ago";
+        if (interval >= 1) {
+            return interval === 1 ? "1 month ago" : interval + " months ago";
         }
         interval = Math.floor(seconds / 86400);
-        if (interval > 1) {
-            return interval + " days ago";
+        if (interval >= 1) {
+            return interval === 1 ? "1 day ago" : interval + " days ago";
         }
         interval = Math.floor(seconds / 3600);
-        if (interval > 1) {
-            return interval + " hours ago";
+        if (interval >= 1) {
+            return interval === 1 ? "1 hour ago" : interval + " hours ago";
         }
         interval = Math.floor(seconds / 60);
-        if (interval > 1) {
-            return interval + " minutes ago";
+        if (interval >= 1) {
+            return interval === 1 ? "1 minute ago" : interval + " minutes ago";
         }
         return Math.floor(seconds) + " seconds ago";
     }
@@ -356,7 +356,7 @@ class QuestionRenderer {
                                     <span class="material-symbols-rounded custom-icon ">
                                         comment
                                     </span>
-                                    <span class="comment-count text-lg" data-post-id="${question.post_id}">${question.comment_count}</span>
+                                    <span class="comment-count-${question.post_id} text-lg" data-post-id="${question.post_id}">${question.comment_count}</span>
                                 </button>
                             </div>
                             <div class="flex items-center space-x-2 ">
@@ -734,10 +734,16 @@ class QuestionRenderer {
                                 </button>
                             </div>
                         </div>
-                        <div class="border-2 border-gray-200 rounded-md">
+                        <div id="image-container" class="border-2 border-gray-200 rounded-md">
                             <img id="post-image" loading="lazy" src="${myPost.imageURL}" alt="Post image" class="rounded-md h-30 w-30 md:w-60 md:h-40 2xl:h-50">
                         </div>
                     `;
+
+                    const postImage = mypostElements.querySelector('#post-image');
+                    if (postImage.src.match('null')) {
+                        const imageContainer = mypostElements.querySelector('#image-container');
+                        mypostElements.removeChild(imageContainer)
+                    }
 
                     const data = await this.fetchData('../controllers/check_likes.php', {
                         method: "POST",
@@ -824,23 +830,27 @@ class QuestionRenderer {
     }
 
     async renderPostDetail(post, userId) {
+        console.log(post)
         document.querySelector('#postdetail-container').setAttribute('data-value', `${post.post_id}`);
         document.querySelector('#post_id').value = post.post_id;
         document.querySelector('#module-name').textContent = post.module_name;
         document.querySelector('#module-name').className = `w-fit rounded-full text-xs px-2 font-medium ${post.bg_class} ${post.text_class}`;
         document.querySelector('#post-title').textContent = post.post_title;
         document.querySelector('#user-avatar').src = post.avatar ?? '../assets/images/user.png';
+        document.querySelector('#user-avatar').setAttribute('data-value', post.user_id);
+        document.querySelector('#user-avatar').className = (`user-${post.user_id} h-10 rounded-full md:h-14 2xl:h-16`);
         document.querySelector('#username').textContent = post.username;
         document.querySelector('#created-at').textContent = this.timeAgo(post.created_at);
         document.querySelector('#post-content').textContent = post.post_content;
         document.querySelector('#post-image').src = post.imageURL ?? '';
         document.querySelector('.comment-count').textContent = `(${post.comments})`;
         document.querySelector('.like-count').textContent = `${post.likes}`;
+        document.querySelector('.like-count').className = `like-count-${post.post_id} text-lg font-normal`
         document.querySelector('#comment-container').setAttribute('data-post-id', `${post.post_id}`);
         document.querySelector('#comment-container').id = `comment-container-${post.post_id}`;
         document.querySelector('#post-form').setAttribute('data-post-id', `${post.post_id}`);
 
-        const usertagContainer = document.querySelector('#user-tag');
+        const usertagContainer = document.querySelector('#usertags');
         const tagContainer = document.createElement('div');
         tagContainer.classList.add('flex', 'items-center', 'space-x-2', 'text-sm');
         tagContainer.id = `tags-container-${post.post_id}`;
@@ -946,8 +956,6 @@ class QuestionRenderer {
                 }
             });
         }
-
-        
     }
 
     renderEditPosts(post, postId) {
@@ -966,26 +974,6 @@ class QuestionRenderer {
             selectedTag.push(`${tagName.tag_name}`);                    
         })
         tagNames.value = selectedTag.join(', ');
-    }
-
-    renderComments(comments) {
-        const commentContainer = document.querySelector('#comment-container');
-
-        comments.forEach(comment => {
-            const commentElement = document.createElement('div');
-            commentElement.setAttribute('data-value', `${comment.comment_id}`)
-            commentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md');
-            commentElement.innerHTML = `
-                <img src="${comment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
-
-                    <div>
-                        <h2 class="font-medium text-md">${comment.username}</h2>
-                        <p class="text-sm">${comment.content}</p>
-                    </div>
-            `;
-
-            commentContainer.appendChild(commentElement);
-        })
     }
 
     renderAllUsers(userList, userId) {
@@ -1062,31 +1050,47 @@ class QuestionRenderer {
     });
     }
 
-    renderNotifications(notifications) {
+    renderNotificationsPopup(notifications) {
         if (!this.container) return;
         this.container.innerHTML = '';
 
         if (!notifications || notifications.length === 0) {
             const noResultsMessage = document.createElement('div');
             noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
-            noResultsMessage.textContent = 'No results found.';
+            noResultsMessage.textContent = 'There is no notifications';
             this.container.appendChild(noResultsMessage);
             return;
         }
 
-        console.log(notifications);
+        let newBadge = document.querySelector('#notify-badge');
+        if (!newBadge) {
+            newBadge = document.createElement('span');
+            newBadge.id = 'notify-badge';
+            newBadge.classList.add('absolute', 'text-xs', '-top-1', '-right-1', 'px-2', 'bg-red-500', 'rounded-full', 'text-white', 'hidden');
+        }
+
+        const unreadCount = notifications.filter(notify => notify.is_read == '0').length;
+        if (unreadCount > 0) {
+            newBadge.textContent = unreadCount;
+            newBadge.classList.add('inline');
+            document.querySelector('#notify-btn').appendChild(newBadge);
+        }
 
         notifications.forEach(notify => {
             const notifyElement = document.createElement('a');
-            notifyElement.classList.add('flex', 'justify-between' ,'px-2', 'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer');
+            notifyElement.classList.add('flex', 'justify-between' ,'px-2', 'py-2' ,'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer');
+
+            if (notify.is_read == '0') {
+                notifyElement.classList.add('bg-blue-200');
+            }
+
             notifyElement.href = `${notify.url}`;
             notifyElement.id = `notify-${notify.notification_id}`;
             const timeInMonth = new Date(notify.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             const timeInHour = new Date(notify.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            console.log(timeInHour);
             notifyElement.innerHTML = `
                 <div class="flex space-x-3">
-                    <img loading="lazy" src="${notify.avatar ?? '../assets/images/user.png'}" alt="" class="h-8">
+                    <img loading="lazy" src="${notify.avatar ?? '../assets/images/user.png'}" alt="" class="h-8 rounded-full">
 
                     <div class="flex flex-col space-y-1">
                         <span>${notify.username} ${notify.message}</span>
@@ -1103,6 +1107,80 @@ class QuestionRenderer {
             `;
             this.container.appendChild(notifyElement)
         });
+    }
+
+    renderNotifications(notifications) {
+        if (!this.container) return;
+        this.container.innerHTML = '';
+
+        if (!notifications || notifications.length === 0) {
+            const noResultsMessage = document.createElement('div');
+            noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
+            noResultsMessage.textContent = 'There is no notifications';
+            this.container.appendChild(noResultsMessage);
+            return;
+        }
+
+        
+
+
+        notifications.forEach(notification => {
+            const notifyElement = document.createElement('div');
+            const timeInMonth = new Date(notification.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const timeInHour = new Date(notification.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            notifyElement.classList.add(`notify-${notification.notification_id}`, 'relative' ,'w-full', 'group', 'flex', 'justify-between', 'border-1', 'dark:border-gray-600', 'p-4', 'rounded-md', 'bg-gray-100', 'dark:bg-gray-800', 'md:w-2/3', 'lg:w-1/2', 'animate-slideRight', 'cursor-pointer', 'hover:border-black/20', 'dark:hover:border-gray-400');
+            notifyElement.innerHTML = `
+                <div class="flex space-x-2  dark:text-gray-400 rounded-lg text-3xl font-light 2xl:w-1/2">
+                    <span class="material-symbols-rounded custom-icon">
+                        notifications_active
+                    </span>
+                    <div>
+                        <img src="${notification.avatar ?? '../assets/images/user.png'}" alt="" class="h-8">
+
+                        <div class="text-lg font-normal">
+                            <h2 class="dark:text-gray-400"><b>${notification.username}</b> ${notification.message}</h2>
+                            <h3 class="dark:text-gray-400">Check it out!</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-sm text-right flex justify-end flex-col dark:text-gray-400 w-fit">
+                    <div class="flex flex-col text-nowrap">
+                        <span>${timeInMonth}</span>
+                        <span>${timeInHour}</span>
+                    </div>
+                </div>
+                <div class="group absolute right-0 top-0 group-hover:visible text-center  dark:text-gray-400 p-1 text-3xl font-light rounded-full cursor-pointer invisible">
+                    <span class="material-symbols-rounded custom-icon p-1 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 active:scale-90">
+                        more_horiz
+                    </span>
+                    <div class="absolute text-left bg-white dark:bg-gray-900 right-3 rounded-md h-fit top-9 font-normal hidden">
+                        <button class="text-left text-lg text-red-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full pl-2 py-2 pr-20 cursor-pointer">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            
+
+            if (notification.is_read == '0') {
+                const firstChildElement = notifyElement.firstChildElement;
+                let newBadge = document.createElement('div');
+                newBadge.classList.add('absolute', 'right-2', '-top-2');
+                newBadge.innerHTML = `
+                    <span class="absolute animate-ping p-2 rounded-full bg-red-400 opacity-75"></span>
+                    <span class="absolute bg-red-500 rounded-full p-2 ">
+                `;
+
+                notifyElement.insertBefore(newBadge, firstChildElement);
+            }
+
+            notifyElement.addEventListener('click', function() {
+                window.location.href = `${notification.url}`;
+            })
+
+            this.container.appendChild(notifyElement)
+        })
     }
 
     // Hàm dùng để gom các ngày đọc bài viết trong lịch sử

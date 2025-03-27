@@ -65,12 +65,15 @@
     import EventListener from '../src/js/events.js';
 
     const myUserId = <?= $_SESSION['user_id'] ?>;
+    const username = `<?= $_SESSION['username'] ?>`;
+    const avatar = `<?= $_SESSION['avatarURL'] ?>`;
+    const tagName = `<?= $_SESSION['tag_name'] ?>`;
 
     document.addEventListener('DOMContentLoaded', async function() {
         const urlParams = new URLSearchParams(window.location.search);
         const tagName = urlParams.get('tag_name');
         const renderer = new QuestionRenderer('#profile-container');
-        const eventListener = new EventListener(myUserId);
+        const eventListener = new EventListener(myUserId, username, avatar, tagName);
 
         try {
             const userInfo = await renderer.fetchData(`../controllers/get_userinfo.php?tag_name=${tagName}`);

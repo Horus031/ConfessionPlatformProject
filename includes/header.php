@@ -1,10 +1,10 @@
-<header class="font-poppins fixed top-0 w-full flex justify-between items-center z-50 p-3 shadow-lg bg-white dark:bg-gray-900  border-b border-gray-400 dark:border-gray-700 animate-postSlideIn">
+<header class="font-poppins fixed top-0 w-full flex justify-between items-center z-60 p-3 shadow-lg bg-white dark:bg-gray-900  border-b border-gray-400 dark:border-gray-700 animate-postSlideIn">
     <div class="hidden md:flex items-center px-3 pt-3 pb-2">
         <img loading="lazy" src="../assets/images/weblogo.png" alt="" class="-mt-4 -mb-4 -ml-4 h-20">
         <span class="text-sm md:text-lg font-semibold  dark:text-white ">Knowledge Nexus</span>
     </div>
 
-    <button id="openMenu" class="text-3xl rounded-lg hover-bg-gray-100 md:hidden p-2">
+    <button id="openMenu" class="text-3xl rounded-lg hover-bg-gray-100 md:hidden p-2 dark:text-gray-400">
         <span class="material-symbols-rounded custom-icon">
             menu
         </span>
@@ -24,20 +24,21 @@
 
     <div class="flex items-center space-x-4">
         <button class="relative group">
-            <div id="notify-btn" class="text-3xl font-light dark:text-gray-400">
+            <div id="notify-btn" class="relative text-3xl font-light dark:text-gray-400 hover:bg-gray-200 p-2 rounded-full active:scale-90">
                 <span class="material-symbols-rounded custom-icon">notifications</span>
+
             </div>
-            <div class="absolute -right-16 top-10 shadow-[0_5px_12px_-6px] z-10 rounded-lg bg-white w-90 group-hover:block hidden before:content-[''] before:absolute before:right-13 before:-top-4 before:w-12 before:h-4 before:bg-transparent">
+            <div id="notify-container" class="absolute -right-16 top-10 shadow-[0_5px_12px_-6px] z-10 rounded-lg bg-white w-90 hidden before:content-[''] before:absolute before:right-13 before:-top-4 before:w-12 before:h-4 before:bg-transparent">
                 <div class="flex w-full justify-between items-center p-2 px-4 space-x-8 border-b border-secondary">
                     <span class="text-sm text-text-light font-bold">Notification</span>
-                    <span class="text-nowrap text-sm text-blue-500">Mark all as read</span>
+                    <span id="marknotify-btn" class="text-nowrap text-sm text-blue-500 cursor-pointer">Mark all as read</span>
                 </div>
 
-                <div id="notify-popup" class="py-2 space-y-4">
+                <div id="notify-popup" class="h-28 overflow-y-auto">
 
                 </div>
 
-                <div class="border-t-1 border-text py-1">
+                <div class="border-t-1 border-text py-2">
                     <a href="main.html.php?page=notification" class="text-[#4E87F1]">See your all notification</a>
                 </div>
             </div>
@@ -59,7 +60,7 @@
 </header>
 
 <!-- Menu mobile -->
-<aside id="menu" class="font-poppins w-2/3 bg-white dark:bg-gray-900  -translate-x-full  h-full z-50 border-r border-gray-400 dark:border-gray-700  transition-all fixed md:block md:fixed md:mt-23.5 md:w-46 md:-translate-x-0 lg:w-46 xl:w-56 2xl:w-72">
+<aside id="menu" class="font-poppins w-2/3 bg-white dark:bg-gray-900  -translate-x-full  h-full z-80 border-r border-gray-400 dark:border-gray-700  transition-all fixed md:block md:fixed md:mt-23.5 md:w-46 md:-translate-x-0 lg:w-46 xl:w-56 2xl:w-72">
     <nav id="navbar" class="flex-1 bg-white dark:bg-gray-900  md:h-full z-2 animate-slideRight">
         <div>
             <div class="flex flex-col mt-4 space-y-2 text-3xl font-light transition-all">
@@ -109,8 +110,10 @@
             </div>
 
 
-            <button id="closeMenu" class="absolute -right-8 top-[50%] bg-white p-4 border-1 border-text-light rounded-full -translate-y-1/2 z-10 hidden">
-                <img loading="lazy" src="../assets/images/left-chevron.png" alt="" class="h-6">
+            <button id="closeMenu" class="absolute -right-8 top-[65%] bg-white p-4 border-1 text-3xl text-light border-text-light rounded-full -translate-y-1/2 z-10 hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200">
+                <span class="material-symbols-rounded custom-icon">
+                    chevron_left
+                </span>
             </button>
 
             <div class="flex justify-center items-center mt-6">
@@ -143,7 +146,7 @@
                 })
             })
 
-            renderer.renderNotifications(notifications, userId)
+            renderer.renderNotificationsPopup(notifications, userId)
 
 
         } catch (error) {

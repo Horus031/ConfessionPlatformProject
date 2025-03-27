@@ -1,0 +1,10 @@
+# Enable mod_rewrite
+RewriteEngine On
+
+# Set the base directory for your project
+RewriteBase /mywebsite/
+
+# Redirect requests to the router
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]

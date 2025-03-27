@@ -1,4 +1,4 @@
-<main class="dark:bg-gray-900 font-poppins flex flex-col overflow-hidden h-full px-2 mt-24 items-end w-full md:pl-[2%] lg:mt-28 2xl:pl-0">
+<main class="dark:bg-gray-900 font-poppins flex flex-col overflow-hidden h-fit px-2 mt-24 items-end w-full md:pl-[2%] lg:mt-28 2xl:pl-0">
     <div class="flex justify-between w-full items-center rounded-xl p-3 bg-linear-160 z-30 from-gradient1 via-[#3ea29a] to-gradient2 md:w-3/4 lg:w-5/6 lg:px-8 animate-postSlideIn transition-all">
         <div class="md:w-72 lg:w-96 2xl:w-2xl animate-fadeIn">
             <h1 class="text-2xl text-white font-bold leading-10 lg:leading-15 lg:text-6xl">Welcome to Knowledge Nexus, <?= isset($_SESSION['fullname']) ? $_SESSION["fullname"] : 'Users'; ?></h1>
@@ -95,12 +95,15 @@
 
 <script type="module">
     const userId = <?= $_SESSION['user_id'] ?>;
+    const username = `<?= $_SESSION['username'] ?>`;
+    const avatar = `<?= $_SESSION['avatarURL'] ?>`;
+
     import QuestionRenderer from '../src/js/render.js';
     import EventListener from '../src/js/events.js';
     document.addEventListener('DOMContentLoaded', async function() {
         const renderer = new QuestionRenderer('#question-container');
         const addQuestionButton = document.querySelector('#addques-btn');
-        const eventListener = new EventListener(userId);
+        const eventListener = new EventListener(userId, username, avatar);
 
         if (addQuestionButton) {
             addQuestionButton.addEventListener('click', function() {

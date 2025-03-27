@@ -294,6 +294,16 @@ class Database
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function fetchEditingInfo($user_id)
+    {
+        $sql = 'SELECT users.user_id, CONCAT(first_name, " ", last_name) AS fullname , users.username, users.tag_name, users.email, users.bio, users.avatar, users.created_at
+                FROM users
+                WHERE user_id = ?';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$user_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function fetchSocialLinks($user_id)
     {
         $sql = 'SELECT user_social_links.platform, user_social_links.url FROM user_social_links
@@ -667,5 +677,33 @@ class Database
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function markAllNotificationsAsRead($userId)
+    {
+        $sql = "UPDATE notifications SET is_read = 1 WHERE user_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$userId]);
+    }
+
+    public function markNotificationAsRead($notificationId)
+    {
+        $sql = "UPDATE notifications SET is_read = 1 WHERE notification_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$notificationId]);
+    }
+
+    public function editComment($content, $comment_id)
+    {
+        $sql = "UPDATE comments SET content = ? WHERE comment_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$content, $comment_id]);
+    }
+
+    public function deleteComment($comment_id)
+    {
+        $sql = "DELETE FROM comments WHERE comment_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$comment_id]);
     }
 }

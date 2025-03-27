@@ -15,8 +15,15 @@ class LikeCommentServer implements MessageComponentInterface
 
     public function onOpen(ConnectionInterface $conn)
     {
+        $queryString = $conn->httpRequest->getUri()->getQuery();
+        parse_str($queryString, $queryParams);
+
+        if (isset($queryParams['user_id'])) {
+            $conn->userId = $queryParams['user_id']; // Store the user ID in the connection object
+        }
+
         $this->clients->attach($conn);
-        echo "New connection ({$conn->resourceId})\n";
+        echo "New connection ({$conn->resourceId}) with user ID: {$conn->userId}\n";
     }
 
     public function onMessage(ConnectionInterface $from, $msg)
@@ -25,6 +32,19 @@ class LikeCommentServer implements MessageComponentInterface
         $data = json_decode($msg, true);
 
         if (isset($data['type'])) {
+            if ($data['type'] === 'like') {
+                $response = [
+                    "type" => "like",
+                    "postId" => $data['postId'],
+                    "likesCount" => $data['likes'],
+                ];
+
+                foreach ($this->clients as $client) {
+                    $client->send(json_encode($response));
+                }
+            }
+
+
             if ($data['type'] === 'comment') {
                 $response = [
                     "type" => "comment",
@@ -32,8 +52,9 @@ class LikeCommentServer implements MessageComponentInterface
                     "userId" => $data['userId'],
                     "username" => $data['username'],
                     "avatar" => $data['avatar'],
-                    "created_at" => date("Y-m-d H:i:s"),
-                    "comment" => $data['comment']
+                    "created_at" => $data['createdTime'],
+                    "comment" => $data['comment'],
+                    "commentCount" => $data['commentCount']
                 ];
 
                 foreach ($this->clients as $client) {
@@ -42,27 +63,24 @@ class LikeCommentServer implements MessageComponentInterface
             }
 
             if ($data['type'] === 'notification') {
-                $stmt = $pdo->prepare("INSERT INTO notifications (user_id, sender_id, type , message, url) VALUES (?, ?, ?, ?, ?)");
-                $stmt->execute([
-                    $data['userId'],
-                    $data['senderId'],
-                    $data['notification_type'],
-                    $data['message'],
-                    $data['url']
-                ]);
-
                 $response = [
                     "type" => "notification",
                     "receiverId" => $data['user_id'],
+                    "username" => $data['username'],
+                    "avatar" => $data['avatar'],
+                    "senderId" => $data['senderId'],
                     "notification_type" => $data['notification_type'],
                     "message" => $data['message'],
+                    "content" => $data['content'],
                     "url" => $data['url'],
-                    "created_at" => date("Y-m-d H:i:s")
+                    "created_at" => $data['createdTime']
                 ];
 
                 // Gửi thông báo đến tất cả client (hoặc lọc theo receiverId nếu cần)
                 foreach ($this->clients as $client) {
-                    $client->send(json_encode($response));
+                    if (isset($client->userId) && $client->userId == $data['user_id']) {
+                        $client->send(json_encode($response));
+                    }
                 }
             }
         }

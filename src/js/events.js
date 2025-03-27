@@ -1,73 +1,98 @@
 import QuestionRenderer from "../js/render.js";
 
 class EventListener {
-    constructor(userId) {
+    constructor(userId, username, avatar, tagName) {
         this.renderer = new QuestionRenderer();
         this.currentURL = window.location.href;
         this.userId = userId;
+        this.username = username;
+        this.avatar = avatar
+        this.tagName = tagName
         this.renderedComments = new Set(); // Tạo Set lưu trữ các id của comment
-        this.socket = new WebSocket("ws://localhost:8080");
+        this.socket = new WebSocket(`ws://localhost:8080?user_id=${this.userId}`);
 
 
-        this.socket.onopen = () => {
+        this.socket.onopen = function() {
             console.log("WebSocket connected!");
-        };
+        }.bind(this);
 
         this.socket.onmessage = (event) => {
             let data = JSON.parse(event.data);
         
             if (data.type === "like") {
-                document.querySelector(`.like-count-${data.postId}`).innerText = data.likes;
-            } 
-            
+                document.querySelector(`.like-count-${data.postId}`).innerText = data.likesCount;
+            }
+        
             if (data.type === "comment") {
+                const commentCountSpan = document.querySelector(`.comment-count-${data.postId}`);
+                if (commentCountSpan) {
+                    commentCountSpan.innerText = data.commentCount;
+                }
+        
                 let commentSection = document.querySelector(`div[id^="comment-container-"]`);
                 let firstChildComment = commentSection.firstElementChild;
-
+        
+                // Update the badge only if the comment is not from the current user
+                if (parseInt(data.userId) !== this.userId) {
+                    this.updateNotificationBadge();
+                }
+        
+                // Convert UTC time to local time
+                const localTime = new Date(data.created_at);
+        
                 const newCommentElement = document.createElement('div');
-                newCommentElement.setAttribute('data-value', `${data.comment_id}`)
-                newCommentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700' ,'animate-slideRight');
+                newCommentElement.setAttribute('data-value', `${data.comment_id}`);
+                newCommentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700', 'animate-slideRight');
                 newCommentElement.innerHTML = `
                     <img src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
-
+        
                     <div>
                         <div class="flex items-center space-x-2">
                             <h2 class="font-medium text-md dark:text-white">${data.username}</h2>
-                            <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(data.createdTime)}</span>
+                            <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(localTime)}</span>
                         </div>
                         <p class="text-sm dark:text-gray-400">${data.comment}</p>
                     </div>
                 `;
-
+        
+                document.querySelector('.comment-count').textContent = `(${commentSection.children.length})`;
+        
                 commentSection.insertBefore(newCommentElement, firstChildComment);
             }
-            
-            if (data.type === "notification") {
-                console.log(data);
+        
+            if (data.type === "notification") {        
+                // Update the notification badge
+                this.updateNotificationBadge();
+        
                 const notifyContainer = document.querySelector('#notify-popup');
                 const notifyFirstChild = notifyContainer.firstElementChild;
-
+        
+                // Convert UTC time to local time
+                const localTime = new Date(data.created_at);
+        
                 const notifyElement = document.createElement('a');
-                notifyElement.classList.add('flex', 'justify-between' ,'px-2', 'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer');
+                notifyElement.classList.add('flex', 'justify-between', 'px-2', 'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer', 'bg-blue-200');
                 notifyElement.href = `${data.url}`;
                 notifyElement.id = `notify-${data.notification_id}`;
-                const timeInMonth = new Date(data.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                const timeInHour = new Date(data.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                console.log(timeInHour);
+                const timeInMonth = localTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const timeInHour = localTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 notifyElement.innerHTML = `
-                    <div class="flex space-x-2">
-                        <img loading="lazy" src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-8">
-
-                        <span>${data.message}.</span>
+                    <div class="flex space-x-3">
+                        <img loading="lazy" src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-8 rounded-full">
+        
+                        <div class="flex flex-col space-y-1">
+                            <span>${data.username} ${data.message}</span>
+        
+                            <span class="text-text-light break-all line-clamp-1">${data.content || 'Check it out!'}</span>
+                        </div>
                     </div>
-
+        
                     <div class="flex flex-col space-y-1 text-nowrap mt-1 text-right">
                         <span class="text-xs">${timeInMonth}</span>
                         <span class="text-xs">${timeInHour}</span>
                     </div>
-                
                 `;
-
+        
                 notifyContainer.insertBefore(notifyElement, notifyFirstChild);
             }
         };
@@ -91,6 +116,7 @@ class EventListener {
         this.userBtn = document.querySelector('#user-btn');
         this.userPopup = document.querySelector('#users-popup');
         this.notifyBtn = document.querySelector('#notify-btn');
+        this.notifyContainer = document.querySelector('#notify-container');
         this.notifyPopup = document.querySelector('#notify-popup');
         this.buttonContainer = document.querySelector('#button-container');
         this.tagList = document.querySelector('#tag-list');
@@ -487,9 +513,57 @@ class EventListener {
                 })
             }
 
-            if (this.notifyBtn) {
+            if (this.notifyContainer) {
                 this.notifyBtn.addEventListener('click', () => {
-                    this.notifyPopup.classList.toggle('hidden');
+                    this.notifyContainer.classList.toggle('hidden');
+                    
+                });
+
+                const markAllButton = document.querySelector('#marknotify-btn');
+                if (markAllButton) {
+                    markAllButton.addEventListener('click', async () => {
+                        try {
+                            await this.renderer.fetchData('../controllers/mark_all_notifications.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ user_id: this.userId })
+                            });
+
+                            // Remove the "new" color from all notifications
+                            const notifications = document.querySelectorAll('#notify-popup a.bg-blue-200');
+                            notifications.forEach(notification => {
+                                notification.classList.remove('bg-blue-200');
+                            });
+
+                            const notifyButton = document.querySelector('#notify-btn');
+                            const badge = notifyButton.querySelector('#notify-badge');
+                            if (badge) {
+                                notifyButton.removeChild(badge);
+                            }
+
+                        } catch (error) {
+                            console.error('Error marking all notifications as read:', error);
+                        }
+                    });
+                }
+
+                const notificationLinks = document.querySelectorAll('#notify-popup a');
+                notificationLinks.forEach(link => {
+                    link.addEventListener('click', async (e) => {
+                        const notificationId = e.currentTarget.id.split('-')[1];
+                        try {
+                            await this.renderer.fetchData('../controllers/mark_notification.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ notification_id: notificationId })
+                            });
+
+                            // Remove the "new" color from the clicked notification
+                            e.currentTarget.classList.remove('bg-blue-200');
+                        } catch (error) {
+                            console.error('Error marking notification as read:', error);
+                        }
+                    });
                 });
             }
 
@@ -526,29 +600,7 @@ class EventListener {
 
                         switch (true) {
                             case button.id == "likes-btn":
-                                const likeImage = question.querySelector('.like-img');
-                                const likeCountSpan = question.querySelector(`.like-count-${postId}`);
-                                const receiverId = question.querySelector('img[class^="user-"]').getAttribute('data-value');
-                                const username = question.querySelector('#post-username').textContent;
-                                const messageNotify = `has liked your post!`;
-                                const urlNotify = `../views/main.html.php?page=postdetails&id=${postId}`;
-                                const createdTime = new Date();
-                                _this.handleLikes(postId, likeCountSpan, likeImage);
-                    
-
-                                setTimeout(async function() {
-                                    if (likeImage.classList.contains('filled-icon') && receiverId != _this.userId) {
-                                        await _this.renderer.fetchData('../controllers/add_notifications.php', {
-                                            method: "POST",
-                                            headers: { "Content-Type": "application/json" },
-                                            body: JSON.stringify({ receiverId: receiverId, senderId: _this.userId, type: 'like', message: messageNotify, url: urlNotify })
-                                        })
-
-                                        _this.sendNotification(receiverId, _this.userId, 'like', messageNotify, urlNotify, createdTime);
-                                    } else {
-                                        _this.notifyPopup.classList.remove('hidden');
-                                    }
-                                }, 100)
+                                await _this.handleLikeButtonClick(postId, question);
                                 break;
                             case button.id == "comment-btn":
                                 console.log('comment');
@@ -558,7 +610,7 @@ class EventListener {
                                 _this.handleSavedPosts(postId, savedImage);
                                 break;
                             case button.id == "link-btn":
-                                console.log('link-btn');
+                                await _this.handleCopyLink(postId);
                                 break;
                             case button.id == "view-btn":
                                 window.location.href = `../views/main.html.php?page=postdetails&id=${postId}`;
@@ -684,7 +736,7 @@ class EventListener {
             }
 
             if (this.postDetailContainer) {
-                this.postDetailContainer.addEventListener('click', function(e) {
+                this.postDetailContainer.addEventListener('click', async function(e) {
                     const postId = _this.postDetailContainer.getAttribute('data-value');
                     let button = e.target.closest('button');
 
@@ -694,9 +746,7 @@ class EventListener {
 
                     switch(true) {
                         case button.id == "like-btn":
-                            const likeImage = _this.postDetailContainer.querySelector('.like-img');
-                            const likeCountSpan = _this.postDetailContainer.querySelector('.like-count');
-                            _this.handleLikes(postId, likeCountSpan, likeImage);
+                            await _this.handleLikeButtonClick(postId, _this.postDetailContainer);
                             break;
                         case button.id == "edit-btn":
                             sessionStorage.setItem('editPostId', postId);
@@ -714,6 +764,25 @@ class EventListener {
 
                     }
                 })
+
+                this.debounce(setTimeout(function() {
+                    const commentContainer = document.querySelector('div[id^="comment-container-"]');
+                    const commentElements = commentContainer.querySelectorAll('div[id^="comment-"]')
+
+                    commentElements.forEach(comment => {
+                        comment.addEventListener('click', function(e) {
+                            if (e.target.closest('span[class^="edit-comment-btn"]')) {
+                                const commentInformation = comment.querySelector('#comment-information');
+                                const iconElement = comment.querySelector('span[class^="edit-comment-btn"]')
+                                _this.handleEditComment(iconElement, commentInformation, comment)
+                                
+                            } else if (e.target.closest('span[class^="delete-comment-btn"]')) {
+                                _this.handleDeleteComement(commentContainer, comment);
+                            }
+                        })
+                    })
+                }, 100))
+
             }
 
             if (this.postForm) {
@@ -734,19 +803,31 @@ class EventListener {
                     });
         
                     if (newComment.error) {
-                        console.log (newComment.error);
+                        console.log(newComment.error);
                     } else {
                         const commentContainer = document.querySelector('div[id^="comment-container-"]');
         
-                        // commentContainer.insertBefore(newCommentElement, firstChildElement);
-                        _this.renderedComments.add(newComment.comment_id); // Thêm comment id vừa post vào Set
-        
-
+                        _this.renderedComments.add(newComment.comment_id); // Add the comment ID to the Set
                         textarea.value = '';
                         document.querySelector('.comment-count').textContent = `(${_this.renderedComments.size})`;
 
+                        const receiverId = document.querySelector('img[id^="user-avatar"]').getAttribute('data-value');
+                        const avatar = `${_this.avatar || '../assets/images/user.png'}`;
+                        const messageNotify = `has commented on your post!`;
+                        const urlNotify = `../views/main.html.php?page=postdetails&id=${postId}`;
+                        const createdTime = new Date();
+            
+                        setTimeout(async function() {
+                            if (receiverId != _this.userId) {
+                                await _this.renderer.fetchData('../controllers/add_notifications.php', {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ receiverId: receiverId, senderId: _this.userId, type: 'comment', message: messageNotify, url: urlNotify })
+                                });
 
-                        console.log(newComment.created_at, newComment.content)
+                                _this.sendNotification(receiverId, _this.username, avatar, _this.userId, 'comment', messageNotify, newComment.content, urlNotify, createdTime);
+                            } 
+                        }, 100);
 
                         _this.socket.send(JSON.stringify({
                             type: "comment",
@@ -755,11 +836,12 @@ class EventListener {
                             userId: newComment.user_id,
                             username: newComment.username,
                             avatar: newComment.avatar,
-                            createdTime: newComment.created_at,
-                            comment: newComment.content
+                            createdTime: new Date(newComment.created_at).toISOString(),
+                            comment: newComment.content,
+                            commentCount: _this.renderedComments.size
                         }));
                     } 
-                })
+                });
             }
 
             // Custom ô hình ảnh
@@ -852,11 +934,13 @@ class EventListener {
                 try {
                     const userIdValue = this.profileActions.getAttribute('data-value');
     
-                    console.log(this.userId, userIdValue);
-    
                     if (this.userId == userIdValue) {
                         editButton.classList.remove('hidden');
                         this.profileActions.removeChild(followButton);
+
+                        editButton.addEventListener('click', function() {
+                            window.location.href = '../views/main.html.php?page=editprofile'
+                        })
                     } else {
                         followButton.classList.remove('hidden');
                         this.profileActions.removeChild(editButton);
@@ -885,6 +969,20 @@ class EventListener {
                                     followButton.textContent = 'Unfollow';
                                     const followerCount = document.getElementById('follower-count');
                                     followerCount.textContent = parseInt(followerCount.textContent) + 1;
+
+                                    // Send notification to the followed user
+                                    const avatar = `${_this.avatar || '../assets/images/user.png'}`;
+                                    const messageNotify = `has started following you!`;
+                                    const urlNotify = `../views/main.html.php?page=profile&tag_name=${_this.tagName}`;
+                                    const createdTime = new Date();
+
+                                    await _this.renderer.fetchData('../controllers/add_notifications.php', {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ receiverId: userIdValue, senderId: _this.userId, type: 'follow', message: messageNotify, url: urlNotify })
+                                    });
+
+                                    _this.sendNotification(userIdValue, _this.username, avatar, _this.userId, 'follow', messageNotify, '', urlNotify, createdTime);
                                 } else if (followResult.status === 'unfollowed') {
                                     followButton.textContent = 'Follow';
                                     const followerCount = document.getElementById('follower-count');
@@ -918,8 +1016,8 @@ class EventListener {
                         this.userPopup.classList.add('hidden');
                     }
     
-                    if (!this.notifyBtn.contains(event.target) && !this.notifyPopup.contains(event.target)) {
-                        this.notifyPopup.classList.add('hidden');
+                    if (!this.notifyBtn.contains(event.target) && !this.notifyBtn.contains(event.target)) {
+                        this.notifyContainer.classList.add('hidden');
                     }
                 }
             });
@@ -951,6 +1049,38 @@ class EventListener {
         }
     }
 
+    async handleLikeButtonClick(postId, question) {
+        const likeImage = question.querySelector('.like-img');
+        const likeCountSpan = question.querySelector(`.like-count-${postId}`);
+        const receiverId = question.querySelector('img[class^="user-"]').getAttribute('data-value');
+        const avatar = `${this.avatar || '../assets/images/user.png'}`;
+        const messageNotify = `has liked your post!`;
+        const content = `Check it out`;
+        const urlNotify = `../views/main.html.php?page=postdetails&id=${postId}`;
+        const createdTime = new Date();
+
+    
+        console.log(likeCountSpan)
+
+        // Handle the like action
+        await this.handleLikes(postId, likeCountSpan, likeImage);
+    
+        // Send notification if the post is liked and the receiver is not the current user
+        if (likeImage.classList.contains('filled-icon') && receiverId != this.userId) {
+            try {
+                await this.renderer.fetchData('../controllers/add_notifications.php', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ receiverId: receiverId, senderId: this.userId, type: 'like', message: messageNotify, url: urlNotify })
+                });
+    
+                this.sendNotification(receiverId, this.username, avatar, this.userId, 'like', messageNotify, content, urlNotify, createdTime);
+            } catch (error) {
+                console.error('Error sending like notification:', error);
+            }
+        }
+    }
+
     async handleLikes(postId, likeCountSpan, likeImage) {
         try {
             const likes = await this.renderer.fetchData('../controllers/handle_likes.php', {
@@ -965,6 +1095,7 @@ class EventListener {
                 likeImage.classList.remove('filled-icon');
                 likeCountSpan.textContent = parseInt(likeCountSpan.textContent) - 1;
             }
+
 
             this.socket.send(JSON.stringify({
                 type: "like",
@@ -1017,6 +1148,58 @@ class EventListener {
         }
     }
 
+    async handleEditComment(icon, container, commentElement) {
+        if (icon.innerText == 'edit') {
+            const commentContent = commentElement.querySelector('p[class^="comment-content-"]')
+
+            const commentInput = document.createElement('input');
+            commentInput.id = 'comment-input';
+            commentInput.type = 'text';
+            commentInput.classList.add('border-1', 'border-gray-400', 'text-gray-400', 'rounded-md', 'p-2')
+            commentInput.value = commentContent.textContent;
+
+
+            container.replaceChild(commentInput, commentContent);
+            icon.textContent = 'check';
+        } else {
+            const commentValue = commentElement.getAttribute('data-value');
+            const inputValue = commentElement.querySelector('input[id="comment-input"]');
+            const newComment = document.createElement('p');
+            newComment.classList.add(`comment-content-${commentValue}`, 'text-sm', 'dark:text-gray-400');
+            newComment.textContent = inputValue.value;
+
+            container.replaceChild(newComment, inputValue);
+            icon.textContent = 'edit';
+
+            console.log(commentValue, newComment.textContent);
+
+            await this.renderer.fetchData('../controllers/edit_comment.php', {
+                method: "POST",
+                headers: { "Content-Type" : "application/json" },
+                body: JSON.stringify({ comment_id: commentValue, newComment: encodeURIComponent(newComment.textContent)})
+            });
+        }
+    }
+
+    async handleDeleteComement(commentContainer, commentElement) {
+        const commentValue = commentElement.getAttribute('data-value');
+        commentElement.classList.remove('animate-slideRight');
+        commentElement.classList.add('animate-slideAndFadeOut');
+
+
+        await this.renderer.fetchData('../controllers/delete_comment.php', {
+            method: "POST",
+            headers: { "Content-Type" : "application/json" },
+            body: JSON.stringify({ comment_id: commentValue })
+        })
+
+        setTimeout(function() {
+            commentContainer.removeChild(commentElement);
+        }, 1500)
+
+
+
+    }
     
     async updateComments(postId) {
         try {
@@ -1033,18 +1216,37 @@ class EventListener {
                 comments.forEach(comment => {
                     if (!this.renderedComments.has(comment.comment_id)) {
                         const commentElement = document.createElement('div');
+                        commentElement.id = `comment-${comment.comment_id}`;
                         commentElement.setAttribute('data-value', `${comment.comment_id}`);
                         commentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700' ,'animate-slideRight');
                         commentElement.innerHTML = `
                             <img src="${comment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
-                            <div>
+                            <div id="comment-information">
                                 <div class="flex items-center space-x-2">
                                     <h2 class="font-medium text-md dark:text-white">${comment.username}</h2>
                                     <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(comment.created_at)}</span>
                                 </div>
-                                <p class="text-sm dark:text-gray-400">${comment.content}</p>
+                                <p class="comment-content-${comment.comment_id} text-sm dark:text-gray-400">${comment.content}</p>
                             </div>
                         `;
+
+                        if (this.userId == comment.user_id) {
+                            const actionButton = document.createElement('div')
+                            actionButton.classList.add('flex', 'text-3xl', 'font-light', 'dark:text-gray-400', 'ml-auto', 'my-auto', 'text-center', 'space-x-2');
+                            actionButton.innerHTML = `
+                                <span class="edit-comment-btn material-symbols-rounded custom-icon text-center rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-900 cursor-pointer active:scale-90">
+                                    edit
+                                </span>
+                                <span class="delete-comment-btn material-symbols-rounded custom-icon text-center rounded-full p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-200 cursor-pointer active:scale-90">
+                                    delete
+                                </span>
+                                
+                            `;
+
+                            commentElement.appendChild(actionButton);
+                        }
+
+
                         commentContainer.insertBefore(commentElement, firstChildElement);
                         this.renderedComments.add(comment.comment_id); // Thêm comment ID vừa post vào Set
                     }
@@ -1055,6 +1257,31 @@ class EventListener {
         } catch (error) {
             console.error('Error updating comments:', error);
         }
+    }
+
+    async handleCopyLink(postId) {
+        try {
+            const postLink = `${window.location.origin}/mywebsite/views/main.html.php?page=postdetails&id=${postId}`;
+            await navigator.clipboard.writeText(postLink);
+
+            // Show a success message
+            console.log(`Link copied to clipboard: ${postLink}`);
+            this.showCopyMessage('Link copied to clipboard!', 'bottom-4', 'right-4');
+        } catch (error) {
+            console.error('Error copying link:', error);
+        }
+    }
+
+    showCopyMessage(message, x, y) {
+        const toast = document.createElement('div');
+        toast.classList.add('toast', 'fixed', x, y, 'bg-blue-500', 'text-white', 'p-2', 'rounded-md', 'shadow-lg', 'z-90', 'animate-toastSlide');
+        toast.textContent = message;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
     }
 
     validateLogin(username, password, isValid) {
@@ -1143,6 +1370,7 @@ class EventListener {
         errorElement.innerText = "";
     }
 
+    
 
     debounce(fn, ms) {
         let timer;
@@ -1215,21 +1443,42 @@ class EventListener {
         }
     }
 
-    sendNotification(userId, senderId, type, message, url, createdTime) {
+    sendNotification(userId, username, avatar, senderId, type, message, content, url, createdTime) {
+        console.log('sendNotification called with:', { userId, username, avatar, senderId, type, message, content, url, createdTime });
+    
         const conditions = userId && senderId && type && message && url && createdTime;
         if (conditions) {
             let notificationData = {
                 type: "notification",
-                userId: userId,
+                user_id: userId,
+                username: username,
+                avatar: avatar,
                 senderId: senderId,
                 notification_type: type,
                 message: message,
+                content: content,
                 url: url,
-                createdTime: createdTime
-    
+                createdTime: new Date(createdTime).toISOString(),
             };
-        
+    
             this.socket.send(JSON.stringify(notificationData));
+            console.log('Notification sent:', notificationData);
+        } else {
+            console.error('sendNotification conditions not met:', { userId, senderId, type, message, content, url, createdTime });
+        }
+    }
+
+    updateNotificationBadge() {
+        const notifyBadge = document.querySelector('#notify-badge');
+        if (notifyBadge) {
+            notifyBadge.textContent = parseInt(notifyBadge.textContent) + 1;
+            notifyBadge.classList.remove('hidden');
+        } else {
+            const newBadge = document.createElement('span');
+            newBadge.id = 'notify-badge';
+            newBadge.classList.add('absolute', 'text-xs', '-top-1', '-right-1', 'px-2', 'bg-red-500', 'rounded-full', 'text-white');
+            newBadge.textContent = '1';
+            this.notifyBtn.appendChild(newBadge);
         }
     }
     
