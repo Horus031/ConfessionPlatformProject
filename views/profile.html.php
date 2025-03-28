@@ -45,7 +45,7 @@
     import EventListener from '../src/js/events.js';
 
     const myUserId = <?= $_SESSION['user_id'] ?>;
-    const username = `<?= $_SESSION['username'] ?>`;
+    const username = `<?= $_SESSION['fullname'] ?>`;
     const avatar = `<?= $_SESSION['avatarURL'] ?>`;
     const tagName = `<?= $_SESSION['tag_name'] ?>`;
 

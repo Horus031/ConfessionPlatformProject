@@ -53,13 +53,7 @@ class QuestionRenderer {
                                     <button type="button" id="view-btn" class="flex w-full items-center rounded-md space-x-4 p-3 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer">
                                         <span class="text-lg">View Details</span>
                                     </button> 
-                                    <button type="button" id="edit-btn" class="flex w-full items-center rounded-md space-x-4 p-3 ${post.user_id == userId ? 'block' : 'hidden'}  hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer">
-                                        <span class="text-lg">Edit</span>
-                                    </button>
-                                    <form action="../controllers/deletepost.php" method="post" class="${post.user_id == userId ? 'block' : 'hidden'} ">
-                                        <input type="hidden" name="post_id" value="${post.post_id}">
-                                        <input type="submit" value="Delete" class="space-x-4 p-3 text-left rounded-md text-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 text-red-400 w-full">
-                                    </form>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -124,6 +118,24 @@ class QuestionRenderer {
                         </div>
                     </div>
                 `;
+
+                const actionPopup = questionElement.querySelector('#action-popup');
+                if (post.user_id == userId) {
+                    const editButton = document.createElement('button');
+                    editButton.className = `flex w-full items-center rounded-md space-x-4 p-3 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer`;
+                    editButton.innerHTML = '<span class="text-lg">Edit</span>';
+
+                    const deleteButton = document.createElement('form');
+                    deleteButton.action = '../controllers/deletepost.php';
+                    deleteButton.method = 'post';
+                    deleteButton.innerHTML = `
+                        <input type="hidden" name="post_id" value="${post.post_id}">
+                        <input type="submit" value="Delete" class="space-x-4 p-3 text-left rounded-md text-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 text-red-400 w-full">
+                    `;
+
+                    actionPopup.appendChild(editButton);
+                    actionPopup.appendChild(deleteButton);
+                }
 
                 fragment.appendChild(questionElement);
 
@@ -321,13 +333,7 @@ class QuestionRenderer {
                                 <button type="button" id="view-btn" class="flex w-full items-center rounded-md space-x-4 p-3 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer">
                                     <span class="text-lg">View Details</span>
                                 </button> 
-                                <button type="button" id="edit-btn" class="flex w-full items-center rounded-md space-x-4 p-3 ${question.user_id == userId ? 'block' : 'hidden'}  hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer">
-                                    <span class="text-lg">Edit</span>
-                                </button>
-                                <form action="../controllers/deletepost.php" method="post" class="${question.user_id == userId ? 'block' : 'hidden'} ">
-                                    <input type="hidden" name="post_id" value="${question.post_id}">
-                                    <input type="submit" value="Delete" class="space-x-4 p-3 text-left rounded-md text-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 text-red-400 w-full">
-                                </form>
+                                
                             </div>
                         </div>
                     </div>
@@ -394,6 +400,24 @@ class QuestionRenderer {
                     </div>
                 </div>
             `;
+
+            const actionPopup = questionElement.querySelector('#action-popup');
+            if (question.user_id == userId) {
+                const editButton = document.createElement('button');
+                editButton.className = `flex w-full items-center rounded-md space-x-4 p-3 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer`;
+                editButton.innerHTML = '<span class="text-lg">Edit</span>';
+
+                const deleteButton = document.createElement('form');
+                deleteButton.action = '../controllers/deletepost.php';
+                deleteButton.method = 'post';
+                deleteButton.innerHTML = `
+                    <input type="hidden" name="post_id" value="${question.post_id}">
+                    <input type="submit" value="Delete" class="space-x-4 p-3 text-left rounded-md text-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 text-red-400 w-full">
+                `;
+
+                actionPopup.appendChild(editButton);
+                actionPopup.appendChild(deleteButton);
+            }
 
             fragment.appendChild(questionElement);
 
@@ -664,19 +688,21 @@ class QuestionRenderer {
                     <span class="text-text">•</span>
                     <span class="text-text-light font-medium dark:text-gray-400">Joined ${formattedDate}</span>
                 </div>
-                <div class="flex flex-col space-y-2">
-                    <div>
+                <div class="flex space-x-2">
+                    <div class="cursor-pointer active:scale-90">
                         <span id="follower-count" class="dark:text-white">0</span>
                         <span class="text-text dark:text-gray-400">Followers</span>
+                    </div>
+                    <div class="cursor-pointer active:scale-90">
                         <span id="following-count" class="dark:text-white">0</span>
                         <span class="text-text dark:text-gray-400">Following</span>
                     </div>
-                    <div>
-                        <span id="view-count" class="dark:text-white">0</span>
-                        <span class="text-text dark:text-gray-400">Views</span>
-                        <span id="like-count" class="dark:text-white">0</span>
-                        <span class="text-text dark:text-gray-400">Likes</span>
-                    </div>
+                </div>
+                <div>
+                    <span id="view-count" class="dark:text-white">0</span>
+                    <span class="text-text dark:text-gray-400">Views</span>
+                    <span id="like-count" class="dark:text-white">0</span>
+                    <span class="text-text dark:text-gray-400">Likes</span>
                 </div>
             `;
 
@@ -1214,15 +1240,10 @@ class QuestionRenderer {
                         <span>${timeInHour}</span>
                     </div>
                 </div>
-                <div class="group absolute right-0 top-0 group-hover:visible text-center  dark:text-gray-400 p-1 text-3xl font-light rounded-full cursor-pointer invisible">
-                    <span class="material-symbols-rounded custom-icon p-1 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 active:scale-90">
-                        more_horiz
+                <div class="group absolute right-0 top-0 text-center  dark:text-red-500 p-1 text-2xl font-light rounded-full cursor-pointer">
+                    <span id="delete-notify" class="material-symbols-rounded custom-icon p-1 rounded-full hover:bg-red-300 dark:hover:bg-red-100 active:scale-90">
+                        delete
                     </span>
-                    <div class="absolute text-left bg-white dark:bg-gray-900 right-3 rounded-md h-fit top-9 font-normal hidden">
-                        <button class="text-left text-lg text-red-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full pl-2 py-2 pr-20 cursor-pointer">
-                            Delete
-                        </button>
-                    </div>
                 </div>
             `;
 
@@ -1241,7 +1262,7 @@ class QuestionRenderer {
             }
 
             notifyElement.addEventListener('click', function() {
-                window.location.href = `${notification.url}`;
+                // window.location.href = `${notification.url}`;
             })
 
             this.container.appendChild(notifyElement)

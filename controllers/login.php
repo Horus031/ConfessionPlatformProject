@@ -20,6 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['user_id'] = $user['user_id'];
             $_SESSION['fullname'] = $user['fullname'];
             $_SESSION['username'] = $username;
+            $_SESSION['fullname'] = $user['fullname'];
             $_SESSION['avatarURL'] = $user['avatar'];
             $_SESSION['tag_name'] = $user['tag_name'];
 

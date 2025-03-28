@@ -275,31 +275,82 @@ class EventListener {
         }
 
         if (this.step2Form) {
-            this.step2Form.addEventListener('submit', async function(e) {
-                e.preventDefault();
+            this.step2Form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+        
+            const username = _this.step2Form.querySelector('#final-username').value;
+            const email = _this.step2Form.querySelector('#final-email').value;
+            const password = _this.step2Form.querySelector('#final-password').value;
+            const firstName = _this.step2Form.querySelector('#firstname').value;
+            const lastName = _this.step2Form.querySelector('#lastname').value;
+            const tagName = _this.step2Form.querySelector('#tagname').value;
+            let isValid = true;
 
-                const username = _this.step2Form.querySelector('#final-username').value;
-                const email = _this.step2Form.querySelector('#final-email').value;
-                const password = _this.step2Form.querySelector('#final-password').value;
-                const firstName = _this.step2Form.querySelector('#firstname').value;
-                const lastName = _this.step2Form.querySelector('#lastname').value;
-                const tagName = _this.step2Form.querySelector('#tagname').value;
+            // Validation for firstName
+            if (firstName == "") {
+                _this.step2Form.querySelector('input[id="firstname"]').classList.add('animate-turnErrorColor');
+                _this.showError("firstname", "First name is required.");
+                isValid = false;
+            } else {
+                _this.step2Form.querySelector('input[id="firstname"]').classList.remove('animate-turnErrorColor');
+                _this.clearError("firstname");
+            }
 
+            // Validation for lastName
+            if (lastName == "") {
+                _this.step2Form.querySelector('input[id="lastname"]').classList.add('animate-turnErrorColor');
+                _this.showError("lastname", "Last name is required.");
+                isValid = false;
+            } else {
+                _this.step2Form.querySelector('input[id="lastname"]').classList.remove('animate-turnErrorColor');
+                _this.clearError("lastname");
+            }
+        
+            // Validation for tagName
+            if (tagName == "") {
+                _this.step2Form.querySelector('input[id="tagname"]').classList.add('animate-turnErrorColor');
+                _this.showError("tagname", "Tag name is required.");
+                isValid = false;
+            } else {
                 try {
-                    const registerResult = await _this.renderer.fetchData('../controllers/register.php', {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ firstName: firstName, lastName: lastName, username: username, tagName: tagName, email: email, password: password })
-                    });
-
-                    if (registerResult.error) {
-                        console.log(registerResult.error);
-                    } else {
-                        window.location.href = '../views/login.html.php';
-                    }
-                } catch (error) {
-                    console.error('Error registering user:', error);
+                const tagCheckResult = await _this.renderer.fetchData('../controllers/check_tagname.php', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ tagName: tagName })
+                });
+        
+                if (tagCheckResult.exists) {
+                    _this.step2Form.querySelector('input[id="tagname"]').classList.add('animate-turnErrorColor');
+                    _this.showError("tagname", "Tag name is already taken.");
+                    isValid = false;
+                } else {
+                    _this.step2Form.querySelector('input[id="tagname"]').classList.remove('animate-turnErrorColor');
+                    _this.clearError("tagname");
                 }
+                } catch (error) {
+                console.error('Error checking tag name:', error);
+                isValid = false;
+                }
+            }
+        
+            // Proceed if all validations pass
+            if (isValid) {
+                try {
+                const registerResult = await _this.renderer.fetchData('../controllers/register.php', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ firstName: firstName, lastName: lastName, username: username, tagName: tagName, email: email, password: password })
+                });
+        
+                if (registerResult.error) {
+                    console.log(registerResult.error);
+                } else {
+                    window.location.href = '../views/login.html.php';
+                }
+                } catch (error) {
+                console.error('Error registering user:', error);
+                }
+            }
             });
         }
 
@@ -497,7 +548,6 @@ class EventListener {
             if (this.userSeach) {
                 this.userSeach.addEventListener('input', function() {
                     const userSearch = _this.userSeach.value.trim().toLowerCase();
-                    console.log(_this.userElements)
                     _this.userList.forEach(user => {
                         if (userSearch === '') {
                             user.classList.remove('hidden');
@@ -518,24 +568,41 @@ class EventListener {
                 const notifyElement = _this.notifyContainer.querySelectorAll('div[class^="notify-"]');
                 const clearNotifyButton = document.querySelector('#clear-notify');
 
+                console.log(notifyElement);
                 notifyElement.forEach(notify => {
                     notify.addEventListener('click', async function(e) {
-                        const notificationId = notify.getAttribute('data-value');
-                        try {
-                            await _this.renderer.fetchData('../controllers/mark_notification.php', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ notification_id: notificationId })
-                            });
+                        if (e.target.closest('span[id="delete-notify"]')) {
+                            const notifyId = notify.getAttribute('data-value');
+                            notify.classList.remove('animate-slideRight');
+                            notify.classList.add('animate-slideAndFadeOut');
 
-                            // Remove the "new" color from the clicked notification
-                            const badge = e.currentTarget.querySelector('.badge');
-                            e.currentTarget.removeChild(badge);
-                        } catch (error) {
-                            console.error('Error marking notification as read:', error);
-                        }
+                            await _this.renderer.fetchData('../controllers/delete_notification.php', {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ notificationId: notifyId }),
+                            })
 
-                        
+                            setTimeout(function() {
+                                _this.notifyContainer.removeChild(notify);
+                            }, 1200)
+
+
+                        } else {
+                            const notificationId = notify.getAttribute('data-value');
+                            try {
+                                await _this.renderer.fetchData('../controllers/mark_notification.php', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ notification_id: notificationId })
+                                });
+    
+                                // Remove the "new" color from the clicked notification
+                                const badge = e.currentTarget.querySelector('.badge');
+                                e.currentTarget.removeChild(badge);
+                            } catch (error) {
+                                console.error('Error marking notification as read:', error);
+                            }
+                        }   
                     })
                 })
 
@@ -890,7 +957,7 @@ class EventListener {
                             commentId: newComment.comment_id,
                             postId: commentContainer.getAttribute('data-post-id'),
                             userId: newComment.user_id,
-                            username: newComment.username,
+                            username: _this.username,
                             avatar: newComment.avatar,
                             createdTime: new Date(newComment.created_at).toISOString(),
                             comment: newComment.content,
@@ -1433,7 +1500,7 @@ class EventListener {
     // Hàm hiển thị lỗi
     showError(inputId, message) {
         let inputElement = document.getElementById(inputId);
-        let errorElement = inputElement.nextElementSibling; // Lấy <span> kế bên
+        let errorElement = inputElement.nextElementSibling;
         errorElement.innerText = message;
         errorElement.style.color = "red";
     }

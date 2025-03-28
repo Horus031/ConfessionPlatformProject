@@ -95,7 +95,7 @@
 
 <script type="module">
     const userId = <?= $_SESSION['user_id'] ?>;
-    const username = `<?= $_SESSION['username'] ?>`;
+    const username = `<?= $_SESSION['fullname'] ?>`;
     const avatar = `<?= $_SESSION['avatarURL'] ?>`;
 
     import QuestionRenderer from '../src/js/render.js';

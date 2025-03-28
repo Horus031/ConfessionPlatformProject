@@ -93,7 +93,7 @@
     import EventListener from '../src/js/events.js';
 
     const userId = <?= $_SESSION['user_id'] ?>;
-    const username = `<?= $_SESSION['username'] ?>`;
+    const username = `<?= $_SESSION['fullname'] ?>`;
     const avatar = `<?= $_SESSION['avatarURL'] ?>`;
 
     document.addEventListener('DOMContentLoaded', async function() {

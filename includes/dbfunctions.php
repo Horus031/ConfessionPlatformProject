@@ -324,7 +324,7 @@ class Database
 
     public function fetchUserByUsername($username)
     {
-        $sql = "SELECT user_id, CONCAT(first_name, ' ', last_name) AS fullname, password, avatar, tag_name FROM users WHERE username = ?";
+        $sql = "SELECT user_id, CONCAT(first_name, ' ', last_name) AS fullname, username, password, avatar, tag_name FROM users WHERE BINARY username = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$username]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -698,6 +698,13 @@ class Database
         $sql = "DELETE FROM notifications WHERE user_id = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$user_id]);
+    }
+
+    public function deleteNotification($notificationId)
+    {
+        $sql = 'DELETE FROM notifications WHERE notification_id = ?';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$notificationId]);
     }
 
     public function editComment($content, $comment_id)
