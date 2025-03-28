@@ -26,20 +26,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         // Server settings
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com'; // Replace with your SMTP server
+        $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'your_email@example.com'; // Replace with your SMTP username
-        $mail->Password = 'your_password'; // Replace with your SMTP password
+        $mail->Username = 'mailsystemkn@gmail.com';
+        $mail->Password = 'hjdk prmd ftvu zoho';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
+        // Debugging
+        $mail->SMTPDebug = 0;
+        $mail->Debugoutput = 'html';
+
         // Recipients
         $mail->setFrom($email, $name);
-        $mail->addAddress('vominhnghia1878@gmail.com'); // Replace with the admin email address
+        $mail->addAddress('vominhnghia1878@gmail.com');
 
         // Content
         $mail->isHTML(false);
-        $mail->Subject = 'New Contact Form Message';
+        $mail->Subject = 'New Message From Server';
         $mail->Body = "Name: $name\nEmail: $email\n\nMessage:\n$message\n";
 
         $mail->send();

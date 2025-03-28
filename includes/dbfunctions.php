@@ -693,6 +693,13 @@ class Database
         $stmt->execute([$notificationId]);
     }
 
+    public function deleteAllNotification($user_id)
+    {
+        $sql = "DELETE FROM notifications WHERE user_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$user_id]);
+    }
+
     public function editComment($content, $comment_id)
     {
         $sql = "UPDATE comments SET content = ? WHERE comment_id = ?";

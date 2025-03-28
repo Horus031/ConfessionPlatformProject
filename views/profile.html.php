@@ -26,29 +26,9 @@
 
     </div>
 
-    <div class="mt-4 space-y-2 transition-all">
+    <div id="top-tags-container" class="mt-4 space-y-2 transition-all">
         <h2 class="font-medium animate-fadeIn dark:text-white">Top tags by reading days</h2>
-        <div class="relative border-1 border-secondary w-56 p-2 rounded-xl shadow-lg animate-slideRight ">
-            <div class="flex justify-between text-sm text-text-light  dark:text-gray-400">
-                <span class="text-sm font-semibold">#frondend</span>
-                <span class="font-semibold">80%</span>
-            </div>
-            <span class="absolute w-8/12 h-[2px] border-2 border-[#4CAF50] left-1.5 rounded-2xl -bottom-0.5"></span>
-        </div>
-        <div class="relative border-1 border-secondary w-56 p-2 rounded-xl shadow-lg animate-slideRight ">
-            <div class="flex justify-between text-sm text-text-light  dark:text-gray-400">
-                <span class="text-sm font-semibold">#frondend</span>
-                <span class="font-semibold">80%</span>
-            </div>
-            <span class="absolute w-8/12 h-[2px] border-2 border-[#4CAF50] left-1.5 rounded-2xl -bottom-0.5"></span>
-        </div>
-        <div class="relative border-1 border-secondary w-56 p-2 rounded-xl shadow-lg animate-slideRight ">
-            <div class="flex justify-between text-sm text-text-light dark:text-gray-400">
-                <span class="text-sm font-semibold">#frondend</span>
-                <span class="font-semibold">80%</span>
-            </div>
-            <span class="absolute w-8/12 h-[2px] border-2 border-[#4CAF50] left-1.5 rounded-2xl -bottom-0.5"></span>
-        </div>
+
 
     </div>
 
@@ -73,6 +53,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const tagName = urlParams.get('tag_name');
         const renderer = new QuestionRenderer('#profile-container');
+        const tagsRenderer = new QuestionRenderer('#top-tags-container');
         const eventListener = new EventListener(myUserId, username, avatar, tagName);
 
         try {
@@ -83,6 +64,11 @@
 
             const userPosts = await renderer.fetchData('../controllers/list_question.php');
             renderer.renderUserPosts(userPosts, otherUserId);
+
+            const topTagsReading = await tagsRenderer.fetchData(
+                `../controllers/get_top_tags.php?user_id=${tagName === username ? myUserId : otherUserId}`
+            );
+            tagsRenderer.renderTopTags(topTagsReading);
 
             const followCounts = await renderer.fetchData(`../controllers/get_follow_counts.php?user_id=${otherUserId}`);
             document.getElementById('follower-count').textContent = followCounts.follower_count;

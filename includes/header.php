@@ -124,6 +124,12 @@
 
             </div>
         </div>
+
+        <div class="fixed items-center left-2 bottom-30 z-90 lg:w-64 hidden lg:hidden md:flex md:text-sm md:space-x-4 2xl:flex">
+            <div class="dark:text-gray-400">
+                &#169; 2025 KnowledgeNexus. <br> All rights reserved.
+            </div>
+        </div>
     </nav>
 </aside>
 

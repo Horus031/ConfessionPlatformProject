@@ -34,6 +34,8 @@ class QuestionRenderer {
 
         posts.forEach(async post => {
             if (post.user_savedid == userId) {
+                const userJoinedTime = new Date(post.created_at);
+                const formattedDate = userJoinedTime.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
                 const questionElement = document.createElement('div');
                 questionElement.id = `ques-${post.post_id}`;
                 questionElement.setAttribute('data-value', `${post.post_id}`);
@@ -43,18 +45,20 @@ class QuestionRenderer {
                         <input type="hidden" name="post_id" value="${post.post_id}">
                         <div class="flex justify-between items-center">
                             <span data-module="${post.module_id}" class="w-fit module-name rounded-full text-xs ${post.bg_class} ${post.text_class} px-2 font-medium">${post.module_name}</span>
-                            <div class="relative group">
-                                <img src="../assets/images/dots.png" class="h-10 hover:bg-gray-300 p-2 rounded-full">
-                                <div id="action-popup" class="absolute bg-white rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent">
-                                    <button type="button" id="view-btn" class="flex w-full items-center space-x-4 p-3 hover:bg-gray-200 cursor-pointer">
-                                        <span>View Details</span>
+                            <div class="relative group rounded-md text-4xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 active:scale-90">
+                                <span id="post-actions" class="material-symbols-rounded custom-icon more-icon">
+                                    more_horiz
+                                </span>
+                                <div id="action-popup" class="absolute bg-white rounded-md top-12 shadow-[0px_0px_5px_-1px] right-0 w-40 hidden before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:text-gray-400 dark:shadow-none">
+                                    <button type="button" id="view-btn" class="flex w-full items-center rounded-md space-x-4 p-3 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer">
+                                        <span class="text-lg">View Details</span>
                                     </button> 
-                                    <button type="button" id="edit-btn" class="flex w-full items-center space-x-4 p-3 ${post.user_id == userId ? 'block' : 'hidden'}  hover:bg-gray-200 cursor-pointer">
-                                        <span>Edit</span>
+                                    <button type="button" id="edit-btn" class="flex w-full items-center rounded-md space-x-4 p-3 ${post.user_id == userId ? 'block' : 'hidden'}  hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer">
+                                        <span class="text-lg">Edit</span>
                                     </button>
                                     <form action="../controllers/deletepost.php" method="post" class="${post.user_id == userId ? 'block' : 'hidden'} ">
                                         <input type="hidden" name="post_id" value="${post.post_id}">
-                                        <input type="submit" value="Delete" class="space-x-4 p-3 text-left cursor-pointer hover:bg-gray-200 text-red-400 w-full">
+                                        <input type="submit" value="Delete" class="space-x-4 p-3 text-left rounded-md text-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 text-red-400 w-full">
                                     </form>
                                 </div>
                             </div>
@@ -67,7 +71,23 @@ class QuestionRenderer {
                             </div>
                             <div class="flex justify-between items-center mt-3">
                                 <div class="flex items-center space-x-2">
-                                    <img loading="lazy" src="${post.avatar ? post.avatar : '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+                                    <div class="relative group">
+                                        <img id="profile-hover" data-value="${post.user_id}" loading="lazy" src="${post.avatar ? post.avatar : '../assets/images/user.png'}" alt="" class="user-${post.user_id} h-10 rounded-full">
+
+                                        <div id="profile-popup" class="absolute bg-white w-66 rounded-md p-2 -top-26 left-0 border-1 border-gray-600 before:content-[''] before:absolute before:w-full before:h-0 before:right-0 before:-bottom-2 before:border-4 before:border-transparent group-hover:block hidden transition-all dark:bg-gray-800 dark:border-gray-400">
+                                            <div class="flex items_center space-x-4">
+                                                <img loading="lazy" src="${post.avatar ? post.avatar : '../assets/images/user.png'}" class="h-20 rounded-full">
+                                                <div>
+                                                    <h4 id="post-username" class="text-lg font-medium dark:text-white">${post.username}</h4>
+                                                    <div class="text-sm">
+                                                        <span class="text-text tagname dark:text-gray-400">@${post.tag_name ?? ''}</span>
+                                                        <span class="text-text dark:text-gray-400">•</span>
+                                                        <span class="text-text-light dark:text-gray-400">Joined ${formattedDate}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <span class="text-xs dark:text-gray-400">${post.username}</span>
                                     <span class="text-xs dark:text-gray-400">${this.timeAgo(post.created_at)}</span>
                                 </div>
@@ -219,7 +239,6 @@ class QuestionRenderer {
                     if (savedData.error) {
                         console.log(error);
                     } else {
-                        console.log(savedData);
                         if (savedData.status == 'yes') {
 
                         } else {
@@ -397,7 +416,7 @@ class QuestionRenderer {
                         const existingTags = tagContainer.querySelectorAll('span');
                         if (existingTags.length === 0) {
                             const tagElement = document.createElement('span');
-                            tagElement.classList.add('bg-gray-300', 'p-1','text-black' , 'rounded-md', 'dark:bg-transparent', 'dark:text-gray-400', 'dark:border-1', 'dark:border-1' ,'dark:border-gray-500');
+                            tagElement.classList.add('tagname', 'bg-gray-300', 'p-1','text-black' , 'rounded-md', 'dark:bg-transparent', 'dark:text-gray-400', 'dark:border-1', 'dark:border-1' ,'dark:border-gray-500');
                             tagElement.textContent = `#${tag.tag_name}`;
                             tagContainer.appendChild(tagElement);
                         } else {
@@ -410,20 +429,20 @@ class QuestionRenderer {
                                 tagSpan.textContent = `+${count}`;
         
                                 const additionalTagPopup = document.createElement('span');
-                                additionalTagPopup.classList.add('p-2');
+                                additionalTagPopup.classList.add('tagname', 'p-2');
                                 additionalTagPopup.textContent = `#${tag.tag_name}`;
                                 tagPopup.appendChild(additionalTagPopup);
         
                             } else {
                                 const additionalTagElement = document.createElement('div');
         
-                                additionalTagElement.classList.add('relative', 'group', 'bg-tags', 'p-1', 'rounded-md', 'additional-tags', 'dark:border-gray-800');
+                                additionalTagElement.classList.add('relative', 'group', 'bg-gray-300', 'p-1', 'rounded-md', 'additional-tags', 'dark:bg-transparent' , 'dark:border-1','dark:text-gray-400', 'dark:border-gray-400');
                                 additionalTagElement.setAttribute('data-count', 1);
                                 additionalTagElement.innerHTML = `
                                     <span id="tag-count">+1</span>
         
-                                    <div id="tags-popup" class="absolute space-y-2 bg-tags  p-2 rounded-md right-1 top-8 shadow-lg hidden group-hover:block before:absolute before:content-[''] before:-top-2 before:w-6 before:h-3 before:right-0 before:bg-transparent dark:border-1 dark:border-gray-800">
-                                        <span class="p-2">#${tag.tag_name}</span>
+                                    <div id="tags-popup" class="absolute space-y-2 bg-gray-300  p-2 rounded-md right-1 top-8 shadow-lg hidden group-hover:block before:absolute before:content-[''] before:-top-2 before:w-6 before:h-3 before:right-0 before:bg-transparent dark:bg-gray-900 dark:border-1 dark:border-gray-600">
+                                        <span class="tagname p-2 dark:text-gray-400">#${tag.tag_name}</span>
                                     </div>
                                 `;
                                 tagContainer.appendChild(additionalTagElement);
@@ -711,7 +730,6 @@ class QuestionRenderer {
 
             posts.forEach(async myPost => {
                 if (myPost.user_id == userId) {
-                    console.log(myPost.post_id);
                     hasPosts = true;
                     const mypostElements = document.createElement('div');
                     mypostElements.classList.add('flex', 'items-center', 'justify-between', 'border-2', 'border-secondary', 'mt-2', 'p-4', 'rounded-lg', 'w-full', 'hover:border-black', 'cursor-pointer', 'animate-slideRight', 'transition-all', 'dark:border-gray-700', 'dark:hover:border-gray-500', 'dark:bg-gray-800');
@@ -855,7 +873,14 @@ class QuestionRenderer {
         tagContainer.classList.add('flex', 'items-center', 'space-x-2', 'text-sm');
         tagContainer.id = `tags-container-${post.post_id}`;
 
+        const postImage = document.querySelector('#post-image')
+        if (postImage.src.match('localhost')) {
+            postImage.classList.add('hidden')
+        }
+
         usertagContainer.appendChild(tagContainer);
+
+        
 
 
         const moduleContainer = document.querySelector('#module-container');
@@ -1050,6 +1075,45 @@ class QuestionRenderer {
     });
     }
 
+    async renderTopTags(container) {
+
+        if (!container || container.length == 0) {
+            const noResultsMessage = document.createElement('div');
+            noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
+            noResultsMessage.textContent = 'No results found.';
+            this.container.appendChild(noResultsMessage);
+            return;
+        }
+
+        try {
+            container.forEach(tag => {
+                const tagElement = document.createElement('div');
+                tagElement.classList.add('relative', 'border-1', 'border-secondary', 'w-56', 'p-2', 'rounded-t-xl', 'shadow-lg', 'animate-slideRight');
+                tagElement.innerHTML = `
+                    <div class="flex justify-between text-sm text-text-light  dark:text-gray-400">
+                        <span class="text-sm font-semibold">#${tag.tag_name}</span>
+                        <span class="font-semibold">${parseInt(tag.percentage)}%</span>
+                    </div>
+                    <span class="percent-line w-0 transition-all duration-1000 absolute h-[2px] border-2 border-[#4CAF50] left-0 rounded-2xl -bottom-0.5"></span>
+                `;
+
+                setTimeout(function() {
+                    const tagWidth = tagElement.offsetWidth;
+                    const lineWidth = (tagWidth * parseInt(tag.percentage)) / 100;
+
+                    const percentLine = tagElement.querySelector('.percent-line');
+                    percentLine.style.width = `${lineWidth}px`;
+                }, 1200)
+
+                this.container.appendChild(tagElement);
+            })
+
+            
+        } catch (error) {
+            console.error('Error fetching top tags:', error);
+        }
+    }
+
     renderNotificationsPopup(notifications) {
         if (!this.container) return;
         this.container.innerHTML = '';
@@ -1126,6 +1190,7 @@ class QuestionRenderer {
 
         notifications.forEach(notification => {
             const notifyElement = document.createElement('div');
+            notifyElement.setAttribute('data-value', notification.notification_id);
             const timeInMonth = new Date(notification.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             const timeInHour = new Date(notification.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             notifyElement.classList.add(`notify-${notification.notification_id}`, 'relative' ,'w-full', 'group', 'flex', 'justify-between', 'border-1', 'dark:border-gray-600', 'p-4', 'rounded-md', 'bg-gray-100', 'dark:bg-gray-800', 'md:w-2/3', 'lg:w-1/2', 'animate-slideRight', 'cursor-pointer', 'hover:border-black/20', 'dark:hover:border-gray-400');
@@ -1166,7 +1231,7 @@ class QuestionRenderer {
             if (notification.is_read == '0') {
                 const firstChildElement = notifyElement.firstChildElement;
                 let newBadge = document.createElement('div');
-                newBadge.classList.add('absolute', 'right-2', '-top-2');
+                newBadge.classList.add('badge', 'absolute', 'right-2', '-top-2');
                 newBadge.innerHTML = `
                     <span class="absolute animate-ping p-2 rounded-full bg-red-400 opacity-75"></span>
                     <span class="absolute bg-red-500 rounded-full p-2 ">

@@ -5,6 +5,7 @@ module.exports = {
     './src/css/*.css',
     './*.html',
     './*.php',
+    './js/*.js',
   ],
   safelist: [
     'bg-blue-100', 'text-blue-500',
@@ -17,6 +18,7 @@ module.exports = {
     'bg-gray-100', 'text-gray-500',
     'bg-orange-100', 'text-orange-500',
     'bg-pink-100', 'text-pink-500',
+
   ],
   theme: {
     extend: {

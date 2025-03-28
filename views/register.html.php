@@ -12,14 +12,14 @@
 
 
 <body class="font-poppins h-screen overflow-hidden bg-no-repeat bg-linear-to-br from-gradient1 to-gradient2">
-    <div id="toast-message" class="absolute -right-2 top-8 z-50 flex items-center w-full max-w-xs p-4 text-text rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800 border-2 border-[#3ea29a] translate-x-full transition-all" role="alert">
+    <div id="toast-container" class="absolute -right-2 top-8 z-50 flex items-center w-full max-w-xs p-4 text-text rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800 border-2 border-[#3ea29a] translate-x-full transition-all" role="alert">
         <div class="inline-flex items-center justify-center text-3xl shrink-0 w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200">
 
             <span class="material-symbols-outlined custom-icon">
                 priority_high
             </span>
         </div>
-        <div class="ms-3 text-sm font-normal">Please fill out all information!</div>
+        <div id="toast-message" class="ms-3 text-sm font-normal">Please fill out all information!</div>
     </div>
 
 

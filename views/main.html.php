@@ -23,6 +23,8 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 
         <?php include "./" . $page . ".html.php"; ?>
     </div>
+
+
 </body>
 
 

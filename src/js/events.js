@@ -105,7 +105,7 @@ class EventListener {
         this.step1Register = document.querySelector('#step1-container');
         this.step2Register = document.querySelector('#step2-container');
         this.step2Form = document.querySelector('#step2-form');
-        this.toastMessage = document.querySelector('#toast-message');
+        this.toastMessage = document.querySelector('#toast-container');
         this.loginForm = document.querySelector('#login-form');
         this.menuBtn = document.querySelector('#openMenu');
         this.closeBtn = document.querySelector('#closeMenu');
@@ -116,7 +116,8 @@ class EventListener {
         this.userBtn = document.querySelector('#user-btn');
         this.userPopup = document.querySelector('#users-popup');
         this.notifyBtn = document.querySelector('#notify-btn');
-        this.notifyContainer = document.querySelector('#notify-container');
+        this.notifyContainer = document.querySelector('#notification-container');
+        this.notifyPopupContainer = document.querySelector('#notify-container');
         this.notifyPopup = document.querySelector('#notify-popup');
         this.buttonContainer = document.querySelector('#button-container');
         this.tagList = document.querySelector('#tag-list');
@@ -267,7 +268,7 @@ class EventListener {
                     if (_this.toastMessage.classList.contains('animate-toastSlide')) {
                         return;
                     } else { 
-                        _this.showToastMessage();
+                        _this.showToastMessage('Please fill out all information!', 'top-8', '-right-2');
                     }
                 }
             });
@@ -514,8 +515,61 @@ class EventListener {
             }
 
             if (this.notifyContainer) {
+                const notifyElement = _this.notifyContainer.querySelectorAll('div[class^="notify-"]');
+                const clearNotifyButton = document.querySelector('#clear-notify');
+
+                notifyElement.forEach(notify => {
+                    notify.addEventListener('click', async function(e) {
+                        const notificationId = notify.getAttribute('data-value');
+                        try {
+                            await _this.renderer.fetchData('../controllers/mark_notification.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ notification_id: notificationId })
+                            });
+
+                            // Remove the "new" color from the clicked notification
+                            const badge = e.currentTarget.querySelector('.badge');
+                            e.currentTarget.removeChild(badge);
+                        } catch (error) {
+                            console.error('Error marking notification as read:', error);
+                        }
+
+                        
+                    })
+                })
+
+                clearNotifyButton.addEventListener('click', async function() {
+                    try {
+                        notifyElement.forEach(notify => {
+                            notify.classList.remove('animate-slideRight');
+                            notify.classList.add('animate-slideAndFadeOut');
+                        })
+
+                        await _this.renderer.fetchData('../controllers/delete_all_notification.php', {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ user_id: _this.userId }),
+                        })
+    
+                        setTimeout(function() {
+                            const firstChild = _this.notifyContainer.firstChild
+                            while (firstChild) {
+                                _this.notifyContainer.removeChild(firstChild);
+                            }
+                        }, 1500)
+
+
+
+                    } catch (error) {
+                        console.log(error);
+                    }
+                })
+            }
+
+            if (this.notifyPopupContainer) {
                 this.notifyBtn.addEventListener('click', () => {
-                    this.notifyContainer.classList.toggle('hidden');
+                    this.notifyPopupContainer.classList.toggle('hidden');
                     
                 });
 
@@ -529,7 +583,6 @@ class EventListener {
                                 body: JSON.stringify({ user_id: this.userId })
                             });
 
-                            // Remove the "new" color from all notifications
                             const notifications = document.querySelectorAll('#notify-popup a.bg-blue-200');
                             notifications.forEach(notification => {
                                 notification.classList.remove('bg-blue-200');
@@ -576,6 +629,7 @@ class EventListener {
                         const profilePopup = question.querySelector('div[id="profile-popup"]');
                         let button = e.target.closest('button');
 
+
                         if (e.target.id == moreButton.id) {
                             const actionPopup = question.querySelector('#action-popup');
                             actionPopup.classList.toggle('hidden');
@@ -593,7 +647,9 @@ class EventListener {
 
 
                         if (!button) {
+                            const tagList = question.querySelectorAll('span[class^="tagname"]')
                             _this.addReadingHistory(postId);
+                            _this.addTagsHistory(tagList);
                             _this.incrementViewCounts(postId);
                             window.location.href = `../views/main.html.php?page=postdetails&id=${postId}`;
                         }
@@ -1002,7 +1058,6 @@ class EventListener {
             if (this.userContainer && this.userList) {
                 this.userList.forEach(user => {
                     const userTagName = user.querySelector('h3[id^="user-tagname"]')
-                    console.log(userTagName);
                     user.addEventListener('click', function() {
                         window.location.href = `main.html.php?page=profile&tag_name=${userTagName.textContent}`;
                     })
@@ -1017,7 +1072,7 @@ class EventListener {
                     }
     
                     if (!this.notifyBtn.contains(event.target) && !this.notifyBtn.contains(event.target)) {
-                        this.notifyContainer.classList.add('hidden');
+                        this.notifyPopupContainer.classList.add('hidden');
                     }
                 }
             });
@@ -1266,22 +1321,58 @@ class EventListener {
 
             // Show a success message
             console.log(`Link copied to clipboard: ${postLink}`);
-            this.showCopyMessage('Link copied to clipboard!', 'bottom-4', 'right-4');
+            this.showToastMessage('Link copied to clipboard!', 'top-28', '-right-2');
         } catch (error) {
             console.error('Error copying link:', error);
         }
     }
 
-    showCopyMessage(message, x, y) {
-        const toast = document.createElement('div');
-        toast.classList.add('toast', 'fixed', x, y, 'bg-blue-500', 'text-white', 'p-2', 'rounded-md', 'shadow-lg', 'z-90', 'animate-toastSlide');
-        toast.textContent = message;
+    async addTagsHistory(tagName) {
+        tagName.forEach(async tag => {
+            try {
+                await this.renderer.fetchData('../controllers/update_tags_history.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: this.userId, tag_name: tag.textContent.slice(1) })
+                });
+            } catch (error) {
+                console.error('Error updating reading history:', error);
+            }
+        })
+    }
 
-        document.body.appendChild(toast);
+    showToastMessage(message, x, y) {
+        const toast = document.querySelector('#toast');
+        if (toast) {
+            toast.classList.remove('animate-toastSlideOut');
+            toast.classList.add('animate-toastSlide');
 
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
+            setTimeout(() => {
+                toast.classList.remove('animate-toastSlide');
+                toast.classList.add('animate-toastSlideOut')
+            }, 3000);
+        } else {
+            const toast = document.createElement('div');
+            toast.classList.add('fixed', x, y, 'z-50', 'flex', 'items-center', 'w-full', 'max-w-xs', 'p-4', 'text-text', 'dark:bg-gray-800', 'border-2', 'border-[#3ea29a]', 'bg-white', 'animate-toastSlide');
+            toast.id = 'toast';
+            toast.innerHTML = `
+                <div class="inline-flex items-center justify-center text-3xl shrink-0 w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200">
+
+                    <span class="material-symbols-rounded custom-icon">
+                        priority_high
+                    </span>
+                </div>
+                <div id="toast-message" class="ms-3 text-sm font-normal dark:text-gray-400">${message}</div>
+            
+            `;
+
+            document.body.appendChild(toast); 
+
+            setTimeout(() => {
+                toast.classList.remove('animate-toastSlide');
+                toast.classList.add('animate-toastSlideOut')
+            }, 3000);
+        }        
     }
 
     validateLogin(username, password, isValid) {
@@ -1337,22 +1428,6 @@ class EventListener {
 
     escapeRegExp(string) {
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-    }
-
-
-    showToastMessage() {
-        const _this = this;
-        this.toastMessage.classList.remove('animate-toastSlideOut');
-        this.toastMessage.classList.add('animate-toastSlide');
-
-
-        setTimeout(function() {
-            _this.toastMessage.classList.remove('animate-toastSlide');
-            _this.toastMessage.classList.add('animate-toastSlideOut');
-        }, 3000)
-           
-
-        
     }
 
     // Hàm hiển thị lỗi
