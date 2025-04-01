@@ -17,7 +17,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 </head>
 
 <body class="h-screen">
-    <div class="dark:bg-gray-900  relative flex h-full w-full overflow-x-hidden overflow-y-auto transition-all">
+    <div class="dark:bg-gray-900  relative flex h-full w-full overflow-x-hidden overflow-y-auto transition-all scroll ">
         <?php include '../includes/overlay.php' ?>
         <?php include '../includes/header.php' ?>
 
@@ -26,8 +26,6 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 
 
 </body>
-
-
 
 
 </html>

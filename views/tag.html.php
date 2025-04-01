@@ -28,24 +28,4 @@
         </div>
     </div>
 </main>
-<script type="module">
-    import QuestionRenderer from '../src/js/render.js';
-    import EventListener from '../src/js/events.js';
-
-    const userId = <?= $_SESSION['user_id'] ?>;
-
-    document.addEventListener('DOMContentLoaded', async function() {
-        const renderer = new QuestionRenderer('#tags-container');
-        const eventListener = new EventListener(userId);
-
-        try {
-            const tags = await renderer.fetchData('../controllers/list_tags.php');
-            renderer.renderTags(tags);
-
-
-            eventListener.start();
-        } catch (error) {
-            console.error('Error loading data:', error);
-        }
-    });
-</script>
+<script type="module" src="../controllers/render/tag.js"></script>

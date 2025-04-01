@@ -1,5 +1,4 @@
 <?php
-// filepath: d:\xampp\htdocs\mywebsite\controllers\get_follow_counts.php
 
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");

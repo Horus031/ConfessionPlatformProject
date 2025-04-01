@@ -1,101 +1,161 @@
 import QuestionRenderer from "../js/render.js";
 
 class EventListener {
-    constructor(userId, username, avatar, tagName) {
+    constructor() {
         this.renderer = new QuestionRenderer();
         this.currentURL = window.location.href;
-        this.userId = userId;
-        this.username = username;
-        this.avatar = avatar
-        this.tagName = tagName
         this.renderedComments = new Set(); // Tạo Set lưu trữ các id của comment
-        this.socket = new WebSocket(`ws://localhost:8080?user_id=${this.userId}`);
 
+        this.initSessionData().then(() => {
+            this.socket = new WebSocket(`ws://localhost:8080?user_id=${this.userId}`);
 
-        this.socket.onopen = function() {
-            console.log("WebSocket connected!");
-        }.bind(this);
+            this.socket.onopen = function() {
+                console.log("WebSocket connected!");
+            }.bind(this);
 
-        this.socket.onmessage = (event) => {
-            let data = JSON.parse(event.data);
-        
-            if (data.type === "like") {
-                document.querySelector(`.like-count-${data.postId}`).innerText = data.likesCount;
-            }
-        
-            if (data.type === "comment") {
-                const commentCountSpan = document.querySelector(`.comment-count-${data.postId}`);
-                if (commentCountSpan) {
-                    commentCountSpan.innerText = data.commentCount;
+            this.socket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+
+                if (data.type === "like") {
+                    document.querySelector(`.like-count-${data.postId}`).innerText = data.likesCount;
                 }
-        
-                let commentSection = document.querySelector(`div[id^="comment-container-"]`);
-                let firstChildComment = commentSection.firstElementChild;
-        
-                // Update the badge only if the comment is not from the current user
-                if (parseInt(data.userId) !== this.userId) {
+
+                if (data.type === "comment") {
+                    const commentCountSpan = document.querySelector(`.comment-count-${data.postId}`);
+                    if (commentCountSpan) {
+                        commentCountSpan.innerText = data.commentCount;
+                    }
+
+                    let commentSection = document.querySelector(`div[id^="comment-container-"]`);
+                    if (commentSection) {
+                        let firstChildComment = commentSection.firstElementChild;
+
+                        // Update the badge only if the comment is not from the current user
+                        if (parseInt(data.userId) !== this.userId) {
+                            this.updateNotificationBadge();
+                        }
+
+                        // Convert UTC time to local time
+                        const localTime = new Date(data.created_at);
+
+                        const newCommentElement = document.createElement('div');
+                        newCommentElement.setAttribute('data-value', `${data.comment_id}`);
+                        newCommentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700', 'animate-slideRight');
+                        newCommentElement.innerHTML = `
+                            <img src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    <h2 class="font-medium text-md dark:text-white">${data.username}</h2>
+                                    <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(localTime)}</span>
+                                </div>
+                                <p class="text-sm dark:text-gray-400">${data.comment}</p>
+                            </div>
+                        `;
+
+                        commentSection.insertBefore(newCommentElement, firstChildComment);
+
+                        document.querySelector('.comment-count').textContent = `(${commentSection.children.length})`;
+                    }
+                }
+
+                if (data.type === "notification") {
+                    // Update the notification badge
                     this.updateNotificationBadge();
+
+                    const notifyContainer = document.querySelector('#notify-popup');
+                    const notifyFirstChild = notifyContainer.firstElementChild;
+
+                    // Convert UTC time to local time
+                    const localTime = new Date(data.created_at);
+
+                    const notifyElement = document.createElement('a');
+                    notifyElement.classList.add('flex', 'justify-between', 'px-2', 'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer', 'bg-blue-200');
+                    notifyElement.href = `${data.url}`;
+                    notifyElement.id = `notify-${data.notification_id}`;
+                    const timeInMonth = localTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const timeInHour = localTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    notifyElement.innerHTML = `
+                        <div class="flex space-x-3">
+                            <img loading="lazy" src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-8 rounded-full">
+
+                            <div class="flex flex-col space-y-1">
+                                <span>${data.username} ${data.message}</span>
+
+                                <span class="text-text-light break-all line-clamp-1">${data.content || 'Check it out!'}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col space-y-1 text-nowrap mt-1 text-right">
+                            <span class="text-xs">${timeInMonth}</span>
+                            <span class="text-xs">${timeInHour}</span>
+                        </div>
+                    `;
+
+                    notifyContainer.insertBefore(notifyElement, notifyFirstChild);
                 }
-        
-                // Convert UTC time to local time
-                const localTime = new Date(data.created_at);
-        
-                const newCommentElement = document.createElement('div');
-                newCommentElement.setAttribute('data-value', `${data.comment_id}`);
-                newCommentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700', 'animate-slideRight');
-                newCommentElement.innerHTML = `
-                    <img src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
-        
-                    <div>
-                        <div class="flex items-center space-x-2">
-                            <h2 class="font-medium text-md dark:text-white">${data.username}</h2>
-                            <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(localTime)}</span>
+
+                if (data.type === "new_post") {
+                    this.updateNotificationBadge();
+
+                    const notifyContainer = document.querySelector('#notify-popup');
+                    const notifyFirstChild = notifyContainer.firstElementChild;
+
+                    // Convert UTC time to local time
+                    const localTime = new Date(data.created_at);
+
+                    const notifyElement = document.createElement('a');
+                    notifyElement.classList.add('flex', 'justify-between', 'px-2', 'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer', 'bg-blue-200');
+                    notifyElement.href = `${data.url}`;
+                    notifyElement.id = `notify-${data.notification_id}`;
+                    const timeInMonth = localTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const timeInHour = localTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    notifyElement.innerHTML = `
+                        <div class="flex space-x-3">
+                            <img loading="lazy" src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-8 rounded-full">
+
+                            <div class="flex flex-col space-y-1">
+                                <span>${data.username} has shared a new post</span>
+
+                                <span class="text-text-light break-all line-clamp-1">${data.title || 'Check it out!'}</span>
+                            </div>
                         </div>
-                        <p class="text-sm dark:text-gray-400">${data.comment}</p>
-                    </div>
-                `;
-        
-                document.querySelector('.comment-count').textContent = `(${commentSection.children.length})`;
-        
-                commentSection.insertBefore(newCommentElement, firstChildComment);
-            }
-        
-            if (data.type === "notification") {        
-                // Update the notification badge
-                this.updateNotificationBadge();
-        
-                const notifyContainer = document.querySelector('#notify-popup');
-                const notifyFirstChild = notifyContainer.firstElementChild;
-        
-                // Convert UTC time to local time
-                const localTime = new Date(data.created_at);
-        
-                const notifyElement = document.createElement('a');
-                notifyElement.classList.add('flex', 'justify-between', 'px-2', 'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer', 'bg-blue-200');
-                notifyElement.href = `${data.url}`;
-                notifyElement.id = `notify-${data.notification_id}`;
-                const timeInMonth = localTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                const timeInHour = localTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                notifyElement.innerHTML = `
-                    <div class="flex space-x-3">
-                        <img loading="lazy" src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-8 rounded-full">
-        
-                        <div class="flex flex-col space-y-1">
-                            <span>${data.username} ${data.message}</span>
-        
-                            <span class="text-text-light break-all line-clamp-1">${data.content || 'Check it out!'}</span>
+
+                        <div class="flex flex-col space-y-1 text-nowrap mt-1 text-right">
+                            <span class="text-xs">${timeInMonth}</span>
+                            <span class="text-xs">${timeInHour}</span>
                         </div>
-                    </div>
-        
-                    <div class="flex flex-col space-y-1 text-nowrap mt-1 text-right">
-                        <span class="text-xs">${timeInMonth}</span>
-                        <span class="text-xs">${timeInHour}</span>
-                    </div>
-                `;
-        
-                notifyContainer.insertBefore(notifyElement, notifyFirstChild);
+                    `;
+
+                    notifyContainer.insertBefore(notifyElement, notifyFirstChild);
+                }
+            };
+        });
+    }
+
+    async initSessionData() {
+        try {
+            // Fetch session data from the server
+            const response = await fetch('../controllers/session_data.php');
+            if (!response.ok) {
+                throw new Error(`Failed to fetch session data: ${response.statusText}`);
             }
-        };
+    
+            const sessionData = await response.json();
+    
+            // Ensure session data is valid
+            if (sessionData && sessionData.user_id) {
+                this.userId = sessionData.user_id;
+                this.fullName = sessionData.fullname || '';
+                this.username = sessionData.username || '';
+                this.avatar = sessionData.avatar || '';
+                this.tagName = sessionData.tag_name || '';
+            } else {
+                throw new Error('Invalid session data received');
+            }
+        } catch (error) {
+            console.error('Error initializing session data:', error);
+        }
     }
 
     initElements() {
@@ -127,6 +187,7 @@ class EventListener {
         this.fileInput = document.querySelector('#imageURL');
         this.fileName = document.querySelector('#file-name');
         this.questionElement = document.querySelectorAll('div[id^="ques-"]');
+        this.historyContainer = document.querySelector('#history-container');
         this.historySearch = document.querySelector('#history-search');
         this.userSeach = document.querySelector('#user-search')
         this.historyElement = document.querySelectorAll('.history-element');
@@ -135,6 +196,7 @@ class EventListener {
         this.tagElements = document.querySelectorAll('div[id^="tag-"]');
         this.postForm = document.querySelector('#post-form');
         this.postDetailContainer = document.querySelector('#postdetail-container');
+        this.newPostForm = document.querySelector('#newpost-form')
         this.tagSearch = document.querySelector('#tag-search');
         this.questionFilter = document.querySelector('#question-filter');
         this.profileActions = document.querySelector('#profile-actions');
@@ -143,7 +205,7 @@ class EventListener {
             this.userList = this.userContainer.querySelectorAll('div[id^=user-]')
         }
         this.darkModeToggle = document.querySelector('#darkmode-btn');
-
+        this.infoContainer = document.querySelector('#info-container');
     }
 
     handleEvents() {
@@ -370,7 +432,6 @@ class EventListener {
                         searchTitle.classList.add('text-sm', 'text-text-light', 'font-medium');
                         _this.searchSuggestions.appendChild(searchTitle);
         
-                        console.log(results);
                         results.forEach(result => {
                             const suggestion = document.createElement('div');
                             suggestion.classList.add('py-2', 'px-4', 'text-xl', 'hover:bg-gray-200', 'cursor-pointer');
@@ -459,6 +520,7 @@ class EventListener {
         if (this.darkModeToggle) {
             this.darkModeToggle.addEventListener('click', function() {
                 _this.toggleDarkMode();
+                
             });
         }
 
@@ -498,14 +560,14 @@ class EventListener {
             if (this.navbar) {
                 const buttons = this.navbar.querySelectorAll('a[id$="btn"]');
                 buttons.forEach(link => {
-                    link.classList.remove("bg-gray-100");
+                    link.classList.remove("bg-gray-300");
                     link.classList.remove("dark:bg-gray-600");
                     const theme = localStorage.getItem('darkMode');
                     if (link.href === this.currentURL) {
                         if (theme === 'enabled') {
                             link.classList.add("dark:bg-gray-600");
                         } else {
-                            link.classList.add("bg-gray-100");
+                            link.classList.add("bg-gray-300");
 
                         }
                     }
@@ -518,7 +580,7 @@ class EventListener {
                 });
             }
 
-            if (this.historySearch) {
+            if (this.historyContainer) {
                 this.historySearch.addEventListener('input', function() {
                     const searchValue = _this.historySearch.value.trim().toLowerCase();
                     _this.historyElement.forEach(history => {
@@ -537,12 +599,20 @@ class EventListener {
                 })
 
 
-                this.historyElement.forEach(question => {
-                    question.addEventListener('click', function(e) {
-                        const questionId = question.getAttribute('data-value');
-                        window.location.href = `../views/main.html.php?page=postdetails&id=${questionId}`;
-                    })
-                })
+                const visibleHistoryElements = Array.from(_this.historyElement).filter(history => !history.classList.contains('hidden'));
+                if (visibleHistoryElements.length > 0) {
+                    visibleHistoryElements.forEach(question => {
+                        question.addEventListener('click', function() {
+                            const questionId = question.getAttribute('data-value');
+                            window.location.href = `../views/main.html.php?page=postdetails&id=${questionId}`;
+                        });
+                    });
+                } else {
+                    const dateTitle = document.querySelector('.date-title');
+                    if (dateTitle) {
+                        dateTitle.classList.add('hidden');
+                    }
+                }
             }
 
             if (this.userSeach) {
@@ -568,7 +638,6 @@ class EventListener {
                 const notifyElement = _this.notifyContainer.querySelectorAll('div[class^="notify-"]');
                 const clearNotifyButton = document.querySelector('#clear-notify');
 
-                console.log(notifyElement);
                 notifyElement.forEach(notify => {
                     notify.addEventListener('click', async function(e) {
                         if (e.target.closest('span[id="delete-notify"]')) {
@@ -595,10 +664,6 @@ class EventListener {
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ notification_id: notificationId })
                                 });
-    
-                                // Remove the "new" color from the clicked notification
-                                const badge = e.currentTarget.querySelector('.badge');
-                                e.currentTarget.removeChild(badge);
                             } catch (error) {
                                 console.error('Error marking notification as read:', error);
                             }
@@ -924,6 +989,8 @@ class EventListener {
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ user_id: userId, post_id: postId, content: encodeURIComponent(commentContent) })
                     });
+
+                    console.log('posted')
         
                     if (newComment.error) {
                         console.log(newComment.error);
@@ -932,7 +999,8 @@ class EventListener {
         
                         _this.renderedComments.add(newComment.comment_id); // Add the comment ID to the Set
                         textarea.value = '';
-                        document.querySelector('.comment-count').textContent = `(${_this.renderedComments.size})`;
+                        console.log(_this.renderedComments.size);
+
 
                         const receiverId = document.querySelector('img[id^="user-avatar"]').getAttribute('data-value');
                         const avatar = `${_this.avatar || '../assets/images/user.png'}`;
@@ -945,10 +1013,11 @@ class EventListener {
                                 await _this.renderer.fetchData('../controllers/add_notifications.php', {
                                     method: "POST",
                                     headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({ receiverId: receiverId, senderId: _this.userId, type: 'comment', message: messageNotify, url: urlNotify })
+                                    body: JSON.stringify({ receiverId: receiverId, senderId: _this.userId, type: 'comment', message: messageNotify, message_content: newComment.content, url: urlNotify })
                                 });
 
                                 _this.sendNotification(receiverId, _this.username, avatar, _this.userId, 'comment', messageNotify, newComment.content, urlNotify, createdTime);
+                                document.querySelector('.comment-count').textContent = `(${_this.renderedComments.size})`;
                             } 
                         }, 100);
 
@@ -963,6 +1032,7 @@ class EventListener {
                             comment: newComment.content,
                             commentCount: _this.renderedComments.size
                         }));
+
                     } 
                 });
             }
@@ -997,7 +1067,6 @@ class EventListener {
                             if (data.error) {
                                 _this.tagList.innerHTML = `<option>${data.error}</option>`
                             } else {
-                                console.log(data);
                                 _this.tagList.innerHTML = '';
     
                                 if (selectedValue == '') {
@@ -1009,7 +1078,6 @@ class EventListener {
                                     _this.buttonContainer.classList.remove('hidden');
                                     _this.tagInput.classList.remove('hidden');
                                     data.forEach(tag => {
-                                        console.log('done')
                                         const tagElement = document.createElement('option');
                                         tagElement.classList.add('dark:text-gray-400', 'dark:bg-gray-900')
                                         tagElement.value = `${tag.tag_name}`;
@@ -1069,17 +1137,14 @@ class EventListener {
                         this.profileActions.removeChild(editButton);
     
                         // Check follow status
-                        fetch(`../controllers/check_follow_status.php?follower_id=${this.userId}&following_id=${userIdValue}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.is_following) {
-                                    followButton.textContent = 'Unfollow';
-                                } else {
-                                    followButton.textContent = 'Follow';
-                                }
-                            })
-                            .catch(error => console.error('Error checking follow status:', error));
-    
+                        const followStatus = this.renderer.fetchData(`../controllers/check_follow_status.php?follower_id=${this.userId}&following_id=${userIdValue}`);
+
+                        if (followStatus.is_following) {
+                            followButton.textContent = 'Unfollow';
+                        } else {
+                            followButton.textContent = 'Follow';
+                        }
+
                         followButton.addEventListener('click', async function() {
                             try {
                                 const followResult = await _this.renderer.fetchData('../controllers/follow_user.php', {
@@ -1131,6 +1196,37 @@ class EventListener {
                 })
             }
 
+            if (this.infoContainer) {
+                this.infoContainer.addEventListener('click', function(e) {
+                    const followId = _this.profileActions.getAttribute('data-value');
+                    if (e.target.closest('div[id="follower-btn"]')) {
+                        _this.handleFollower(followId);
+                    } else if (e.target.closest('div[id="following-btn"]')) {
+                        _this.handleFollowing(followId);
+                    }
+                })
+            }
+
+
+            if (this.newPostForm) {
+                this.newPostForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    let formData = new FormData(_this.newPostForm);
+                    try {
+                        const newPost = await _this.renderer.fetchData('../controllers/add_newpost.php', {
+                            method: 'POST',
+                            body: formData
+                        })
+
+                        _this.sendNewPostNotify(_this.userId, _this.username, _this.avatar, 'new_post', newPost)
+                    } catch (error) {
+                        console.log(error);
+                    }
+
+                })
+            }
+
             // Check khi click ra ngoài các menu & popup
             document.addEventListener('click', (event) => {
                 if (this.userBtn && this.notifyBtn) {
@@ -1158,11 +1254,9 @@ class EventListener {
             })
 
             if (savedPosts.status == "saved") {
-                console.log(savedPosts)
                 console.log('save!')
                 savedImage.classList.add('filled-icon');
             } else {
-                console.log(savedPosts)
                 console.log('unsave');
                 savedImage.classList.remove('filled-icon');
             }
@@ -1182,7 +1276,6 @@ class EventListener {
         const createdTime = new Date();
 
     
-        console.log(likeCountSpan)
 
         // Handle the like action
         await this.handleLikes(postId, likeCountSpan, likeImage);
@@ -1512,8 +1605,94 @@ class EventListener {
         errorElement.innerText = "";
     }
 
-    
+    async handleFollower(followingId) {
+        const followerOverlay = document.createElement('div');
+        followerOverlay.id = "follow-overlay";
+        followerOverlay.className = `font-poppins flex absolute items-center justify-center bg-black/60 h-full top-0 bottom-0 left-0 right-0 z-90`;
+        followerOverlay.innerHTML = `
+            <div id="follow-popup" class=" z-90 bg-white dark:bg-gray-800 dark:text-gray-400 w-md h-md rounded-lg">
+                <div class="relative border-b-1 border-b-black p-2 dark:border-b-gray-600">
+                    <h1 id="follow-title" class="text-center text-lg">Followers</h1>
+                    <div class="absolute text-3xl font-light right-2 top-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer">
+                        <span id="close-follow" class="material-symbols-rounded custom-icon">close</span>
+                    </div>
+                </div>
+                <div class="mt-1 p-2 px-4">
+                    <input type="text" name="followInput" id="follow-input" placeholder="Search users" class="border-1 w-full px-4 rounded-md h-8 dark:border-gray-600 focus:outline-0 dark:text-gray-400">
+                </div>
 
+                <div id="follow-container" class="p-2 px-4 space-y-2 overflow-y-auto rounded-lg h-50 scroll">
+                    
+                </div>
+            </div>
+        `;
+
+        const followerContainer = followerOverlay.querySelector('#follow-container');
+
+        const followerList = await this.renderer.fetchData('../controllers/get_followers.php', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ followingId: followingId })
+        })
+
+        this.renderer.renderFollower(followerList, followerContainer)
+
+        
+        followerOverlay.addEventListener('click', (e) => {
+            const followPopup = followerOverlay.querySelector('#follow-popup');
+            if (!followPopup.contains(e.target) || e.target.closest('span[id="close-follow"]')) {
+                document.body.removeChild(followerOverlay);
+            }
+        })
+
+
+        document.body.appendChild(followerOverlay)
+    }
+
+    async handleFollowing(followerId) {
+        const followerOverlay = document.createElement('div');
+        followerOverlay.id = "follow-overlay";
+        followerOverlay.className = `font-poppins flex absolute items-center justify-center bg-black/60 h-full top-0 bottom-0 left-0 right-0 z-90`;
+        followerOverlay.innerHTML = `
+            <div id="follow-popup" class=" z-90 bg-white dark:bg-gray-800 dark:text-gray-400 w-md h-md rounded-lg">
+                <div class="relative border-b-1 border-b-black p-2 dark:border-b-gray-600">
+                    <h1 id="follow-title" class="text-center text-lg">Following</h1>
+                    <div class="absolute text-3xl font-light right-2 top-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer">
+                        <span id="close-follow" class="material-symbols-rounded custom-icon">close</span>
+                    </div>
+                </div>
+                <div class="mt-1 p-2 px-4">
+                    <input type="text" name="" id="" placeholder="Search" class="border-1 w-full px-4 rounded-md h-8 dark:border-gray-600 focus:outline-0 dark:text-gray-400">
+                </div>
+
+                <div id="follow-container" class="p-2 px-4 space-y-4 overflow-y-auto rounded-lg h-50 scroll">
+                    
+                </div>
+            </div>
+        `;
+
+        const followingContainer = followerOverlay.querySelector('#follow-container');
+
+        const followingList = await this.renderer.fetchData('../controllers/get_following.php', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ followerId: followerId })
+        })
+
+        this.renderer.renderFollowing(followingList, followingContainer)
+
+        
+        followerOverlay.addEventListener('click', (e) => {
+            const followPopup = followerOverlay.querySelector('#follow-popup');
+            if (!followPopup.contains(e.target) || e.target.closest('span[id="close-follow"]')) {
+                document.body.removeChild(followerOverlay);
+            }
+        })
+
+
+        document.body.appendChild(followerOverlay)
+    }
+    
     debounce(fn, ms) {
         let timer;
         
@@ -1533,6 +1712,22 @@ class EventListener {
     async toggleDarkMode() {
         const isDarkMode = document.documentElement.classList.toggle('dark');
         localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+
+        const buttons = this.navbar.querySelectorAll('a[id$="btn"]');
+        console.log(buttons);
+        buttons.forEach(link => {
+            link.classList.remove("bg-gray-200");
+            link.classList.remove("dark:bg-gray-600");
+            const theme = localStorage.getItem('darkMode');
+            if (link.href === this.currentURL) {
+                if (theme === 'enabled') {
+                    link.classList.add("dark:bg-gray-600");
+                } else {
+                    link.classList.add("bg-gray-200");
+
+                }
+            }
+        });
 
         // Save the preference to the server
         await this.renderer.fetchData('../controllers/update_darkmode.php', {
@@ -1585,6 +1780,7 @@ class EventListener {
         }
     }
 
+    
     sendNotification(userId, username, avatar, senderId, type, message, content, url, createdTime) {
         console.log('sendNotification called with:', { userId, username, avatar, senderId, type, message, content, url, createdTime });
     
@@ -1609,6 +1805,32 @@ class EventListener {
             console.error('sendNotification conditions not met:', { userId, senderId, type, message, content, url, createdTime });
         }
     }
+
+    sendNewPostNotify(userId, username, avatar, type, postData) {    
+        const messageNotify = `has shared a new post`;
+        const urlNotify = `../views/main.html.php?page=postdetails&id=${postData.post_id}`;
+        const conditions = userId && username && avatar && postData;
+
+        if (conditions) {
+            const notification = {
+                type: 'new_post',
+                user_id: userId,
+                username: username,
+                avatar: avatar,
+                notification_type: type,
+                postId: postData.post_id,
+                postTitle: postData.post_title,
+                postContent: postData.post_content,
+                message: messageNotify,
+                url: urlNotify,
+                createdTime: new Date().toISOString()
+              };
+    
+            this.socket.send(JSON.stringify(notification));
+        } else {
+            console.error('sendNotification conditions not met:', { userId, username, avatar, type, postData});
+        }
+      }
 
     updateNotificationBadge() {
         const notifyBadge = document.querySelector('#notify-badge');

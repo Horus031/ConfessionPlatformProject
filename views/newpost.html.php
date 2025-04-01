@@ -2,7 +2,7 @@
     <h1 class="text-2xl font-semibold lg:text-4xl dark:text-white animate-slideRight">New post</h1>
 
 
-    <form id="newpost-form" action="../controllers/add_newpost.php" method="post" enctype="multipart/form-data" class="animate-slideRight">
+    <form id="newpost-form" method="post" enctype="multipart/form-data" class="animate-slideRight">
         <div class="mt-2 space-y-4">
             <input type="text" name="titleValue" id="title" class="border-1 border-text rounded-lg p-2 q px-4 w-full md:w-5/8 lg:w-4/9 dark:border-gray-600 dark:text-gray-400" placeholder="Post title">
         </div>
@@ -52,7 +52,7 @@
         </div>
 
         <div class="text-right md:text-left">
-            <button type="submit" name="submit" class="bg-black text-white rounded-lg px-4 py-2 mt-4">
+            <button type="submit" name="submit" id="submit-btn" class="bg-black text-white rounded-lg px-4 py-2 mt-4">
                 Post
             </button>
         </div>
@@ -60,22 +60,4 @@
 
 </main>
 
-<script type="module">
-    import QuestionRenderer from '../src/js/render.js';
-    import EventListener from '../src/js/events.js';
-    const userId = <?= $_SESSION['user_id'] ?>;
-
-    document.addEventListener('DOMContentLoaded', async function() {
-        const renderer = new QuestionRenderer(null, '#modules');
-        const eventListener = new EventListener(userId);
-        try {
-            const modules = await renderer.fetchData('../controllers/list_modules.php');
-            renderer.renderModules(modules);
-
-            eventListener.start();
-        } catch (error) {
-            console.error(error)
-        }
-
-    })
-</script>
+<script type="module" src="../controllers/render/newpost.js"></script>

@@ -16,10 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user_id && $post_id && $content) {
         try {
             $pdo->beginTransaction();
+            $comment_id = $database->postComment($user_id, $post_id, $content);
 
-            $database->handleComments($post_id);
-
-            $newComment = $database->fetchNewComment($user_id, $post_id, $content);
+            $newComment = $database->fetchNewComment($comment_id);
 
             echo json_encode($newComment);
             $pdo->commit();

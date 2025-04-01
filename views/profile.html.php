@@ -40,47 +40,10 @@
     </div>
 </main>
 
-<script type="module">
-    import QuestionRenderer from '../src/js/render.js';
-    import EventListener from '../src/js/events.js';
+<div id="follow-overlay" class="font-poppins absolute items-center justify-center bg-black/60 h-full top-0 bottom-0 left-0 right-0 z-90 hidden">
+    <div class=" ">
 
-    const myUserId = <?= $_SESSION['user_id'] ?>;
-    const username = `<?= $_SESSION['fullname'] ?>`;
-    const avatar = `<?= $_SESSION['avatarURL'] ?>`;
-    const tagName = `<?= $_SESSION['tag_name'] ?>`;
+    </div>
+</div>
 
-    document.addEventListener('DOMContentLoaded', async function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const tagName = urlParams.get('tag_name');
-        const renderer = new QuestionRenderer('#profile-container');
-        const tagsRenderer = new QuestionRenderer('#top-tags-container');
-        const eventListener = new EventListener(myUserId, username, avatar, tagName);
-
-        try {
-            const userInfo = await renderer.fetchData(`../controllers/get_userinfo.php?tag_name=${tagName}`);
-            renderer.renderUserProfile(userInfo);
-
-            const otherUserId = document.querySelector('#profile-actions').getAttribute('data-value');
-
-            const userPosts = await renderer.fetchData('../controllers/list_question.php');
-            renderer.renderUserPosts(userPosts, otherUserId);
-
-            const topTagsReading = await tagsRenderer.fetchData(
-                `../controllers/get_top_tags.php?user_id=${tagName === username ? myUserId : otherUserId}`
-            );
-            tagsRenderer.renderTopTags(topTagsReading);
-
-            const followCounts = await renderer.fetchData(`../controllers/get_follow_counts.php?user_id=${otherUserId}`);
-            document.getElementById('follower-count').textContent = followCounts.follower_count;
-            document.getElementById('following-count').textContent = followCounts.following_count;
-
-            const userPostCounts = await renderer.fetchData(`../controllers/get_user_counts.php?user_id=${otherUserId}`);
-            document.getElementById('view-count').textContent = userPostCounts.total_view_count;
-            document.getElementById('like-count').textContent = userPostCounts.total_like_count;
-
-            eventListener.start();
-        } catch (error) {
-            console.error('Error loading data:', error);
-        }
-    });
-</script>
+<script type="module" src="../controllers/render/profile.js"></script>

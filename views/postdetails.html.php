@@ -88,28 +88,4 @@
     </div>
 </main>
 
-<script type="module">
-    import QuestionRenderer from '../src/js/render.js';
-    import EventListener from '../src/js/events.js';
-
-    const userId = <?= $_SESSION['user_id'] ?>;
-    const username = `<?= $_SESSION['fullname'] ?>`;
-    const avatar = `<?= $_SESSION['avatarURL'] ?>`;
-
-    document.addEventListener('DOMContentLoaded', async function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const postId = urlParams.get('id');
-        const renderer = new QuestionRenderer('#post-container');
-        const eventListener = new EventListener(userId, username, avatar);
-
-        try {
-            const postInfo = await renderer.fetchData(`../controllers/get_postdetails.php?id=${postId}`)
-            renderer.renderPostDetail(postInfo, userId);
-        } catch (error) {
-            console.error('Error loading data:', error);
-        }
-
-
-        eventListener.start();
-    });
-</script>
+<script type="module" src="../controllers/render/postdetail.js"></script>

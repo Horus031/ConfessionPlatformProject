@@ -93,32 +93,4 @@
     </div>
 </main>
 
-<script type="module">
-    const userId = <?= $_SESSION['user_id'] ?>;
-    const username = `<?= $_SESSION['fullname'] ?>`;
-    const avatar = `<?= $_SESSION['avatarURL'] ?>`;
-
-    import QuestionRenderer from '../src/js/render.js';
-    import EventListener from '../src/js/events.js';
-    document.addEventListener('DOMContentLoaded', async function() {
-        const renderer = new QuestionRenderer('#question-container');
-        const addQuestionButton = document.querySelector('#addques-btn');
-        const eventListener = new EventListener(userId, username, avatar);
-
-        if (addQuestionButton) {
-            addQuestionButton.addEventListener('click', function() {
-                window.location.href = '../views/main.html.php?page=newpost';
-            });
-        }
-
-        try {
-            const questions = await renderer.fetchData('../controllers/list_question.php');
-            renderer.renderQuestions(questions, userId);
-
-
-            eventListener.start();
-        } catch (error) {
-            console.error('Error loading data:', error);
-        }
-    });
-</script>
+<script type="module" src="../controllers/render/home.js"></script>

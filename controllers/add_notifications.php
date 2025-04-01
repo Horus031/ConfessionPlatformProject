@@ -13,13 +13,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $senderId = isset($data['senderId']) ? intval($data['senderId']) : null;
     $type = isset($data['type']) ? $data['type'] : null;
     $message = isset($data['message']) ? $data['message'] : null;
+    $message_content = isset($data['message_content']) ? $data['message_content'] : null;
     $url = isset($data['url']) ? $data['url'] : null;
 
     if ($userId && $senderId && $type && $message && $url) {
         try {
             $pdo->beginTransaction();
 
-            $database->sendNotifications($userId, $senderId, $type, $message, $url);
+            $database->sendNotifications($userId, $senderId, $type, $message, $message_content, $url);
 
 
             echo json_encode(['success' => 'Successfully create notification']);

@@ -4,39 +4,9 @@
     <button id="clear-notify">
         <h2 class="text-red-500 dark:text-red-300 w-fit mt-2 cursor-pointer active:scale-90">Clear all notifications</h2>
     </button>
-    <div id="notification-container" class="mt-4 space-y-4">
+    <div id="notification-container" class="font-poppins mt-4 space-y-4">
 
     </div>
 </main>
 
-<script type="module">
-    import EventListener from '../src/js/events.js';
-    import QuestionRenderer from '../src/js/render.js';
-
-    const userId = <?= $_SESSION['user_id'] ?>;
-
-    document.addEventListener('DOMContentLoaded', async function() {
-        const renderer = new QuestionRenderer('#notification-container');
-        const eventListener = new EventListener(userId);
-
-        try {
-            const notifications = await renderer.fetchData('../controllers/get_notifications.php', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    userId: userId
-                })
-            })
-
-            renderer.renderNotifications(notifications, userId)
-
-
-        } catch (error) {
-            console.log('Error fetching data', error);
-        }
-
-        eventListener.start();
-    })
-</script>
+<script type="module" src="../controllers/render/notification.js"></script>

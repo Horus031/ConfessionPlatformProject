@@ -1,4 +1,3 @@
-import EventListener from "../js/events.js";
 
 class QuestionRenderer {
     constructor(containerId, filterId, userId) {
@@ -45,8 +44,8 @@ class QuestionRenderer {
                         <input type="hidden" name="post_id" value="${post.post_id}">
                         <div class="flex justify-between items-center">
                             <span data-module="${post.module_id}" class="w-fit module-name rounded-full text-xs ${post.bg_class} ${post.text_class} px-2 font-medium">${post.module_name}</span>
-                            <div class="relative group rounded-md text-4xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 active:scale-90">
-                                <span id="post-actions" class="material-symbols-rounded custom-icon more-icon">
+                            <div class="relative group rounded-md text-4xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600">
+                                <span id="post-actions" class="material-symbols-rounded custom-icon more-icon active:scale-90">
                                     more_horiz
                                 </span>
                                 <div id="action-popup" class="absolute bg-white rounded-md top-12 shadow-[0px_0px_5px_-1px] right-0 w-40 hidden before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:text-gray-400 dark:shadow-none">
@@ -93,13 +92,13 @@ class QuestionRenderer {
                                         <span class="material-symbols-rounded custom-icon like-img">
                                             thumb_up
                                         </span>
-                                        <span class="like-count text-lg" data-post-id="${post.post_id}">${post.like_count}</span>
+                                        <span class="like-count-${post.post_id} text-lg" data-post-id="${post.post_id}"></span>
                                     </button>
                                     <button id="comment-btn" class="flex items-center space-x-2 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
                                         <span class="material-symbols-rounded custom-icon">
                                             comment
                                         </span>
-                                        <span class="comment-count text-lg" data-post-id="${post.post_id}">${post.comment_count}</span>
+                                        <span class="comment-count-${post.post_id} text-lg" data-post-id="${post.post_id}"></span>
                                     </button>
                                 </div>
                                 <div class="flex items-center space-x-2 ">
@@ -123,6 +122,7 @@ class QuestionRenderer {
                 if (post.user_id == userId) {
                     const editButton = document.createElement('button');
                     editButton.className = `flex w-full items-center rounded-md space-x-4 p-3 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer`;
+                    editButton.id = 'edit-btn';
                     editButton.innerHTML = '<span class="text-lg">Edit</span>';
 
                     const deleteButton = document.createElement('form');
@@ -141,6 +141,23 @@ class QuestionRenderer {
 
 
                 try {
+                    const likeCount = await this.fetchData('../controllers/get_likecount.php', {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ post_id: post.post_id })
+                    })
+    
+                    const commentCount = await this.fetchData('../controllers/get_commentcount.php', {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ post_id: post.post_id })
+                    })
+    
+                    questionElement.querySelector(`.like-count-${post.post_id}`).textContent = likeCount.like_count;
+                    questionElement.querySelector(`.comment-count-${post.post_id}`).textContent = commentCount.comment_count;
+
+
+
                     const postTag = await this.fetchData(`../controllers/get_posttags.php`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -325,15 +342,14 @@ class QuestionRenderer {
                     <input type="hidden" name="post_id" value="${question.post_id}">
                     <div class="flex justify-between items-center">
                         <span data-module="${question.module_id}" class="font-semibold w-fit module-name rounded-full text-xs ${question.bg_class} ${question.text_class} px-2">${question.module_name}</span>
-                        <div class="relative group rounded-md text-4xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 active:scale-90">
-                            <span id="post-actions" class="material-symbols-rounded custom-icon more-icon">
+                        <div class="relative group rounded-md text-4xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600">
+                            <span id="post-actions" class="material-symbols-rounded custom-icon more-icon active:scale-90">
                                 more_horiz
                             </span>
                             <div id="action-popup" class="absolute bg-white rounded-md top-12 shadow-[0px_0px_5px_-1px] right-0 w-40 hidden before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:text-gray-400 dark:shadow-none">
                                 <button type="button" id="view-btn" class="flex w-full items-center rounded-md space-x-4 p-3 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer">
                                     <span class="text-lg">View Details</span>
                                 </button> 
-                                
                             </div>
                         </div>
                     </div>
@@ -375,13 +391,13 @@ class QuestionRenderer {
                                     <span class="material-symbols-rounded custom-icon like-img">
                                         thumb_up
                                     </span>
-                                    <span class="like-count-${question.post_id} text-lg" data-post-id="${question.post_id}">${question.like_count}</span>
+                                    <span class="like-count-${question.post_id} text-lg" data-post-id="${question.post_id}">$</span>
                                 </button>
                                 <button id="comment-btn" class="flex items-center space-x-2 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
                                     <span class="material-symbols-rounded custom-icon ">
                                         comment
                                     </span>
-                                    <span class="comment-count-${question.post_id} text-lg" data-post-id="${question.post_id}">${question.comment_count}</span>
+                                    <span class="comment-count-${question.post_id} text-lg" data-post-id="${question.post_id}">$</span>
                                 </button>
                             </div>
                             <div class="flex items-center space-x-2 ">
@@ -405,6 +421,7 @@ class QuestionRenderer {
             if (question.user_id == userId) {
                 const editButton = document.createElement('button');
                 editButton.className = `flex w-full items-center rounded-md space-x-4 p-3 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer`;
+                editButton.id = 'edit-btn';
                 editButton.innerHTML = '<span class="text-lg">Edit</span>';
 
                 const deleteButton = document.createElement('form');
@@ -427,6 +444,23 @@ class QuestionRenderer {
             }
 
             try {
+                const likeCount = await this.fetchData('../controllers/get_likecount.php', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ post_id: question.post_id })
+                })
+
+                const commentCount = await this.fetchData('../controllers/get_commentcount.php', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ post_id: question.post_id })
+                })
+
+                questionElement.querySelector(`.like-count-${question.post_id}`).textContent = likeCount.like_count;
+                questionElement.querySelector(`.comment-count-${question.post_id}`).textContent = commentCount.comment_count;
+
+
+
                 const postTag = await this.fetchData(`../controllers/get_posttags.php`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -669,6 +703,7 @@ class QuestionRenderer {
         if (data.error) {
             profileContainer.innerHTML = `<p class="text-red-500">${data.error}</p>`;
         } else {
+
             const username = document.querySelector('#username');
             username.classList.add('dark:text-white');
             username.textContent = data.fullname;
@@ -689,11 +724,11 @@ class QuestionRenderer {
                     <span class="text-text-light font-medium dark:text-gray-400">Joined ${formattedDate}</span>
                 </div>
                 <div class="flex space-x-2">
-                    <div class="cursor-pointer active:scale-90">
+                    <div id="follower-btn" class="cursor-pointer active:scale-90">
                         <span id="follower-count" class="dark:text-white">0</span>
                         <span class="text-text dark:text-gray-400">Followers</span>
                     </div>
-                    <div class="cursor-pointer active:scale-90">
+                    <div id="following-btn" class="cursor-pointer active:scale-90">
                         <span id="following-count" class="dark:text-white">0</span>
                         <span class="text-text dark:text-gray-400">Following</span>
                     </div>
@@ -768,13 +803,13 @@ class QuestionRenderer {
                                     <span class="material-symbols-rounded custom-icon like-img">
                                         thumb_up
                                     </span>
-                                    <span class="like-count text-lg" data-post-id="${myPost.post_id}">${myPost.like_count}</span>
+                                    <span class="like-count-${myPost.post_id} text-lg" data-post-id="${myPost.post_id}"></span>
                                 </button>
                                 <button id="comment-btn" class="flex items-center space-x-2 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
                                     <span class="material-symbols-rounded custom-icon">
                                         comment
                                     </span>
-                                    <span class="comment-count text-lg" data-post-id="${myPost.post_id}">${myPost.comment_count}</span>
+                                    <span class="comment-count-${myPost.post_id} text-lg" data-post-id="${myPost.post_id}"></span>
                                 </button>
                             </div>
                         </div>
@@ -782,6 +817,21 @@ class QuestionRenderer {
                             <img id="post-image" loading="lazy" src="${myPost.imageURL}" alt="Post image" class="rounded-md h-30 w-30 md:w-60 md:h-40 2xl:h-50">
                         </div>
                     `;
+
+                    const likeCount = await this.fetchData('../controllers/get_likecount.php', {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ post_id: myPost.post_id })
+                    })
+    
+                    const commentCount = await this.fetchData('../controllers/get_commentcount.php', {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ post_id: myPost.post_id })
+                    })
+    
+                    mypostElements.querySelector(`.like-count-${myPost.post_id}`).textContent = likeCount.like_count;
+                    mypostElements.querySelector(`.comment-count-${myPost.post_id}`).textContent = commentCount.comment_count;
 
                     const postImage = mypostElements.querySelector('#post-image');
                     if (postImage.src.match('null')) {
@@ -874,7 +924,6 @@ class QuestionRenderer {
     }
 
     async renderPostDetail(post, userId) {
-        console.log(post)
         document.querySelector('#postdetail-container').setAttribute('data-value', `${post.post_id}`);
         document.querySelector('#post_id').value = post.post_id;
         document.querySelector('#module-name').textContent = post.module_name;
@@ -1010,7 +1059,6 @@ class QuestionRenderer {
     }
 
     renderEditPosts(post, postId) {
-        console.log(post);
         document.querySelector('#post-value').value = `${postId}`
         document.querySelector('#title').value = `${post.post_title}`;
         document.querySelector('#content').value = `${post.post_content}`;
@@ -1060,45 +1108,58 @@ class QuestionRenderer {
     }
 
     renderReadingHistory(history) {
-    if (!this.container) return;
-    this.container.innerHTML = '';
+        if (!this.container) return;
+        this.container.innerHTML = '';
 
-    const groupedHistory = this.groupByDate(history);
-    const sortedDates = Object.keys(groupedHistory).sort((a, b) => new Date(b) - new Date(a));
+        const groupedHistory = this.groupByDate(history);
+        const sortedDates = Object.keys(groupedHistory).sort((a, b) => new Date(b) - new Date(a));
 
-    sortedDates.forEach(date => {
-        const posts = groupedHistory[date];
-        const dateElement = document.createElement('h2');
-        dateElement.classList.add('lg:text-3xl', 'animate-postSlideIn');
-        dateElement.textContent = date;
-        this.container.appendChild(dateElement);
+        sortedDates.forEach(date => {
+            const historyElement = document.createElement('div');
+            historyElement.id = `elements-${date.toLowerCase()}`;
+            const posts = groupedHistory[date];
+            const dateElement = document.createElement('h2');
+            dateElement.classList.add('date-title', 'lg:text-3xl', 'animate-postSlideIn');
+            dateElement.textContent = date;
+            historyElement.appendChild(dateElement);
 
-        const postIds = new Set();
+            const postIds = new Set();
 
-        posts.forEach(post => {
-            if (!postIds.has(post.post_id)) {
-                postIds.add(post.post_id);
+            posts.forEach(async post => {
+                if (!postIds.has(post.post_id)) {
+                    postIds.add(post.post_id);
 
-                const postElement = document.createElement('div');
-                postElement.classList.add('history-element','flex', 'space-x-4', 'p-2', 'hover:bg-gray-200', 'dark:hover:bg-gray-700', 'cursor-pointer', 'animate-slideRight');
-                postElement.setAttribute('data-value', post.post_id);
-                postElement.innerHTML = `
-                    <div class="relative flex items-center pl-4">
-                        <img src="${post.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 absolute top-1/4 -left-2 border-1 border-black rounded-full lg:h-20 2xl:h-16">
-                        <img src="${post.imageURL}" alt="" class="rounded-md w-40 h-20 lg:w-80 lg:h-40 2xl:w-60">
-                    </div>
-                    <div>
-                        <h2 class="history-title line-clamp-3 leading-5 text-text lg:text-3xl lg:leading-8 dark:text-white">${post.post_title}</h2>
-                        <div class="text-sm font-medium text-text lg:text-2xl dark:text-white">
-                            <span>${post.like_count}</span>
-                            <span>likes</span>
+                    const postElement = document.createElement('div');
+                    postElement.classList.add('history-element','flex', 'space-x-4', 'p-2', 'hover:bg-gray-200', 'dark:hover:bg-gray-700', 'cursor-pointer', 'animate-slideRight');
+                    postElement.setAttribute('data-value', post.post_id);
+                    postElement.innerHTML = `
+                        <div class="relative flex items-center pl-4">
+                            <img src="${post.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 absolute top-1/4 -left-2 border-1 border-black rounded-full lg:h-20 2xl:h-16">
+                            <img src="${post.imageURL}" alt="" class="rounded-md w-40 h-20 lg:w-80 lg:h-40 2xl:w-60">
                         </div>
-                    </div>
-                `;
-                this.container.appendChild(postElement);
-            }
+                        <div>
+                            <h2 class="history-title line-clamp-3 leading-5 text-text lg:text-3xl lg:leading-8 dark:text-white">${post.post_title}</h2>
+                            <div class="text-sm font-medium text-text lg:text-2xl dark:text-white">
+                                <span class="like-count-${post.post_id}"></span>
+                                <span>likes</span>
+                            </div>
+                        </div>
+                    `;
+
+                    const likeCount = await this.fetchData('../controllers/get_likecount.php', {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ post_id: post.post_id })
+                    })
+    
+                    postElement.querySelector(`.like-count-${post.post_id}`).textContent = likeCount.like_count;
+
+                    historyElement.appendChild(postElement);
+                }
+            });
+
+            this.container.appendChild(historyElement);
         });
-    });
     }
 
     async renderTopTags(container) {
@@ -1152,6 +1213,7 @@ class QuestionRenderer {
             return;
         }
 
+
         let newBadge = document.querySelector('#notify-badge');
         if (!newBadge) {
             newBadge = document.createElement('span');
@@ -1168,10 +1230,10 @@ class QuestionRenderer {
 
         notifications.forEach(notify => {
             const notifyElement = document.createElement('a');
-            notifyElement.classList.add('flex', 'justify-between' ,'px-2', 'py-2' ,'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer');
+            notifyElement.classList.add('flex', 'justify-between' ,'px-2', 'py-2' ,'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer', 'dark:hover:bg-gray-700');
 
             if (notify.is_read == '0') {
-                notifyElement.classList.add('bg-blue-200');
+                notifyElement.classList.add('bg-blue-200', 'dark:bg-gray-200');
             }
 
             notifyElement.href = `${notify.url}`;
@@ -1182,14 +1244,14 @@ class QuestionRenderer {
                 <div class="flex space-x-3">
                     <img loading="lazy" src="${notify.avatar ?? '../assets/images/user.png'}" alt="" class="h-8 rounded-full">
 
-                    <div class="flex flex-col space-y-1">
-                        <span>${notify.username} ${notify.message}</span>
+                    <div class="flex flex-col space-y-1 dark:text-gray-400">
+                        <span><b>${notify.username}</b> ${notify.message}</span>
 
-                        <span class="text-text-light break-all line-clamp-1">Check it out!</span>
+                        <span class="text-text-light break-all line-clamp-1 dark:text-gray-600">${notify.message_content || 'Check it out!'}</span>
                     </div>
                 </div>
 
-                <div class="flex flex-col space-y-1 text-nowrap mt-1 text-right">
+                <div class="flex flex-col space-y-1 text-nowrap mt-1 text-right dark:text-gray-400">
                     <span class="text-xs">${timeInMonth}</span>
                     <span class="text-xs">${timeInHour}</span>
                 </div>
@@ -1221,7 +1283,7 @@ class QuestionRenderer {
             const timeInHour = new Date(notification.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             notifyElement.classList.add(`notify-${notification.notification_id}`, 'relative' ,'w-full', 'group', 'flex', 'justify-between', 'border-1', 'dark:border-gray-600', 'p-4', 'rounded-md', 'bg-gray-100', 'dark:bg-gray-800', 'md:w-2/3', 'lg:w-1/2', 'animate-slideRight', 'cursor-pointer', 'hover:border-black/20', 'dark:hover:border-gray-400');
             notifyElement.innerHTML = `
-                <div class="flex space-x-2  dark:text-gray-400 rounded-lg text-3xl font-light 2xl:w-1/2">
+                <div class="flex space-x-2  dark:text-gray-500 rounded-lg text-3xl font-light 2xl:w-1/2">
                     <span class="material-symbols-rounded custom-icon">
                         notifications_active
                     </span>
@@ -1230,7 +1292,7 @@ class QuestionRenderer {
 
                         <div class="text-lg font-normal">
                             <h2 class="dark:text-gray-400"><b>${notification.username}</b> ${notification.message}</h2>
-                            <h3 class="dark:text-gray-400">Check it out!</h3>
+                            <h3 class="text-gray-500">${notification.message_content || 'Check it out!'}</h3>
                         </div>
                     </div>
                 </div>
@@ -1262,10 +1324,67 @@ class QuestionRenderer {
             }
 
             notifyElement.addEventListener('click', function() {
-                // window.location.href = `${notification.url}`;
+                window.location.href = `${notification.url}`;
             })
 
             this.container.appendChild(notifyElement)
+        })
+    }
+
+    renderFollower(followerList, followerContainer) {
+        if (!followerList || followerList.length == 0) {
+            const noResultsMessage = document.createElement('div');
+            noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
+            noResultsMessage.textContent = 'You have no followers';
+            followerContainer.appendChild(noResultsMessage);
+            return;
+        }
+
+        followerList.forEach(follower => {
+            const followerElement = document.createElement('div');
+            followerElement.classList.add('flex', 'p-2', 'space-x-2', 'hover:bg-gray-200', 'dark:hover:bg-gray-700', 'cursor-pointer');
+            followerElement.innerHTML = `
+                <img src="${follower.avatar || '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+                <div class="flex flex-col -space-y-1 text-sm">
+                    <span class="dark:text-white">${follower.tag_name}</span>
+                    <span class="dark:text-gray-400">${follower.fullname}</span>
+                </div>
+            `;
+
+
+            followerElement.addEventListener('click', function() {
+                window.location.href = `../views/main.html.php?page=profile&tag_name=${follower.tag_name}`;
+            })
+
+            followerContainer.appendChild(followerElement)
+        })
+    }
+
+    renderFollowing(followingList, followingContainer) {
+        if (!followingList || followingList.length == 0) {
+            const noResultsMessage = document.createElement('div');
+            noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
+            noResultsMessage.textContent = 'You have not followed anyone yet';
+            followingContainer.appendChild(noResultsMessage);
+            return;
+        }
+
+        followingList.forEach(follower => {
+            const followerElement = document.createElement('div');
+            followerElement.classList.add('flex', 'p-2', 'space-x-2', 'hover:bg-gray-200', 'dark:hover:bg-gray-700', 'cursor-pointer');
+            followerElement.innerHTML = `
+                <img src="${follower.avatar || '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+                <div class="flex flex-col -space-y-1 text-sm">
+                    <span class="dark:text-white">${follower.tag_name}</span>
+                    <span class="dark:text-gray-400">${follower.fullname}</span>
+                </div>
+            `;
+
+            followerElement.addEventListener('click', function() {
+                window.location.href = `../views/main.html.php?page=profile&tag_name=${follower.tag_name}`;
+            })
+
+            followingContainer.appendChild(followerElement)
         })
     }
 

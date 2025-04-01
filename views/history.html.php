@@ -15,18 +15,4 @@
 
 </main>
 
-<script type="module">
-    const userId = <?= $_SESSION['user_id'] ?>;
-    import EventListener from '../src/js/events.js';
-    import QuestionRenderer from '../src/js/render.js';
-
-    document.addEventListener('DOMContentLoaded', async function() {
-        const eventListener = new EventListener(userId);
-
-        const renderer = new QuestionRenderer('#history-container');
-        const history = await renderer.fetchData(`../controllers/get_reading_history.php?user_id=${userId}`);
-        renderer.renderReadingHistory(history);
-
-        eventListener.start();
-    });
-</script>
+<script type="module" src="../controllers/render/history.js"></script>

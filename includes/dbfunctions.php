@@ -218,9 +218,8 @@ class Database
         return $this->pdo->lastInsertId();
     }
 
-    public function fetchNewComment($user_id, $post_id, $content)
+    public function fetchNewComment($comment_id)
     {
-        $comment_id = $this->postComment($user_id, $post_id, $content);
         $sql = 'SELECT users.user_id, users.username, users.avatar, comments.comment_id, comments.content, comments.created_at 
         FROM comments 
         JOIN users ON comments.user_id = users.user_id 
@@ -272,7 +271,7 @@ class Database
 
     public function fetchAllPosts()
     {
-        $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, users.tag_name, users.created_at AS userJoinedTime, modules.module_id, modules.module_name, modules.bg_class, modules.text_class 
+        $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, users.tag_name, users.created_at AS userJoinedTime, modules.module_id, modules.module_name, modules.bg_class, modules.text_class 
                 FROM ((((posts 
                 INNER JOIN users ON posts.user_id = users.user_id)
                 INNER JOIN modules ON posts.module_id = modules.module_id)
@@ -380,7 +379,7 @@ class Database
 
     public function getLikesCount($post_id)
     {
-        $sql = 'SELECT like_count FROM posts WHERE post_id = ?';
+        $sql = 'SELECT COUNT(*) AS like_count FROM likes WHERE post_id = ?';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$post_id]);
         $like = $stmt->fetch();
@@ -391,19 +390,12 @@ class Database
 
     public function getCommentsCount($post_id)
     {
-        $sql = 'SELECT comment_count FROM posts WHERE post_id = ?';
+        $sql = 'SELECT COUNT(*) AS comment_count FROM comments WHERE post_id = ?';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$post_id]);
         $comment = $stmt->fetch();
 
         return $comment;
-    }
-
-    public function handleComments($post_id)
-    {
-        $sql = 'UPDATE posts SET comment_count = comment_count + 1 WHERE post_id = ?';
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$post_id]);
     }
 
     public function checkLikes($post_id)
@@ -423,19 +415,11 @@ class Database
             $stmtDelete = $this->pdo->prepare($sqlDelete);
             $stmtDelete->execute([$_SESSION['user_id'], $post_id]);
 
-            $sqlUpdate = "UPDATE posts SET like_count = like_count - 1 WHERE post_id = ?";
-            $stmtUpdate = $this->pdo->prepare($sqlUpdate);
-            $stmtUpdate->execute([$post_id]);
-
             return true;
         } else {
             $sqlInsert = "INSERT INTO likes (user_id, post_id) VALUES (?, ?)";
             $stmtInsert = $this->pdo->prepare($sqlInsert);
             $stmtInsert->execute([$_SESSION['user_id'], $post_id]);
-
-            $sqlUpdate = "UPDATE posts SET like_count = like_count + 1 WHERE post_id = ?";
-            $stmtUpdate = $this->pdo->prepare($sqlUpdate);
-            $stmtUpdate->execute([$post_id]);
 
             return false;
         }
@@ -470,7 +454,7 @@ class Database
 
     public function getAllSavedPosts()
     {
-        $sql = 'SELECT user_saved_posts.user_id AS user_savedid,posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class FROM (((posts
+        $sql = 'SELECT user_saved_posts.user_id AS user_savedid,posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class FROM (((posts
         INNER JOIN user_saved_posts ON posts.post_id = user_saved_posts.post_id)
         INNER JOIN users ON posts.user_id = users.user_id)
         INNER JOIN modules ON posts.module_id = modules.module_id)';
@@ -518,7 +502,7 @@ class Database
     public function searchPostsAndUsers($query)
     {
         $sql = "
-        SELECT 'title' AS type, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
+        SELECT 'title' AS type, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
         FROM ((((posts 
         INNER JOIN users ON posts.user_id = users.user_id)
         INNER JOIN modules ON posts.module_id = modules.module_id)
@@ -535,7 +519,7 @@ class Database
     public function searchPostByTags($query)
     {
         $stmt = $this->pdo->prepare("
-        SELECT DISTINCT 'tag' AS type, tags.tag_name, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
+        SELECT DISTINCT 'tag' AS type, tags.tag_name, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
         FROM ((((posts 
         INNER JOIN posttags ON posts.post_id = posttags.post_id)
         INNER JOIN tags ON posttags.tag_id = tags.tag_id)
@@ -551,7 +535,7 @@ class Database
     public function searchPostByTagName($query)
     {
         $stmt = $this->pdo->prepare("
-        SELECT DISTINCT 'user' AS type, users.tag_name, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, posts.like_count, posts.comment_count, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
+        SELECT DISTINCT 'user' AS type, users.tag_name, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
         FROM ((((posts 
         INNER JOIN users ON posts.user_id = users.user_id)
         INNER JOIN modules ON posts.module_id = modules.module_id)
@@ -624,7 +608,9 @@ class Database
 
     public function getTotalLikeCount($userId)
     {
-        $sql = "SELECT SUM(like_count) FROM posts WHERE user_id = :user_id";
+        $sql = "SELECT COUNT(*) FROM likes 
+                INNER JOIN posts ON likes.post_id = posts.post_id 
+                WHERE posts.user_id = :user_id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['user_id' => $userId]);
         return $stmt->fetchColumn();
@@ -659,11 +645,11 @@ class Database
         }
     }
 
-    public function sendNotifications($userId, $senderId, $type, $message, $url)
+    public function sendNotifications($userId, $senderId, $type, $message, $message_content, $url)
     {
-        $sql = 'INSERT INTO notifications (user_id, sender_id, type , message, url) VALUES (?, ?, ?, ?, ?)';
+        $sql = 'INSERT INTO notifications (user_id, sender_id, type , message, message_content, url) VALUES (?, ?, ?, ?, ?, ?)';
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$userId, $senderId, $type, $message, $url]);
+        $stmt->execute([$userId, $senderId, $type, $message, $message_content, $url]);
     }
 
     public function getAllNotifications($userId)
@@ -719,5 +705,25 @@ class Database
         $sql = "DELETE FROM comments WHERE comment_id = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$comment_id]);
+    }
+
+    public function getAllFollowers($following_id)
+    {
+        $sql = "SELECT users.user_id, users.avatar, users.tag_name, CONCAT(users.first_name, ' ', users.last_name) AS fullname
+        FROM users INNER JOIN user_follows ON users.user_id = user_follows.follower_id
+        WHERE user_follows.following_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$following_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllFollowing($follower_id)
+    {
+        $sql = "SELECT users.avatar, users.tag_name, CONCAT(users.first_name, ' ', users.last_name) AS fullname
+        FROM users INNER JOIN user_follows ON users.user_id = user_follows.following_id
+        WHERE user_follows.follower_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$follower_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

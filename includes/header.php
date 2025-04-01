@@ -28,17 +28,17 @@
                 <span class="material-symbols-rounded custom-icon">notifications</span>
 
             </div>
-            <div id="notify-container" class="absolute -right-16 top-10 shadow-[0_5px_12px_-6px] z-10 rounded-lg bg-white w-90 hidden before:content-[''] before:absolute before:right-13 before:-top-4 before:w-12 before:h-4 before:bg-transparent">
+            <div id="notify-container" class="absolute right-0 top-18 shadow-[0_5px_12px_-6px] z-10 rounded-lg bg-white dark:bg-gray-800 dark:border-1 dark:border-gray-400 w-90 hidden before:content-[''] before:absolute before:right-13 before:-top-4 before:w-12 before:h-4 before:bg-transparent">
                 <div class="flex w-full justify-between items-center p-2 px-4 space-x-8 border-b border-secondary">
-                    <span class="text-sm text-text-light font-bold">Notification</span>
+                    <span class="text-sm font-bold dark:text-gray-400">Notification</span>
                     <span id="marknotify-btn" class="text-nowrap text-sm text-blue-500 cursor-pointer">Mark all as read</span>
                 </div>
 
-                <div id="notify-popup" class="h-28 overflow-y-auto">
+                <div id="notify-popup" class="h-28 overflow-y-auto scroll">
 
                 </div>
 
-                <div class="border-t-1 border-text py-2">
+                <div class="border-t-1 border-text dark:border-gray-400 py-2">
                     <a href="main.html.php?page=notification" class="text-[#4E87F1]">See your all notification</a>
                 </div>
             </div>

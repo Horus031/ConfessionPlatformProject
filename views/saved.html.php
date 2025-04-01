@@ -13,23 +13,4 @@
     </div>
 </main>
 
-<script type="module">
-    import QuestionRenderer from '../src/js/render.js';
-    import EventListener from '../src/js/events.js';
-
-    const userId = <?= $_SESSION['user_id'] ?>;
-    document.addEventListener('DOMContentLoaded', async function() {
-        const renderer = new QuestionRenderer('#saved-container');
-        const eventListener = new EventListener(userId);
-        try {
-            const savedPosts = await renderer.fetchData('../controllers/get_savedposts.php');
-            renderer.renderSavedPosts(savedPosts, userId);
-
-
-            eventListener.start();
-        } catch (error) {
-            console.log(error);
-        }
-
-    })
-</script>
+<script type="module" src="../controllers/render/saved.js"></script>
