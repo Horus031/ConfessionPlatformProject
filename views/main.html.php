@@ -1,6 +1,7 @@
 <?php
 session_start();
 $page = isset($_GET['page']) ? $_GET['page'] : 'home';
+
 ?>
 
 <!DOCTYPE html>
@@ -9,7 +10,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Knowledge Nexus</title>
     <link rel="stylesheet" href="/mywebsite/src/css/output.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
@@ -26,6 +27,5 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 
 
 </body>
-
 
 </html>

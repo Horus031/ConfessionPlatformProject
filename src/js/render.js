@@ -703,7 +703,6 @@ class QuestionRenderer {
         if (data.error) {
             profileContainer.innerHTML = `<p class="text-red-500">${data.error}</p>`;
         } else {
-
             const username = document.querySelector('#username');
             username.classList.add('dark:text-white');
             username.textContent = data.fullname;
@@ -744,12 +743,12 @@ class QuestionRenderer {
             try {
                 setTimeout(async function() {
                     const followCounts = await _this.fetchData(`../controllers/get_follow_counts.php?user_id=${data.user_id}`);
-                    document.getElementById('follower-count').textContent = followCounts.follower_count;
-                    document.getElementById('following-count').textContent = followCounts.following_count;
+                    document.getElementById('follower-count').textContent = followCounts.follower_count || '0';
+                    document.getElementById('following-count').textContent = followCounts.following_count || '0';
 
                     const userPostCounts = await _this.fetchData(`../controllers/get_user_counts.php?user_id=${data.user_id}`);
-                    document.getElementById('view-count').textContent = userPostCounts.total_view_count;
-                    document.getElementById('like-count').textContent = userPostCounts.total_like_count;
+                    document.getElementById('view-count').textContent = userPostCounts.total_view_count || '0';
+                    document.getElementById('like-count').textContent = userPostCounts.total_like_count || '0';
                 }, 100)
             } catch (error) {
                 console.error('Error loading follow and post counts:', error);
@@ -782,13 +781,11 @@ class QuestionRenderer {
 
     renderUserPosts(posts, userId) {
         const mypostContainer = document.querySelector('#mypost-container');
+
         let hasPosts = false;
         if (posts.error) {
             mypostContainer.innerHTML = `<p class="text-red-500">${posts.error}</p>`;
         } else {
-
-
-
             posts.forEach(async myPost => {
                 if (myPost.user_id == userId) {
                     hasPosts = true;
@@ -891,7 +888,13 @@ class QuestionRenderer {
                 <span class="material-symbols-rounded custom-icon absolute top-1/5 left-4">
                     badge
                 </span>
-                <input type="text" name="usernameValue" id="" class="border-1 border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your username" value="${userInfo.username}">
+                <input type="text" name="firstnameValue" id="" class="border-1 border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your firstname" value="${userInfo.first_name}">
+            </div>
+            <div class="relative flex items-center text-3xl font-light dark:text-gray-400 2xl:w-1/3">
+                <span class="material-symbols-rounded custom-icon absolute top-1/5 left-4">
+                    badge
+                </span>
+                <input type="text" name="lastnameValue" id="" class="border-1 border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your lastname" value="${userInfo.last_name}">
             </div>
             <div class="relative flex items-center text-3xl font-light dark:text-gray-400 2xl:w-1/3">
                 <span class="material-symbols-rounded custom-icon absolute top-1/5 left-4">
@@ -1135,16 +1138,21 @@ class QuestionRenderer {
                     postElement.innerHTML = `
                         <div class="relative flex items-center pl-4">
                             <img src="${post.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 absolute top-1/4 -left-2 border-1 border-black rounded-full lg:h-20 2xl:h-16">
-                            <img src="${post.imageURL}" alt="" class="rounded-md w-40 h-20 lg:w-80 lg:h-40 2xl:w-60">
+                            <img src="${post.imageURL}" alt="" class="history-images rounded-md w-40 h-20 lg:w-80 lg:h-40 2xl:w-60">
                         </div>
                         <div>
                             <h2 class="history-title line-clamp-3 leading-5 text-text lg:text-3xl lg:leading-8 dark:text-white">${post.post_title}</h2>
-                            <div class="text-sm font-medium text-text lg:text-2xl dark:text-white">
-                                <span class="like-count-${post.post_id}"></span>
-                                <span>likes</span>
+                            <div class="mt-2 flex items-center space-x-2 text-3xl text-text font-light dark:text-white">
+                                <span class="material-symbols-rounded custom-icon">thumb_up</span>
+                                <span class="like-count-${post.post_id} text-lg"></span>
                             </div>
                         </div>
                     `;
+
+                    const postImage = postElement.querySelector('img[class^="history-images"]');
+                    if (postImage.src.match('localhost')) {
+                        postImage.classList.add('invisible')
+                    }
 
                     const likeCount = await this.fetchData('../controllers/get_likecount.php', {
                         method: "POST",
@@ -1153,6 +1161,12 @@ class QuestionRenderer {
                     })
     
                     postElement.querySelector(`.like-count-${post.post_id}`).textContent = likeCount.like_count;
+
+
+                    postElement.addEventListener('click', function() {
+                        window.location.href = `../views/main.html.php?page=postdetails&id=${post.post_id}`;
+                    })
+
 
                     historyElement.appendChild(postElement);
                 }
@@ -1167,7 +1181,7 @@ class QuestionRenderer {
         if (!container || container.length == 0) {
             const noResultsMessage = document.createElement('div');
             noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
-            noResultsMessage.textContent = 'No results found.';
+            noResultsMessage.textContent = 'There is no analysis data';
             this.container.appendChild(noResultsMessage);
             return;
         }
@@ -1207,6 +1221,7 @@ class QuestionRenderer {
 
         if (!notifications || notifications.length === 0) {
             const noResultsMessage = document.createElement('div');
+            noResultsMessage.id = 'no-notify';
             noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
             noResultsMessage.textContent = 'There is no notifications';
             this.container.appendChild(noResultsMessage);
@@ -1342,12 +1357,12 @@ class QuestionRenderer {
 
         followerList.forEach(follower => {
             const followerElement = document.createElement('div');
-            followerElement.classList.add('flex', 'p-2', 'space-x-2', 'hover:bg-gray-200', 'dark:hover:bg-gray-700', 'cursor-pointer');
+            followerElement.classList.add('follow-element', 'flex', 'p-2', 'space-x-2', 'hover:bg-gray-200', 'dark:hover:bg-gray-700', 'cursor-pointer');
             followerElement.innerHTML = `
                 <img src="${follower.avatar || '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
                 <div class="flex flex-col -space-y-1 text-sm">
-                    <span class="dark:text-white">${follower.tag_name}</span>
-                    <span class="dark:text-gray-400">${follower.fullname}</span>
+                    <span class="follow-tagname dark:text-white">${follower.tag_name}</span>
+                    <span class="follow-fullname dark:text-gray-400">${follower.fullname}</span>
                 </div>
             `;
 
@@ -1371,12 +1386,12 @@ class QuestionRenderer {
 
         followingList.forEach(follower => {
             const followerElement = document.createElement('div');
-            followerElement.classList.add('flex', 'p-2', 'space-x-2', 'hover:bg-gray-200', 'dark:hover:bg-gray-700', 'cursor-pointer');
+            followerElement.classList.add('follow-element','flex', 'p-2', 'space-x-2', 'hover:bg-gray-200', 'dark:hover:bg-gray-700', 'cursor-pointer');
             followerElement.innerHTML = `
                 <img src="${follower.avatar || '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
                 <div class="flex flex-col -space-y-1 text-sm">
-                    <span class="dark:text-white">${follower.tag_name}</span>
-                    <span class="dark:text-gray-400">${follower.fullname}</span>
+                    <span class="follow-tagname dark:text-white">${follower.tag_name}</span>
+                    <span class="follow-fullname dark:text-gray-400">${follower.fullname}</span>
                 </div>
             `;
 
@@ -1388,7 +1403,7 @@ class QuestionRenderer {
         })
     }
 
-    // Hàm dùng để gom các ngày đọc bài viết trong lịch sử
+
     groupByDate(posts) {
         return posts.reduce((grouped, post) => {
             const date = this.formatDate(post.read_date);
@@ -1405,16 +1420,37 @@ class QuestionRenderer {
         const now = new Date();
         const yesterday = new Date(now);
         yesterday.setDate(now.getDate() - 1);
-    
+
         const isToday = date.toDateString() === now.toDateString();
         const isYesterday = date.toDateString() === yesterday.toDateString();
-    
+
         if (isToday) {
             return `Today`;
         } else if (isYesterday) {
             return `Yesterday`;
         } else {
-            return date.toLocaleDateString([], { year: 'numeric', month: 'long', day: 'numeric' });
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+    }
+
+    async initSessionData() {
+        try {
+            // Fetch session data from the server
+            const sessionData = await this.fetchData('../controllers/session_data.php');
+    
+            // Ensure session data is valid
+            if (sessionData && sessionData.user_id) {
+                this.userId = sessionData.user_id;
+                this.fullName = sessionData.fullname || '';
+                this.username = sessionData.username || '';
+                this.avatar = sessionData.avatar || '';
+                this.tagName = sessionData.tag_name || '';
+                this.roleId = sessionData.role_id || 1;
+            } else {
+                throw new Error('Invalid session data received');
+            }
+        } catch (error) {
+            console.error('Error initializing session data:', error);
         }
     }
 }

@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $module_id = $_POST['moduleValues'];
 
         // Check if the imageURL has value
-        if (isset($_FILES['imageURL']['value'])) {
+        if (isset($_FILES['imageURL']) && is_uploaded_file($_FILES['imageURL']['tmp_name'])) {
             // Include the upload_images.php file to handle the image upload
             include '../includes/upload_images.php';
 

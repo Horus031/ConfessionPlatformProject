@@ -6,142 +6,149 @@ class EventListener {
         this.currentURL = window.location.href;
         this.renderedComments = new Set(); // Tạo Set lưu trữ các id của comment
 
-        this.initSessionData().then(() => {
-            this.socket = new WebSocket(`ws://localhost:8080?user_id=${this.userId}`);
-
-            this.socket.onopen = function() {
-                console.log("WebSocket connected!");
-            }.bind(this);
-
-            this.socket.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-
-                if (data.type === "like") {
-                    document.querySelector(`.like-count-${data.postId}`).innerText = data.likesCount;
-                }
-
-                if (data.type === "comment") {
-                    const commentCountSpan = document.querySelector(`.comment-count-${data.postId}`);
-                    if (commentCountSpan) {
-                        commentCountSpan.innerText = data.commentCount;
-                    }
-
-                    let commentSection = document.querySelector(`div[id^="comment-container-"]`);
-                    if (commentSection) {
-                        let firstChildComment = commentSection.firstElementChild;
-
-                        // Update the badge only if the comment is not from the current user
-                        if (parseInt(data.userId) !== this.userId) {
-                            this.updateNotificationBadge();
+        if (this.currentURL.includes('main.html.php')) {
+            this.initSessionData().then(() => {
+                this.socket = new WebSocket(`ws://localhost:8080?user_id=${this.userId}`);
+    
+                this.socket.onopen = function() {
+                    console.log("WebSocket connected!");
+                }.bind(this);
+    
+                this.socket.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+    
+                    if (data.type === "like") {
+                        const likeCountSpan = document.querySelector(`.like-count-${data.postId}`);
+                        if (likeCountSpan) {
+                            likeCountSpan.innerText = data.likesCount;
                         }
+                    }
+    
+                    if (data.type === "comment") {
+                        const commentCountSpan = document.querySelector(`.comment-count-${data.postId}`);
+                        if (commentCountSpan) {
+                            commentCountSpan.innerText = data.commentCount;
+                        }
+    
+                        let commentSection = document.querySelector(`div[id^="comment-container-"]`);
+                        if (commentSection) {
+                            let firstChildComment = commentSection.firstElementChild;
+    
+                            // Update the badge only if the comment is not from the current user
+                            if (parseInt(data.userId) !== this.userId) {
+                                this.updateNotificationBadge();
+                            }
+    
+                            // Convert UTC time to local time
+                            const localTime = new Date(data.created_at);
+    
+                            const newCommentElement = document.createElement('div');
+                            newCommentElement.setAttribute('data-value', `${data.comment_id}`);
+                            newCommentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700', 'animate-slideRight');
+                            newCommentElement.innerHTML = `
+                                <img src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+    
+                                <div>
+                                    <div class="flex items-center space-x-2">
+                                        <h2 class="font-medium text-md dark:text-white">${data.username}</h2>
+                                        <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(localTime)}</span>
+                                    </div>
+                                    <p class="text-sm dark:text-gray-400">${data.comment}</p>
+                                </div>
+                            `;
+    
+                            commentSection.insertBefore(newCommentElement, firstChildComment);
+    
+                            document.querySelector('.comment-count').textContent = `(${commentSection.children.length})`;
+                        }
+                    }
+    
+                    if (data.type === "notification") {
+                        // Update the notification badge
+                        this.updateNotificationBadge();
+    
+                        const notifyContainer = document.querySelector('#notify-popup');
 
+                        const notifyFirstChild = notifyContainer.firstElementChild;
+    
                         // Convert UTC time to local time
                         const localTime = new Date(data.created_at);
-
-                        const newCommentElement = document.createElement('div');
-                        newCommentElement.setAttribute('data-value', `${data.comment_id}`);
-                        newCommentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700', 'animate-slideRight');
-                        newCommentElement.innerHTML = `
-                            <img src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
-
-                            <div>
-                                <div class="flex items-center space-x-2">
-                                    <h2 class="font-medium text-md dark:text-white">${data.username}</h2>
-                                    <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(localTime)}</span>
+    
+                        const notifyElement = document.createElement('a');
+                        notifyElement.classList.add('flex', 'justify-between', 'px-2', 'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer', 'bg-blue-200', 'dark:bg-gray-200', 'dark:hover:bg-gray-700');
+                        notifyElement.href = `${data.url}`;
+                        notifyElement.id = `notify-${data.notification_id}`;
+                        const timeInMonth = localTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        const timeInHour = localTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        notifyElement.innerHTML = `
+                            <div class="flex space-x-3">
+                                <img loading="lazy" src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-8 rounded-full">
+    
+                                <div class="flex flex-col space-y-1">
+                                    <span>${data.username} ${data.message}</span>
+    
+                                    <span class="text-text-light break-all line-clamp-1">${data.content || 'Check it out!'}</span>
                                 </div>
-                                <p class="text-sm dark:text-gray-400">${data.comment}</p>
+                            </div>
+    
+                            <div class="flex flex-col space-y-1 text-nowrap mt-1 text-right">
+                                <span class="text-xs">${timeInMonth}</span>
+                                <span class="text-xs">${timeInHour}</span>
                             </div>
                         `;
 
-                        commentSection.insertBefore(newCommentElement, firstChildComment);
-
-                        document.querySelector('.comment-count').textContent = `(${commentSection.children.length})`;
+                        if (notifyFirstChild.id == 'no-notify') {
+                            notifyContainer.removeChild(notifyFirstChild);
+                            notifyContainer.appendChild(notifyElement);
+                        } else {
+                            notifyContainer.insertBefore(notifyElement, notifyFirstChild);
+                        }
+    
                     }
-                }
-
-                if (data.type === "notification") {
-                    // Update the notification badge
-                    this.updateNotificationBadge();
-
-                    const notifyContainer = document.querySelector('#notify-popup');
-                    const notifyFirstChild = notifyContainer.firstElementChild;
-
-                    // Convert UTC time to local time
-                    const localTime = new Date(data.created_at);
-
-                    const notifyElement = document.createElement('a');
-                    notifyElement.classList.add('flex', 'justify-between', 'px-2', 'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer', 'bg-blue-200');
-                    notifyElement.href = `${data.url}`;
-                    notifyElement.id = `notify-${data.notification_id}`;
-                    const timeInMonth = localTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    const timeInHour = localTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    notifyElement.innerHTML = `
-                        <div class="flex space-x-3">
-                            <img loading="lazy" src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-8 rounded-full">
-
-                            <div class="flex flex-col space-y-1">
-                                <span>${data.username} ${data.message}</span>
-
-                                <span class="text-text-light break-all line-clamp-1">${data.content || 'Check it out!'}</span>
+    
+                    if (data.type === "new_post") {
+                        this.updateNotificationBadge();
+    
+                        const notifyContainer = document.querySelector('#notify-popup');
+                        const notifyFirstChild = notifyContainer.firstElementChild;
+    
+                        // Convert UTC time to local time
+                        const localTime = new Date(data.created_at);
+    
+                        const notifyElement = document.createElement('a');
+                        notifyElement.classList.add('flex', 'justify-between', 'px-2', 'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer', 'bg-blue-200');
+                        notifyElement.href = `${data.url}`;
+                        notifyElement.id = `notify-${data.notification_id}`;
+                        const timeInMonth = localTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        const timeInHour = localTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        notifyElement.innerHTML = `
+                            <div class="flex space-x-3">
+                                <img loading="lazy" src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-8 rounded-full">
+    
+                                <div class="flex flex-col space-y-1">
+                                    <span>${data.username} has shared a new post</span>
+    
+                                    <span class="text-text-light break-all line-clamp-1">${data.title || 'Check it out!'}</span>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="flex flex-col space-y-1 text-nowrap mt-1 text-right">
-                            <span class="text-xs">${timeInMonth}</span>
-                            <span class="text-xs">${timeInHour}</span>
-                        </div>
-                    `;
-
-                    notifyContainer.insertBefore(notifyElement, notifyFirstChild);
-                }
-
-                if (data.type === "new_post") {
-                    this.updateNotificationBadge();
-
-                    const notifyContainer = document.querySelector('#notify-popup');
-                    const notifyFirstChild = notifyContainer.firstElementChild;
-
-                    // Convert UTC time to local time
-                    const localTime = new Date(data.created_at);
-
-                    const notifyElement = document.createElement('a');
-                    notifyElement.classList.add('flex', 'justify-between', 'px-2', 'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer', 'bg-blue-200');
-                    notifyElement.href = `${data.url}`;
-                    notifyElement.id = `notify-${data.notification_id}`;
-                    const timeInMonth = localTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    const timeInHour = localTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    notifyElement.innerHTML = `
-                        <div class="flex space-x-3">
-                            <img loading="lazy" src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-8 rounded-full">
-
-                            <div class="flex flex-col space-y-1">
-                                <span>${data.username} has shared a new post</span>
-
-                                <span class="text-text-light break-all line-clamp-1">${data.title || 'Check it out!'}</span>
+    
+                            <div class="flex flex-col space-y-1 text-nowrap mt-1 text-right">
+                                <span class="text-xs">${timeInMonth}</span>
+                                <span class="text-xs">${timeInHour}</span>
                             </div>
-                        </div>
-
-                        <div class="flex flex-col space-y-1 text-nowrap mt-1 text-right">
-                            <span class="text-xs">${timeInMonth}</span>
-                            <span class="text-xs">${timeInHour}</span>
-                        </div>
-                    `;
-
-                    notifyContainer.insertBefore(notifyElement, notifyFirstChild);
-                }
-            };
-        });
+                        `;
+    
+                        notifyContainer.insertBefore(notifyElement, notifyFirstChild);
+                    }
+                };
+            });
+        }
     }
 
     async initSessionData() {
         try {
             // Fetch session data from the server
-            const response = await fetch('../controllers/session_data.php');
-            if (!response.ok) {
-                throw new Error(`Failed to fetch session data: ${response.statusText}`);
-            }
-    
-            const sessionData = await response.json();
+            const sessionData = await this.renderer.fetchData('../controllers/session_data.php');
     
             // Ensure session data is valid
             if (sessionData && sessionData.user_id) {
@@ -150,6 +157,7 @@ class EventListener {
                 this.username = sessionData.username || '';
                 this.avatar = sessionData.avatar || '';
                 this.tagName = sessionData.tag_name || '';
+                this.roleId = sessionData.role_id || 1;
             } else {
                 throw new Error('Invalid session data received');
             }
@@ -190,7 +198,6 @@ class EventListener {
         this.historyContainer = document.querySelector('#history-container');
         this.historySearch = document.querySelector('#history-search');
         this.userSeach = document.querySelector('#user-search')
-        this.historyElement = document.querySelectorAll('.history-element');
         this.filterTags = document.querySelector('#filter-tags');
         this.tagContainer = document.querySelector('#tags-container');
         this.tagElements = document.querySelectorAll('div[id^="tag-"]');
@@ -201,6 +208,7 @@ class EventListener {
         this.questionFilter = document.querySelector('#question-filter');
         this.profileActions = document.querySelector('#profile-actions');
         this.userContainer = document.querySelector('#users-container');
+        this.myPostContainer = document.querySelector('#mypost-container');
         if (this.userContainer) {
             this.userList = this.userContainer.querySelectorAll('div[id^=user-]')
         }
@@ -580,39 +588,46 @@ class EventListener {
                 });
             }
 
+            if (this.userPopup) {
+                const profileLink = this.userPopup.firstElementChild;
+                const adminPopup = document.createElement('a');
+                adminPopup.classList.add('flex', 'items-center', 'rounded-md', 'text-3xl', 'font-light', 'space-x-4', 'p-3', 'hover:bg-gray-200', 'cursor-pointer', 'dark:text-gray-400');
+                adminPopup.innerHTML = `
+                        <span class="material-symbols-rounded custom-icon">shield_person</span>
+                        <span class="text-lg font-normal">Enter Admin Mode</span>
+                `;
+
+                if (this.roleId == 2) {
+                    this.userPopup.insertBefore(adminPopup, profileLink.nextSibling);
+                }
+                
+            }
+
             if (this.historyContainer) {
                 this.historySearch.addEventListener('input', function() {
                     const searchValue = _this.historySearch.value.trim().toLowerCase();
-                    _this.historyElement.forEach(history => {
-                        if (searchValue === '') {
-                            history.classList.remove('hidden');
-                            return;
-                        }
+                    const historyByDate = _this.historyContainer.querySelectorAll('div[id^="elements-"]');
 
-                        const historyValue = history.querySelector('.history-title').textContent.toLowerCase();
-                        if (historyValue.includes(searchValue)) {
-                            history.classList.remove('hidden');
-                        } else {
-                            history.classList.add('hidden');
-                        }
-                    });
-                })
+                    historyByDate.forEach(element => {
+                        const historyElement = element.querySelectorAll('div[class^="history-element"]');
 
+                        historyElement.forEach(history => {
+                            if (searchValue === '') {
+                                history.classList.remove('hidden');
+                                return;
+                            }
 
-                const visibleHistoryElements = Array.from(_this.historyElement).filter(history => !history.classList.contains('hidden'));
-                if (visibleHistoryElements.length > 0) {
-                    visibleHistoryElements.forEach(question => {
-                        question.addEventListener('click', function() {
-                            const questionId = question.getAttribute('data-value');
-                            window.location.href = `../views/main.html.php?page=postdetails&id=${questionId}`;
-                        });
-                    });
-                } else {
-                    const dateTitle = document.querySelector('.date-title');
-                    if (dateTitle) {
-                        dateTitle.classList.add('hidden');
-                    }
-                }
+                            const historyValue = history.querySelector('h2[class^="history-title"]').textContent.toLowerCase();
+                            if (historyValue.includes(searchValue)) {
+                                element.querySelector('h2[class^="date-title"]').classList.remove('hidden');
+                                history.classList.remove('hidden');
+                            } else {
+                                element.querySelector('h2[class^="date-title"]').classList.add('hidden');
+                                history.classList.add('hidden');
+                            }
+                        })
+                    })
+                });
             }
 
             if (this.userSeach) {
@@ -637,11 +652,13 @@ class EventListener {
             if (this.notifyContainer) {
                 const notifyElement = _this.notifyContainer.querySelectorAll('div[class^="notify-"]');
                 const clearNotifyButton = document.querySelector('#clear-notify');
-
                 notifyElement.forEach(notify => {
                     notify.addEventListener('click', async function(e) {
                         if (e.target.closest('span[id="delete-notify"]')) {
                             const notifyId = notify.getAttribute('data-value');
+                            
+                            
+
                             notify.classList.remove('animate-slideRight');
                             notify.classList.add('animate-slideAndFadeOut');
 
@@ -678,6 +695,17 @@ class EventListener {
                             notify.classList.add('animate-slideAndFadeOut');
                         })
 
+                        const noResultsMessage = document.createElement('div');
+                        noResultsMessage.id = 'no-notify';
+                        noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
+                        noResultsMessage.textContent = 'There is no notifications';
+
+                        _this.notifyPopup.innerHTML = noResultsMessage.outerHTML;
+                        const badge = _this.notifyBtn.querySelector('#notify-badge');
+                        if (badge) {
+                            _this.notifyBtn.removeChild(badge);
+                        }
+
                         await _this.renderer.fetchData('../controllers/delete_all_notification.php', {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -685,10 +713,7 @@ class EventListener {
                         })
     
                         setTimeout(function() {
-                            const firstChild = _this.notifyContainer.firstChild
-                            while (firstChild) {
-                                _this.notifyContainer.removeChild(firstChild);
-                            }
+                            _this.notifyContainer.innerHTML = '';
                         }, 1500)
 
 
@@ -990,7 +1015,6 @@ class EventListener {
                         body: JSON.stringify({ user_id: userId, post_id: postId, content: encodeURIComponent(commentContent) })
                     });
 
-                    console.log('posted')
         
                     if (newComment.error) {
                         console.log(newComment.error);
@@ -999,7 +1023,6 @@ class EventListener {
         
                         _this.renderedComments.add(newComment.comment_id); // Add the comment ID to the Set
                         textarea.value = '';
-                        console.log(_this.renderedComments.size);
 
 
                         const receiverId = document.querySelector('img[id^="user-avatar"]').getAttribute('data-value');
@@ -1016,7 +1039,7 @@ class EventListener {
                                     body: JSON.stringify({ receiverId: receiverId, senderId: _this.userId, type: 'comment', message: messageNotify, message_content: newComment.content, url: urlNotify })
                                 });
 
-                                _this.sendNotification(receiverId, _this.username, avatar, _this.userId, 'comment', messageNotify, newComment.content, urlNotify, createdTime);
+                                _this.sendNotification(receiverId, _this.fullName, avatar, _this.userId, 'comment', messageNotify, newComment.content, urlNotify, createdTime);
                                 document.querySelector('.comment-count').textContent = `(${_this.renderedComments.size})`;
                             } 
                         }, 100);
@@ -1056,37 +1079,36 @@ class EventListener {
                     // Clear the tag list to prevent duplication
                     _this.tagList.innerHTML = '';
         
-                    setTimeout(function() {
-                        fetch('../controllers/tags_withtype.php', {
+                    setTimeout(async function() {
+                        const tagWithType = await _this.renderer.fetchData('../controllers/tags_withtype.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                             body: new URLSearchParams({ type: selectedValue })
                         })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.error) {
-                                _this.tagList.innerHTML = `<option>${data.error}</option>`
+
+                        
+                        if (tagWithType.error) {
+                            _this.tagList.innerHTML = `<option>${tagWithType.error}</option>`
+                        } else {
+                            _this.tagList.innerHTML = '';
+
+                            if (selectedValue == '') {
+                                _this.tagList.classList.add('hidden');
+                                _this.buttonContainer.classList.add('hidden');
+                                _this.tagInput.classList.add('hidden');
                             } else {
-                                _this.tagList.innerHTML = '';
-    
-                                if (selectedValue == '') {
-                                    _this.tagList.classList.add('hidden');
-                                    _this.buttonContainer.classList.add('hidden');
-                                    _this.tagInput.classList.add('hidden');
-                                } else {
-                                    _this.tagList.classList.remove('hidden');
-                                    _this.buttonContainer.classList.remove('hidden');
-                                    _this.tagInput.classList.remove('hidden');
-                                    data.forEach(tag => {
-                                        const tagElement = document.createElement('option');
-                                        tagElement.classList.add('dark:text-gray-400', 'dark:bg-gray-900')
-                                        tagElement.value = `${tag.tag_name}`;
-                                        tagElement.textContent = `${tag.tag_name}`;
-                                        _this.tagList.appendChild(tagElement);
-                                    })
-                                }
+                                _this.tagList.classList.remove('hidden');
+                                _this.buttonContainer.classList.remove('hidden');
+                                _this.tagInput.classList.remove('hidden');
+                                tagWithType.forEach(tag => {
+                                    const tagElement = document.createElement('option');
+                                    tagElement.classList.add('dark:text-gray-400', 'dark:bg-gray-900')
+                                    tagElement.value = `${tag.tag_name}`;
+                                    tagElement.textContent = `${tag.tag_name}`;
+                                    _this.tagList.appendChild(tagElement);
+                                })
                             }
-                        })
+                        }
                     }, 100)
                 });
             }
@@ -1115,15 +1137,22 @@ class EventListener {
                 });
             }
 
-
+            
             // Xử lý các event liên quan đến profile
             if (this.profileActions) {
                 const editButton = this.profileActions.querySelector('#edit-profile');
                 const followButton = this.profileActions.querySelector('#follow-btn');
                 const userTagName = this.profileActions.getAttribute('data-tagname');
+                const myPostTitle = this.myPostContainer.previousElementSibling;
+
+                
     
                 try {
                     const userIdValue = this.profileActions.getAttribute('data-value');
+
+                    if (userIdValue !== this.userId) {
+                        myPostTitle.textContent = `Their posts`;
+                    }
     
                     if (this.userId == userIdValue) {
                         editButton.classList.remove('hidden');
@@ -1133,53 +1162,7 @@ class EventListener {
                             window.location.href = '../views/main.html.php?page=editprofile'
                         })
                     } else {
-                        followButton.classList.remove('hidden');
-                        this.profileActions.removeChild(editButton);
-    
-                        // Check follow status
-                        const followStatus = this.renderer.fetchData(`../controllers/check_follow_status.php?follower_id=${this.userId}&following_id=${userIdValue}`);
-
-                        if (followStatus.is_following) {
-                            followButton.textContent = 'Unfollow';
-                        } else {
-                            followButton.textContent = 'Follow';
-                        }
-
-                        followButton.addEventListener('click', async function() {
-                            try {
-                                const followResult = await _this.renderer.fetchData('../controllers/follow_user.php', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ follower_id: _this.userId, following_id: userIdValue })
-                                });
-    
-                                if (followResult.status === 'followed') {
-                                    followButton.textContent = 'Unfollow';
-                                    const followerCount = document.getElementById('follower-count');
-                                    followerCount.textContent = parseInt(followerCount.textContent) + 1;
-
-                                    // Send notification to the followed user
-                                    const avatar = `${_this.avatar || '../assets/images/user.png'}`;
-                                    const messageNotify = `has started following you!`;
-                                    const urlNotify = `../views/main.html.php?page=profile&tag_name=${_this.tagName}`;
-                                    const createdTime = new Date();
-
-                                    await _this.renderer.fetchData('../controllers/add_notifications.php', {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify({ receiverId: userIdValue, senderId: _this.userId, type: 'follow', message: messageNotify, url: urlNotify })
-                                    });
-
-                                    _this.sendNotification(userIdValue, _this.username, avatar, _this.userId, 'follow', messageNotify, '', urlNotify, createdTime);
-                                } else if (followResult.status === 'unfollowed') {
-                                    followButton.textContent = 'Follow';
-                                    const followerCount = document.getElementById('follower-count');
-                                    followerCount.textContent = parseInt(followerCount.textContent) - 1;
-                                }
-                            } catch (error) {
-                                console.error('Error following/unfollowing user:', error);
-                            }
-                        });
+                        this.handleFollowButton(followButton, editButton, userIdValue);
                     }
                 } catch (error) {
                     console.log(error);
@@ -1201,8 +1184,16 @@ class EventListener {
                     const followId = _this.profileActions.getAttribute('data-value');
                     if (e.target.closest('div[id="follower-btn"]')) {
                         _this.handleFollower(followId);
+
+                        setTimeout(function() {
+                            _this.followerSearch();
+                        }, 100)
                     } else if (e.target.closest('div[id="following-btn"]')) {
                         _this.handleFollowing(followId);
+
+                        setTimeout(function() {
+                            _this.followerSearch();
+                        }, 100)
                     }
                 })
             }
@@ -1213,13 +1204,40 @@ class EventListener {
                     e.preventDefault();
 
                     let formData = new FormData(_this.newPostForm);
+
                     try {
+                        const postTitle = _this.newPostForm.querySelector('input[id="title"]');
+                        const postContent = _this.newPostForm.querySelector('textarea[id="content"]');
+                        
+                        if (postTitle.value == '' && postContent.value == '') {
+                            _this.showError('title', 'Title is required');
+                            _this.showError('content', 'Content is required');
+                            return;
+                        }
+
+                        if (postTitle.value == '') {
+                            _this.clearError('content')
+                            _this.showError('title', 'Title is required');
+                            return;
+                        }
+
+                        if (postContent.value == '') {
+                            _this.clearError('title')
+                            _this.showError('content', 'Content is required');
+                            return;
+                        }
+
+
+                        _this.clearError('title')
+                        _this.clearError('content')
                         const newPost = await _this.renderer.fetchData('../controllers/add_newpost.php', {
                             method: 'POST',
                             body: formData
                         })
-
                         _this.sendNewPostNotify(_this.userId, _this.username, _this.avatar, 'new_post', newPost)
+                        
+                        window.location.href = `../views/main.html.php`;
+
                     } catch (error) {
                         console.log(error);
                     }
@@ -1254,10 +1272,8 @@ class EventListener {
             })
 
             if (savedPosts.status == "saved") {
-                console.log('save!')
                 savedImage.classList.add('filled-icon');
             } else {
-                console.log('unsave');
                 savedImage.classList.remove('filled-icon');
             }
         } catch (error) {
@@ -1294,6 +1310,58 @@ class EventListener {
                 console.error('Error sending like notification:', error);
             }
         }
+    }
+
+    async handleFollowButton(followButton, editButton, userIdValue) {
+        const _this = this;
+        followButton.classList.remove('hidden');
+        this.profileActions.removeChild(editButton);
+
+        // Check follow status
+        const followStatus = await this.renderer.fetchData(`../controllers/check_follow_status.php?follower_id=${this.userId}&following_id=${userIdValue}`);
+
+        
+        if (followStatus.is_following) {
+            followButton.textContent = 'Unfollow';
+        } else {
+            followButton.textContent = 'Follow';
+        }
+
+        followButton.addEventListener('click', async function() {
+            try {
+                const followResult = await _this.renderer.fetchData('../controllers/follow_user.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ follower_id: _this.userId, following_id: userIdValue })
+                });
+
+                if (followResult.status === 'followed') {
+                    followButton.textContent = 'Unfollow';
+                    const followerCount = document.getElementById('follower-count');
+                    followerCount.textContent = parseInt(followerCount.textContent) + 1;
+
+                    // Send notification to the followed user
+                    const avatar = `${_this.avatar || '../assets/images/user.png'}`;
+                    const messageNotify = `has started following you!`;
+                    const urlNotify = `../views/main.html.php?page=profile&tag_name=${_this.tagName}`;
+                    const createdTime = new Date();
+
+                    await _this.renderer.fetchData('../controllers/add_notifications.php', {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ receiverId: userIdValue, senderId: _this.userId, type: 'follow', message: messageNotify, url: urlNotify })
+                    });
+
+                    _this.sendNotification(userIdValue, _this.username, avatar, _this.userId, 'follow', messageNotify, '', urlNotify, createdTime);
+                } else if (followResult.status === 'unfollowed') {
+                    followButton.textContent = 'Follow';
+                    const followerCount = document.getElementById('follower-count');
+                    followerCount.textContent = parseInt(followerCount.textContent) - 1;
+                }
+            } catch (error) {
+                console.error('Error following/unfollowing user:', error);
+            }
+        });
     }
 
     async handleLikes(postId, likeCountSpan, likeImage) {
@@ -1438,7 +1506,7 @@ class EventListener {
                             <img src="${comment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
                             <div id="comment-information">
                                 <div class="flex items-center space-x-2">
-                                    <h2 class="font-medium text-md dark:text-white">${comment.username}</h2>
+                                    <h2 class="font-medium text-md dark:text-white">${comment.fullname}</h2>
                                     <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(comment.created_at)}</span>
                                 </div>
                                 <p class="comment-content-${comment.comment_id} text-sm dark:text-gray-400">${comment.content}</p>
@@ -1479,8 +1547,6 @@ class EventListener {
             const postLink = `${window.location.origin}/mywebsite/views/main.html.php?page=postdetails&id=${postId}`;
             await navigator.clipboard.writeText(postLink);
 
-            // Show a success message
-            console.log(`Link copied to clipboard: ${postLink}`);
             this.showToastMessage('Link copied to clipboard!', 'top-28', '-right-2');
         } catch (error) {
             console.error('Error copying link:', error);
@@ -1636,6 +1702,7 @@ class EventListener {
         })
 
         this.renderer.renderFollower(followerList, followerContainer)
+        
 
         
         followerOverlay.addEventListener('click', (e) => {
@@ -1647,6 +1714,37 @@ class EventListener {
 
 
         document.body.appendChild(followerOverlay)
+    }
+
+    followerSearch() {
+        const searchInput = document.querySelector('#follow-input');
+        const followerContainer = document.querySelector('#follow-container');
+        const followerList = followerContainer.querySelectorAll('div[class^="follow-element"]');
+        searchInput.addEventListener('input', this.debounce(async (e) => {
+            const searchValue = searchInput.value.trim().toLowerCase();
+            followerList.forEach(follower => {
+                if (searchValue == '') {
+                    follower.classList.remove('hidden');
+                    return;
+                }
+
+                const followTagName = follower.querySelector('span[class^="follow-tagname"]');
+                const followFullName = follower.querySelector('span[class^="follow-fullname"]');
+
+                if (followTagName && followFullName) {
+                    const tagName = followTagName.textContent.trim().toLowerCase();
+                    const fullName = followFullName.textContent.trim().toLowerCase();
+
+                    if (tagName.includes(searchValue) || fullName.includes(searchValue)) {
+                        follower.classList.remove('hidden');
+                    } else {
+                        follower.classList.add('hidden');
+                    }
+                }
+
+                
+            })
+        }, 300));
     }
 
     async handleFollowing(followerId) {
@@ -1662,7 +1760,7 @@ class EventListener {
                     </div>
                 </div>
                 <div class="mt-1 p-2 px-4">
-                    <input type="text" name="" id="" placeholder="Search" class="border-1 w-full px-4 rounded-md h-8 dark:border-gray-600 focus:outline-0 dark:text-gray-400">
+                    <input type="text" name="followInput" id="follow-input" placeholder="Search" class="border-1 w-full px-4 rounded-md h-8 dark:border-gray-600 focus:outline-0 dark:text-gray-400">
                 </div>
 
                 <div id="follow-container" class="p-2 px-4 space-y-4 overflow-y-auto rounded-lg h-50 scroll">
@@ -1714,7 +1812,6 @@ class EventListener {
         localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
 
         const buttons = this.navbar.querySelectorAll('a[id$="btn"]');
-        console.log(buttons);
         buttons.forEach(link => {
             link.classList.remove("bg-gray-200");
             link.classList.remove("dark:bg-gray-600");
@@ -1740,9 +1837,8 @@ class EventListener {
 
     async applyDarkModePreference() {
         try {
-            const response = await fetch(`../controllers/get_darkmode.php?user_id=${this.userId}`);
-            const data = await response.json();
-            const darkMode = data.dark_mode;
+            const response = await this.renderer.fetchData(`../controllers/get_darkmode.php?user_id=${this.userId}`);
+            const darkMode = response.dark_mode;
 
             if (darkMode === '1') {
                 document.documentElement.classList.add('dark');
@@ -1782,8 +1878,6 @@ class EventListener {
 
     
     sendNotification(userId, username, avatar, senderId, type, message, content, url, createdTime) {
-        console.log('sendNotification called with:', { userId, username, avatar, senderId, type, message, content, url, createdTime });
-    
         const conditions = userId && senderId && type && message && url && createdTime;
         if (conditions) {
             let notificationData = {
@@ -1800,7 +1894,6 @@ class EventListener {
             };
     
             this.socket.send(JSON.stringify(notificationData));
-            console.log('Notification sent:', notificationData);
         } else {
             console.error('sendNotification conditions not met:', { userId, senderId, type, message, content, url, createdTime });
         }

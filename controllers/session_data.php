@@ -8,4 +8,5 @@ echo json_encode([
     'username' => $_SESSION['fullname'],
     'avatar' => $_SESSION['avatarURL'],
     'tag_name' => $_SESSION['tag_name'],
+    'role_id' => $_SESSION['role_id'],
 ]);

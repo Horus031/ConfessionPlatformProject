@@ -45,11 +45,12 @@
         </button>
         <button class="relative group">
             <img id="user-btn" loading="lazy" src="<?= isset($_SESSION['avatarURL']) ? $_SESSION["avatarURL"] : '../assets/images/user.png'; ?>" alt="" class="h-10 rounded-full">
-            <div id="users-popup" class="absolute bg-white border-1 rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 z-70 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:border-gray-600">
+            <div id="users-popup" class="absolute bg-white border-1 rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-64 z-70 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:border-gray-600">
                 <a href="main.html.php?page=profile&tag_name=<?= $_SESSION['tag_name'] ?>" class="flex items-center rounded-md text-3xl font-light space-x-4 p-3 hover:bg-gray-200 cursor-pointer dark:text-gray-400">
                     <span class="material-symbols-rounded custom-icon">account_circle</span>
                     <span class="text-lg font-normal">Profile</span>
                 </a>
+
                 <a href="../controllers/logout.php" class="flex items-center rounded-md text-3xl font-light space-x-4 p-3 hover:bg-gray-200 cursor-pointer dark:text-gray-400">
                     <span class="material-symbols-rounded custom-icon">logout</span>
                     <span class="text-lg font-normal">Logout</span>
@@ -60,7 +61,7 @@
 </header>
 
 <!-- Menu mobile -->
-<aside id="menu" class="font-poppins w-2/3 bg-white dark:bg-gray-900  -translate-x-full  h-full z-80 border-r border-gray-400 dark:border-gray-700  transition-all fixed md:block md:fixed md:mt-23.5 md:w-46 md:-translate-x-0 lg:w-46 xl:w-56 2xl:w-72">
+<aside id="menu" class="font-poppins w-2/3 bg-white dark:bg-gray-900  -translate-x-full  h-full z-40 border-r border-gray-400 dark:border-gray-700  transition-all fixed md:block md:fixed md:mt-23.5 md:w-46 md:-translate-x-0 lg:w-46 xl:w-56 2xl:w-80">
     <nav id="navbar" class="flex-1 bg-white dark:bg-gray-900  md:h-full z-2 animate-slideRight">
         <div>
             <div class="flex flex-col mt-4 space-y-2 text-3xl font-light transition-all">
@@ -100,7 +101,7 @@
                     <span class="text-lg font-normal">Contact</span>
                 </a>
 
-                <button id="darkmode-btn" class="text-3xl w-full flex text-gray-700 dark:text-gray-400 items-center space-x-3 px-3 py-2 transition-all">
+                <button id="darkmode-btn" class="text-3xl w-full flex text-gray-700 dark:text-gray-400 items-center space-x-3 px-3 py-2 cursor-pointer transition-all">
                     <div class="font-light transition-all dark:text-amber-300 dark:fill-amber-300">
                         <span class="material-symbols-rounded custom-icon darkmode-icon">dark_mode</span>
                     </div>

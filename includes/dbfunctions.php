@@ -80,7 +80,7 @@ class Database
 
     public function insertPost($user_id, $title, $content, $module_id, $imageURL)
     {
-        $sql = 'INSERT INTO posts (user_id, post_title, post_content, module_id, imageURL, status) VALUES (?, ?, ?, ?, ?, "approved")';
+        $sql = 'INSERT INTO posts (user_id, post_title, post_content, module_id, imageURL) VALUES (?, ?, ?, ?, ?)';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$user_id, $title, $content, $module_id, $imageURL]);
         return $this->pdo->lastInsertId();
@@ -159,17 +159,18 @@ class Database
         return $existingUser['avatar'];
     }
 
-    public function updateUser($user_id, $username, $tag_name, $email, $avatarURL, $bio)
+    public function updateUser($user_id, $first_name, $last_name, $tag_name, $email, $avatarURL, $bio)
     {
         $sql = "UPDATE users SET
-                username = ?,
+                first_name = ?,
+                last_name = ?,
                 tag_name = ?,
                 email = ?,
                 avatar = ?,
                 bio = ?
                 WHERE user_id = ?";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$username, $tag_name, $email, $avatarURL, $bio, $user_id]);
+        $stmt->execute([$first_name, $last_name, $tag_name, $email, $avatarURL, $bio, $user_id]);
     }
 
     public function updateUserSocialLinks($user_id, $social_links)
@@ -196,7 +197,7 @@ class Database
 
     public function fetchAllComments($post_id)
     {
-        $sql = 'SELECT comments.comment_id, comments.user_id, comments.post_id, comments.content, comments.created_at,users.username, users.avatar
+        $sql = 'SELECT comments.comment_id, comments.user_id, comments.post_id, comments.content, comments.created_at, CONCAT(first_name, " ", last_name) AS fullname, users.username, users.avatar
                 FROM ((comments
                 INNER JOIN posts ON comments.post_id = posts.post_id)
                 INNER JOIN users ON comments.user_id = users.user_id)
@@ -272,12 +273,13 @@ class Database
     public function fetchAllPosts()
     {
         $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, users.tag_name, users.created_at AS userJoinedTime, modules.module_id, modules.module_name, modules.bg_class, modules.text_class 
-                FROM ((((posts 
+                FROM ((((posts  
                 INNER JOIN users ON posts.user_id = users.user_id)
                 INNER JOIN modules ON posts.module_id = modules.module_id)
                 LEFT JOIN likes ON posts.post_id = likes.post_id)
                 LEFT JOIN comments ON posts.post_id = comments.post_id)
-                GROUP BY post_id';
+                GROUP BY post_id 
+                ORDER BY posts.created_at DESC';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -295,7 +297,7 @@ class Database
 
     public function fetchEditingInfo($user_id)
     {
-        $sql = 'SELECT users.user_id, CONCAT(first_name, " ", last_name) AS fullname , users.username, users.tag_name, users.email, users.bio, users.avatar, users.created_at
+        $sql = 'SELECT users.user_id, users.first_name, users.last_name, users.username, users.tag_name, users.email, users.bio, users.avatar, users.created_at
                 FROM users
                 WHERE user_id = ?';
         $stmt = $this->pdo->prepare($sql);
@@ -323,7 +325,7 @@ class Database
 
     public function fetchUserByUsername($username)
     {
-        $sql = "SELECT user_id, CONCAT(first_name, ' ', last_name) AS fullname, username, password, avatar, tag_name FROM users WHERE BINARY username = ?";
+        $sql = "SELECT user_id, CONCAT(first_name, ' ', last_name) AS fullname, username, password, avatar, tag_name, role_id FROM users WHERE BINARY username = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$username]);
         return $stmt->fetch(PDO::FETCH_ASSOC);

@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const tagName = sessionStorage.getItem('editUserTagName');
     const renderer = new QuestionRenderer('#edit-container');
     const eventListener = new EventListener();
-    await eventListener.initSessionData;
+    await eventListener.initSessionData();
 
     try {
         const editUserInfo = await renderer.fetchData(`../controllers/get_editinfo.php`, {

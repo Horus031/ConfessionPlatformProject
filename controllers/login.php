@@ -22,6 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['fullname'] = $user['fullname'];
             $_SESSION['avatarURL'] = $user['avatar'];
             $_SESSION['tag_name'] = $user['tag_name'];
+            $_SESSION['role_id'] = $user['role_id'];
 
             if ($remember) {
                 $token = bin2hex(random_bytes(32)); // Generate a random token
