@@ -46,4 +46,4 @@
     </div>
 </div>
 
-<script type="module" src="../controllers/render/profile.js"></script>
+<script type="module" src="../controllers/render&events/profile.js"></script>

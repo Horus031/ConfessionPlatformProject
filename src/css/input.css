@@ -38,6 +38,14 @@
   .dark .scroll::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.5);
   }
+
+  th, td {
+    padding: 15px;
+    text-align: left;
+  }
+  td {
+    text-align: center;
+  }
 }
 
 @layer components {

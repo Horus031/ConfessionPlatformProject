@@ -234,6 +234,6 @@
 </body>
 
 
-<script type="module" src="../controllers/render/login&register.js"></script>
+<script type="module" src="../controllers/render&events/login&register.js"></script>
 
 </html>

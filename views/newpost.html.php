@@ -62,4 +62,4 @@
 
 </main>
 
-<script type="module" src="../controllers/render/newpost.js"></script>
+<script type="module" src="../controllers/render&events/newpost.js"></script>

@@ -64,4 +64,4 @@
 
 </main>
 
-<script type="module" src="../controllers/render/editpost.js"></script>
+<script type="module" src="../controllers/render&events/editpost.js"></script>

@@ -17,12 +17,17 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 
 </head>
 
-<body class="h-screen">
+<body class="dark:bg-gray-900">
     <div class="dark:bg-gray-900  relative flex h-full w-full overflow-x-hidden overflow-y-auto transition-all scroll ">
-        <?php include '../includes/overlay.php' ?>
-        <?php include '../includes/header.php' ?>
+        <!-- Check if page is not admin page -->
+        <?php if ($page !== 'admin') : ?>
+            <?php include '../includes/overlay.php' ?>
+            <?php include '../includes/header.php' ?>
 
-        <?php include "./" . $page . ".html.php"; ?>
+            <?php include "./" . $page . ".html.php"; ?>
+        <?php else : ?>
+            <?php include "./" . $page . ".html.php"; ?>
+        <?php endif; ?>
     </div>
 
 

@@ -1,4 +1,4 @@
-<header class="font-poppins fixed top-0 w-full flex justify-between items-center z-60 p-3 shadow-lg bg-white dark:bg-gray-900  border-b border-gray-400 dark:border-gray-700 animate-postSlideIn">
+<header class="font-poppins fixed top-0 w-full flex justify-between items-center z-60 p-3 shadow-lg bg-white dark:bg-gray-900  border-b border-gray-400 dark:border-gray-700">
     <div class="hidden md:flex items-center px-3 pt-3 pb-2">
         <img loading="lazy" src="../assets/images/weblogo.png" alt="" class="-mt-4 -mb-4 -ml-4 h-20">
         <span class="text-sm md:text-lg font-semibold  dark:text-white ">Knowledge Nexus</span>
@@ -61,8 +61,8 @@
 </header>
 
 <!-- Menu mobile -->
-<aside id="menu" class="font-poppins w-2/3 bg-white dark:bg-gray-900  -translate-x-full  h-full z-40 border-r border-gray-400 dark:border-gray-700  transition-all fixed md:block md:fixed md:mt-23.5 md:w-46 md:-translate-x-0 lg:w-46 xl:w-56 2xl:w-80">
-    <nav id="navbar" class="flex-1 bg-white dark:bg-gray-900  md:h-full z-2 animate-slideRight">
+<aside id="menu" class="font-poppins w-2/3 top-[8%] bg-white dark:bg-gray-900  -translate-x-full  h-full z-40 border-r border-gray-400 dark:border-gray-700  transition-all fixed md:block md:fixed md:w-46 md:-translate-x-0 md:top-[10%] lg:w-46 xl:w-56 2xl:w-80">
+    <nav id="navbar" class="flex-1 bg-white dark:bg-gray-900  md:h-full z-2">
         <div>
             <div class="flex flex-col mt-4 space-y-2 text-3xl font-light transition-all">
                 <a href="main.html.php?page=home" id="home-btn" class="flex text-gray-700 dark:text-gray-400 items-center space-x-3 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all">

@@ -28,4 +28,4 @@
         </div>
     </div>
 </main>
-<script type="module" src="../controllers/render/tag.js"></script>
+<script type="module" src="../controllers/render&events/tag.js"></script>

@@ -20,4 +20,4 @@
     <div id="formFeedback" class="mt-4"></div>
 </main>
 
-<script type="module" src="../controllers/render/contact.js"></script>
+<script type="module" src="../controllers/render&events/contact.js"></script>

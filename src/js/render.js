@@ -1453,6 +1453,63 @@ class QuestionRenderer {
             console.error('Error initializing session data:', error);
         }
     }
+
+    // Admin Render Functions
+    renderAdminUsers(userList) {
+        if (!userList || userList.length == 0) {
+            const noResultsMessage = document.createElement('div');
+            noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
+            noResultsMessage.textContent = 'You have not followed anyone yet';
+            followingContainer.appendChild(noResultsMessage);
+            return;
+        }
+
+        const totalUsers = document.querySelector('#total-users');
+        totalUsers.textContent = userList.length;
+
+        userList.forEach(user => {
+            console.log(user.create_at)
+            const createdAt = new Date(user.created_at);
+        const formattedDate = createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const userElement = document.createElement('tr');
+            userElement.setAttribute('data-value', user.user_id);
+            userElement.innerHTML = `
+                <td class="text-left">
+                    <div class="flex space-x-4">
+                        <img src="${user.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+                        <div>
+                            <span class="font-semibold text-white">${user.fullname}</span>
+                            <span class="text-sm">@${user.tag_name}</span>
+                            <p>${user.email ?? 'No information'}</p>
+                        </div>
+                    </div>
+                </td>
+                <td>${user.username}</td>
+                <td>${user.role_id == 2 ? 'Admin' : 'User'}</td>
+                <td>
+                    <span class="bg-green-100 text-green-600 font-semibold   rounded-full p-2">Active</span>
+                </td>
+                <td>
+                    ${formattedDate}
+                </td>
+                <td>
+                    <div class="flex text-2xl text-center justify-center">
+                        <span class="view-userbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
+                            visibility
+                        </span>
+                        <span class="edit-userbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
+                            edit
+                        </span>
+                        <span class="delete-userbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
+                            delete
+                        </span>
+                    </div>
+                </td>
+            `;
+            this.container.appendChild(userElement);
+        })
+
+    }
 }
 
 // Export the class

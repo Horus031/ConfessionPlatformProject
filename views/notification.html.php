@@ -9,4 +9,4 @@
     </div>
 </main>
 
-<script type="module" src="../controllers/render/notification.js"></script>
+<script type="module" src="../controllers/render&events/notification.js"></script>

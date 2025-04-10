@@ -15,4 +15,4 @@
 
 </main>
 
-<script type="module" src="../controllers/render/history.js"></script>
+<script type="module" src="../controllers/render&events/history.js"></script>

@@ -216,10 +216,23 @@ class EventListener {
         this.infoContainer = document.querySelector('#info-container');
     }
 
+    initAdminElements() {
+        this.backHomeBtn = document.querySelector('#backToHome');
+        this.addUserBtn = document.querySelector('#adduser-btn');
+        this.userManagement = document.querySelector('#user-management');
+        this.newUserContainer = document.querySelector('#new-user');
+        this.createUserForm = document.querySelector('#create-user-form');
+        this.cancelCreateUsers = document.querySelector('#cancel-create');
+        this.userTab = document.querySelector('#user-tab');
+        this.questionTab = document.querySelector('#question-tab');
+        this.moduleTab = document.querySelector('#module-tab');
+    }
+
     handleEvents() {
         const _this = this;
         this.initElements();
         
+        console.log('main')
 
         if (this.loginForm) {
             this.loginForm.addEventListener('submit', async function(e) {
@@ -271,7 +284,7 @@ class EventListener {
                 const confirmPassword = _this.step1Register.querySelector('#confirm-password').value;
                 let isValid = true;
 
-                _this.validateRegister(username, email, password, confirmPassword, isValid);
+                _this.validateRegister(_this.step1Register, username, email, password, confirmPassword, isValid);
 
                 const validConditions = username || email || password || confirmPassword;
 
@@ -591,6 +604,7 @@ class EventListener {
             if (this.userPopup) {
                 const profileLink = this.userPopup.firstElementChild;
                 const adminPopup = document.createElement('a');
+                adminPopup.href = `main.html.php?page=admin`
                 adminPopup.classList.add('flex', 'items-center', 'rounded-md', 'text-3xl', 'font-light', 'space-x-4', 'p-3', 'hover:bg-gray-200', 'cursor-pointer', 'dark:text-gray-400');
                 adminPopup.innerHTML = `
                         <span class="material-symbols-rounded custom-icon">shield_person</span>
@@ -1236,8 +1250,8 @@ class EventListener {
                         })
                         _this.sendNewPostNotify(_this.userId, _this.username, _this.avatar, 'new_post', newPost)
                         
-                        window.location.href = `../views/main.html.php`;
 
+                        window.location.href = `../views/main.html.php`;
                     } catch (error) {
                         console.log(error);
                     }
@@ -1261,6 +1275,110 @@ class EventListener {
 
         
 
+    }
+
+    handleAdminEvents() {
+        const _this = this;
+        this.initAdminElements();
+       
+
+        if (this.backHomeBtn) {
+            this.backHomeBtn.addEventListener('click', function() {
+                window.location.href = '../views/main.html.php';
+            });
+        }
+
+        if (this.addUserBtn) {
+            this.addUserBtn.addEventListener('click', function() {
+                _this.userManagement.classList.add('hidden');
+                _this.newUserContainer.classList.remove('hidden');
+            })
+        }
+
+        if (this.cancelCreateUsers) {
+            this.cancelCreateUsers.addEventListener('click', function() {
+                _this.newUserContainer.classList.add('hidden');
+                _this.userManagement.classList.remove('hidden');
+            });
+        }
+
+        if (this.createUserForm) {
+            this.createUserForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const firstName = _this.createUserForm.querySelector('#first-name').value;
+                const lastName = _this.createUserForm.querySelector('#last-name').value;
+                const username = _this.createUserForm.querySelector('#username').value;
+                const tagName = _this.createUserForm.querySelector('#tagname').value;
+                const email = _this.createUserForm.querySelector('#email').value;
+                const password = _this.createUserForm.querySelector('#password').value;
+                const confirmPassword = _this.createUserForm.querySelector('#confirm-password').value;
+                let isValid = true;
+
+
+                _this.validateRegister(_this.createUserForm, username, email, password, confirmPassword, isValid);
+
+                const validConditions = firstName || lastName || username || tagName || email || password || confirmPassword ;
+
+                if (validConditions) {
+                    try {
+                        const registerResult = await _this.renderer.fetchData('../controllers/validate_register.php', {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ username: username, email: email, password: password, confirm_password: confirmPassword })
+                        });
+
+                        if (registerResult.errors) {
+                            const errorObj = registerResult.errors;
+                            if (errorObj.userExist || errorObj.userLength) {
+                                _this.step1Register.querySelector('input[id="username"]').classList.add('animate-turnErrorColor');
+                                _this.showError("username", `${errorObj.userExist || errorObj.userLength}`);
+                            } else {
+                                _this.clearError("username");
+                            }
+
+                            if (errorObj.emailExist || errorObj.emailInvalid) {
+                                _this.step1Register.querySelector('input[id="email"]').classList.add('animate-turnErrorColor');
+                                _this.showError("email", `${errorObj.emailExist || errorObj.emailInvalid}`);
+                            } else {
+                                _this.clearError("email");
+                            }
+
+                            if (errorObj.passwordLength) {
+                                _this.step1Register.querySelector('input[id="password"]').classList.add('animate-turnErrorColor');
+                                _this.showError("password", `${errorObj.passwordLength}`);
+                            } else {
+                                _this.clearError("password");
+                            }
+
+                            if (errorObj.confirm_password) {
+                                _this.step1Register.querySelector('input[id="confirm-password"]').classList.add('animate-turnErrorColor');
+                                _this.showError("confirm-password", `${errorObj.confirm_password}`);
+                            } else {
+                                _this.clearError("confirm-password");
+                            }
+                            isValid = false;
+                        } else {
+                            
+                        }
+                    } catch (error) {
+                        console.error('Error validating form:', error);
+                    }
+                } else {
+                    if (_this.toastMessage.classList.contains('animate-toastSlide')) {
+                        return;
+                    } else { 
+                        _this.showToastMessage('Please fill out all information!', 'top-8', '-right-2');
+                    }
+                }
+                
+            });
+        }
+
+        if (this.userTab && this.questionTab && this.moduleTab) {
+            
+        }
+
+        
     }
 
     async handleSavedPosts(postId, savedImage) {
@@ -1622,33 +1740,33 @@ class EventListener {
         }
     }
 
-    validateRegister(username, email, password, confirmPassword, isValid) {
+    validateRegister(form, username, email, password, confirmPassword, isValid) {
         if (username === "") {
-            this.step1Register.querySelector('input[id="username"]').classList.add('animate-turnErrorColor');
+            form.querySelector('input[id="username"]').classList.add('animate-turnErrorColor');
             isValid = false;
         } else {
-            this.step1Register.querySelector('input[id="username"]').classList.remove('animate-turnErrorColor');
+            form.querySelector('input[id="username"]').classList.remove('animate-turnErrorColor');
         }
 
         if (email === "") {
-            this.step1Register.querySelector('input[id="email"]').classList.add('animate-turnErrorColor');
+            form.querySelector('input[id="email"]').classList.add('animate-turnErrorColor');
             isValid = false;
         } else {
-            this.step1Register.querySelector('input[id="email"]').classList.remove('animate-turnErrorColor');
+            form.querySelector('input[id="email"]').classList.remove('animate-turnErrorColor');
         }
 
         if (password === "") {
-            this.step1Register.querySelector('input[id="password"]').classList.add('animate-turnErrorColor');
+            form.querySelector('input[id="password"]').classList.add('animate-turnErrorColor');
             isValid = false;
         } else {
-            this.step1Register.querySelector('input[id="password"]').classList.remove('animate-turnErrorColor');
+            form.querySelector('input[id="password"]').classList.remove('animate-turnErrorColor');
         }
 
         if (confirmPassword === "") {
-            this.step1Register.querySelector('input[id="confirm-password"]').classList.add('animate-turnErrorColor');
+            form.querySelector('input[id="confirm-password"]').classList.add('animate-turnErrorColor');
             isValid = false;
         } else {
-            this.step1Register.querySelector('input[id="confirm-password"]').classList.remove('animate-turnErrorColor');
+            form.querySelector('input[id="confirm-password"]').classList.remove('animate-turnErrorColor');
         }
     }
 
@@ -1940,11 +2058,16 @@ class EventListener {
     }
     
     
-    start() {
-        this.handleEvents();
-
+    async start() {
         // Apply dark mode preference on page load
-        this.applyDarkModePreference();
+        await this.applyDarkModePreference();
+
+        // Check if the current page is admin or not
+        if (this.currentURL.includes('admin')) {
+            this.handleAdminEvents();
+        } else {
+            this.handleEvents();
+        }
 
         const postId = this.postDetailContainer ? this.postDetailContainer.getAttribute('data-value') : null;
         if (postId) {

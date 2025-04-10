@@ -93,4 +93,4 @@
     </div>
 </main>
 
-<script type="module" src="../controllers/render/home.js"></script>
+<script type="module" src="../controllers/render&events/home.js"></script>

@@ -17,4 +17,4 @@
     </div>
 </main>
 
-<script type="module" src="../controllers/render/findusers.js"></script>
+<script type="module" src="../controllers/render&events/findusers.js"></script>

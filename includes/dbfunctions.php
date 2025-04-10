@@ -728,4 +728,14 @@ class Database
         $stmt->execute([$follower_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+
+    // Admin Functions
+    public function getUsersFromAdmin()
+    {
+        $sql = "SELECT user_id, CONCAT(first_name, ' ', last_name) AS fullname, username, tag_name, email, avatar, role_id, created_at FROM users";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

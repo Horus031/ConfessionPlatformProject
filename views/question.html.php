@@ -1,11 +1,11 @@
-<main class="mt-24 px-4 w-full md:mt-28 md:pl-[26%] lg:pl-[20%] xl:pl-[20%] 2xl:pl-[16%]">
+<main class="mt-24 px-4 w-full md:mt-28 md:pl-[26%] lg:pl-[20%] xl:pl-[20%] 2xl:pl-[20%]">
     <div class="flex justify-between items-center transition-all">
         <div class="animate-slideRight">
             <h1 id="question-title" class="text-2xl font-semibold lg:text-4xl dark:text-gray-400">Questions</h1>
         </div>
 
         <div>
-            <a href="main.html.php?page=newpost" id="add-btn" class="bg-black dark:text-gray-400 dark:border-1 dark:border-gray-400 dark:bg-transparent py-1 px-6 rounded-lg font-medium md:py-4 lg:text-2xl animate-slideLeft">Add question</a>
+            <a href="main.html.php?page=newpost" id="add-btn" class="bg-black text-white dark:text-gray-400 dark:border-1 dark:border-gray-400 dark:bg-transparent py-1 px-6 rounded-lg font-medium md:py-4 lg:text-2xl animate-slideLeft">Add question</a>
         </div>
     </div>
     <div>

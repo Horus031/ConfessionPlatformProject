@@ -78,4 +78,4 @@
     </form>
 </main>
 
-<script type="module" src="../controllers/render/editprofile.js"></script>
+<script type="module" src="../controllers/render&events/editprofile.js"></script>
