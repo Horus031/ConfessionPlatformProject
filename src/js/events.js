@@ -5,6 +5,8 @@ class EventListener {
         this.renderer = new QuestionRenderer();
         this.currentURL = window.location.href;
         this.renderedComments = new Set(); // Tạo Set lưu trữ các id của comment
+        this.loadingOverlay = document.querySelector('#loading-overlay');
+
 
         if (this.currentURL.includes('main.html.php')) {
             this.initSessionData().then(() => {
@@ -35,7 +37,7 @@ class EventListener {
                             let firstChildComment = commentSection.firstElementChild;
     
                             // Update the badge only if the comment is not from the current user
-                            if (parseInt(data.userId) !== this.userId) {
+                            if (parseInt(data.userId) != this.userId) {
                                 this.updateNotificationBadge();
                             }
     
@@ -50,10 +52,10 @@ class EventListener {
     
                                 <div>
                                     <div class="flex items-center space-x-2">
-                                        <h2 class="font-medium text-md dark:text-white">${data.username}</h2>
+                                        <h2 class="text-text font-medium text-md dark:text-white">${data.username}</h2>
                                         <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(localTime)}</span>
                                     </div>
-                                    <p class="text-sm dark:text-gray-400">${data.comment}</p>
+                                    <p class="text-text text-sm dark:text-gray-400">${data.comment}</p>
                                 </div>
                             `;
     
@@ -64,8 +66,6 @@ class EventListener {
                     }
     
                     if (data.type === "notification") {
-                        // Update the notification badge
-                        this.updateNotificationBadge();
     
                         const notifyContainer = document.querySelector('#notify-popup');
 
@@ -173,6 +173,8 @@ class EventListener {
         this.step1Register = document.querySelector('#step1-container');
         this.step2Register = document.querySelector('#step2-container');
         this.step2Form = document.querySelector('#step2-form');
+        this.editUserForm = document.querySelector('#edit-form');
+        this.contactForm = document.querySelector('#contactForm');
         this.toastMessage = document.querySelector('#toast-container');
         this.loginForm = document.querySelector('#login-form');
         this.menuBtn = document.querySelector('#openMenu');
@@ -221,11 +223,18 @@ class EventListener {
         this.addUserBtn = document.querySelector('#adduser-btn');
         this.userManagement = document.querySelector('#user-management');
         this.newUserContainer = document.querySelector('#new-user');
+        this.editUserContainer = document.querySelector('#edit-user');
         this.createUserForm = document.querySelector('#create-user-form');
         this.cancelCreateUsers = document.querySelector('#cancel-create');
         this.userTab = document.querySelector('#user-tab');
         this.questionTab = document.querySelector('#question-tab');
         this.moduleTab = document.querySelector('#module-tab');
+        this.userContainer = document.querySelector('#user-container')
+        this.userActions = document.querySelector('#user-actions');
+        this.userSearch = document.querySelector('#user-search');
+        this.toastMessage = document.querySelector('#toast');
+        this.adminEditForm = document.querySelector('#admin-edit');
+
     }
 
     handleEvents() {
@@ -439,6 +448,7 @@ class EventListener {
 
 
         if (this.searchInput) {
+            _this.searchSuggestions.classList.add('bg-white', 'dark:bg-gray-800', 'border-0')
             const debouncedSearch = this.debounce(async function() {
                 const query = _this.searchInput.value.trim();
         
@@ -492,19 +502,19 @@ class EventListener {
         
             this.searchInput.addEventListener('focus', function() {
                 _this.searchSuggestions.innerHTML = `
-                    <h4 id="search-title" class="text-sm text-text-light font-medium">Several ways to find post:</h4>
-                    <hr class="bg-text-light border-text-light mb-4">
+                    <h4 id="search-title" class="text-sm text-text dark:text-gray-400 font-medium">Several ways to find post:</h4>
+                    <hr class="bg-text-light border-gray-400 mb-4">
                     <div class="text-sm flex flex-col">
-                        <span>
-                            <b class="text-black">Post title</b>
+                        <span class="text-black dark:text-gray-400">
+                            <span class="font-semibold text-black dark:text-white">Post title</span>
                             Type anything and results will be displayed
                         </span>
-                        <span>
-                            <b class="text-black">#example</b>
+                        <span class="text-black dark:text-gray-400">
+                            <span class="font-semibold text-black dark:text-white">#example</span>
                             Find post by tags
                         </span>
-                        <span>
-                            <b class="text-black">@example</b>
+                        <span class="text-black dark:text-gray-400">
+                            <span class="font-semibold text-black dark:text-white">@example</span>
                             Find post by users' tag name
                         </span>
                     </div>
@@ -605,16 +615,120 @@ class EventListener {
                 const profileLink = this.userPopup.firstElementChild;
                 const adminPopup = document.createElement('a');
                 adminPopup.href = `main.html.php?page=admin`
-                adminPopup.classList.add('flex', 'items-center', 'rounded-md', 'text-3xl', 'font-light', 'space-x-4', 'p-3', 'hover:bg-gray-200', 'cursor-pointer', 'dark:text-gray-400');
+                adminPopup.classList.add('flex', 'items-center', 'rounded-md', 'text-3xl', 'font-light', 'text-text','space-x-4', 'p-3', 'hover:bg-gray-200', 'cursor-pointer', 'dark:text-gray-400');
                 adminPopup.innerHTML = `
                         <span class="material-symbols-rounded custom-icon">shield_person</span>
-                        <span class="text-lg font-normal">Enter Admin Mode</span>
+                        <span class=" text-lg font-normal">Enter Admin Mode</span>
                 `;
 
                 if (this.roleId == 2) {
                     this.userPopup.insertBefore(adminPopup, profileLink.nextSibling);
                 }
                 
+            }
+
+            if (this.contactForm) {
+                this.contactForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    const form = e.target;
+                    const formData = new FormData(form);
+                    const formFeedback = document.querySelector('#formFeedback');
+
+                    try {
+                        _this.loadingOverlay.classList.remove('hidden');
+
+
+                        const response = await _this.renderer.fetchData('../controllers/send_message.php', {
+                            method: 'POST',
+                            body: formData
+                        })
+
+                        const result = typeof response === 'string' ? JSON.parse(response) : response;
+                        try {
+                            if (result.success) {
+                                formFeedback.textContent = 'Message sent successfully! Thank you for contacting us.';
+                                formFeedback.classList.add('text-green-500');
+                                form.reset();
+
+                                setTimeout(function() {
+                                    formFeedback.textContent = '';
+                                }, 3000)
+                            } else {
+                                formFeedback.textContent = 'Failed to send message. Please try again.';
+                                formFeedback.classList.add('text-red-500');
+
+                                setTimeout(function() {
+                                    formFeedback.textContent = '';
+                                }, 3000)
+                            }
+                        } catch (error) {
+                            console.error('Invalid JSON response:', result);
+                            formFeedback.textContent = 'An error occurred. Please try again.';
+                            formFeedback.classList.add('text-red-500');
+                        }
+
+                    } catch (error) {
+                        console.log(error);
+                        formFeedback.textContent = 'An error occurred. Please try again.';
+                        formFeedback.classList.add('text-red-500');
+                    } finally {
+                        _this.loadingOverlay.classList.add('hidden');
+                    }
+                })
+            }
+
+           if (this.editUserForm) {
+                const tagNameValue = document.querySelector('input[id="edit-tagname"]');
+
+                this.editUserForm.addEventListener('click', function(e) {
+                    if (e.target.closest('button[id^="cancel-"]')) {
+                        window.location.href = `../views/main.html.php?page=profile&tag_name=${tagNameValue.value}`;
+                    }
+                })
+
+                this.editUserForm.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        
+                        const formData = new FormData(_this.editUserForm);
+            
+                        // Define the desired order of social links
+                        const socialLinkOrder = ['Facebook', 'Github', 'LinkedIn'];
+            
+                        // Combine social_links into an object with keys as names
+                        const socialLinks = {};
+                        socialLinkOrder.forEach(key => {
+                            const value = formData.get(`social_links[${key}]`);
+                            socialLinks[key] = value || '';
+                        });
+            
+                        // Add the social_links object as a JSON string to FormData
+                        formData.set('social_links', JSON.stringify(socialLinks));
+            
+                        formData.set('currentURL', window.location.href);
+            
+                        // Debugging: Log the FormData contents
+                        for (const [key, value] of formData.entries()) {
+                            console.log(key, value);
+                        }
+
+                        try {
+                            _this.loadingOverlay.classList.remove('hidden');
+
+                            const response = await _this.renderer.fetchData('../controllers/edit_userinfo.php', {
+                                method: 'POST',
+                                body: formData
+                            })
+    
+                            if (response['user']) {
+                                window.location.href = `../views/main.html.php?page=profile&tag_name=${tagNameValue.value}`;
+                            }
+                        } catch (error) {
+                            console.error(error);
+                        } finally {
+                            _this.loadingOverlay.classList.add('hidden');
+                        }
+                })
             }
 
             if (this.historyContainer) {
@@ -1116,7 +1230,7 @@ class EventListener {
                                 _this.tagInput.classList.remove('hidden');
                                 tagWithType.forEach(tag => {
                                     const tagElement = document.createElement('option');
-                                    tagElement.classList.add('dark:text-gray-400', 'dark:bg-gray-900')
+                                    tagElement.classList.add('bg-transparent','text-text','dark:text-gray-400', 'dark:bg-gray-900')
                                     tagElement.value = `${tag.tag_name}`;
                                     tagElement.textContent = `${tag.tag_name}`;
                                     _this.tagList.appendChild(tagElement);
@@ -1244,6 +1358,10 @@ class EventListener {
 
                         _this.clearError('title')
                         _this.clearError('content')
+
+
+                        _this.loadingOverlay.classList.remove('hidden')
+
                         const newPost = await _this.renderer.fetchData('../controllers/add_newpost.php', {
                             method: 'POST',
                             body: formData
@@ -1254,6 +1372,8 @@ class EventListener {
                         window.location.href = `../views/main.html.php`;
                     } catch (error) {
                         console.log(error);
+                    } finally {
+                        _this.loadingOverlay.classList.add('hidden')
                     }
 
                 })
@@ -1277,9 +1397,10 @@ class EventListener {
 
     }
 
-    handleAdminEvents() {
+    async handleAdminEvents() {
         const _this = this;
         this.initAdminElements();
+        await this.initSessionData();
        
 
         if (this.backHomeBtn) {
@@ -1288,6 +1409,81 @@ class EventListener {
             });
         }
 
+        if (this.userContainer) {
+            const userLists = this.userContainer.querySelectorAll('tr');
+            userLists.forEach(user => {
+                const userActions = user.querySelector('#user-actions');
+                const userId = user.getAttribute('data-value');
+                userActions.addEventListener('click', function(e) {
+                    if (e.target.closest('span[class^="view-userbtn"]')) {
+                        const tagName = user.querySelector('span[class^="tagname"]').textContent;
+                        window.open(`main.html.php?page=profile&tag_name=${tagName.slice(1)}`, '_blank')
+                    } else if (e.target.closest('span[class^="edit-userbtn"]')) {
+                        _this.handleAdminEdit(userId);
+
+                        _this.editUserContainer.querySelector('#edit-title').textContent = `Edit User`
+                        _this.userManagement.classList.add('hidden');
+                        _this.editUserContainer.classList.remove('hidden');
+
+                        _this.handleUpdateUser(parseInt(userId))
+                    } else {
+                        _this.handleDeleteUser(userId);
+                    }
+                })
+            })
+        }
+
+        if (this.editUserContainer) {
+            this.editUserContainer.addEventListener('click', function(e) {
+                if (e.target.closest('button[id^="cancel-"]')) {
+                    _this.userManagement.classList.remove('hidden');
+                    _this.editUserContainer.classList.add('hidden');
+                }
+            })
+        }
+
+        // Admin search
+        if (this.userSearch) {
+            this.userSearch.addEventListener('input', function() {
+            const inputValue = _this.userSearch.value.trim().toLowerCase();
+            const statusFilter = document.querySelector('#status-filter').value.toLowerCase();
+            const roleFilter = document.querySelector('#role-filter').value.toLowerCase();
+
+            _this.userContainer.querySelectorAll('tr').forEach(user => {
+                const fullName = user.querySelector('span[class^="fullname"]').textContent.toLowerCase();
+                const status = user.querySelector('span[class^="user-status"]').textContent.toLowerCase();
+                const role = user.querySelector('td[class^="user-role"]').textContent.toLowerCase();
+
+                const matchesName = inputValue === '' || fullName.includes(inputValue);
+                const matchesStatus = statusFilter === 'all' || status === statusFilter;
+                const matchesRole = roleFilter === 'all' || role === roleFilter;
+
+                if (matchesName && matchesStatus && matchesRole) {
+                user.classList.remove('hidden');
+                } else {
+                user.classList.add('hidden');
+                }
+            });
+            });
+
+            // Add event listeners for status and role filters
+            const statusFilter = document.querySelector('#status-filter');
+            const roleFilter = document.querySelector('#role-filter');
+
+            if (statusFilter) {
+            statusFilter.addEventListener('change', function() {
+                _this.userSearch.dispatchEvent(new Event('input'));
+            });
+            }
+
+            if (roleFilter) {
+            roleFilter.addEventListener('change', function() {
+                _this.userSearch.dispatchEvent(new Event('input'));
+            });
+            }
+        }
+
+        // Add user button
         if (this.addUserBtn) {
             this.addUserBtn.addEventListener('click', function() {
                 _this.userManagement.classList.add('hidden');
@@ -1315,9 +1511,9 @@ class EventListener {
                 let isValid = true;
 
 
-                _this.validateRegister(_this.createUserForm, username, email, password, confirmPassword, isValid);
+                _this.validateRegister(_this.createUserForm, username, email, password, confirmPassword, firstName, lastName, tagName, isValid);
 
-                const validConditions = firstName || lastName || username || tagName || email || password || confirmPassword ;
+                const validConditions = firstName || lastName || username || tagName || email || password || confirmPassword;
 
                 if (validConditions) {
                     try {
@@ -1330,45 +1526,79 @@ class EventListener {
                         if (registerResult.errors) {
                             const errorObj = registerResult.errors;
                             if (errorObj.userExist || errorObj.userLength) {
-                                _this.step1Register.querySelector('input[id="username"]').classList.add('animate-turnErrorColor');
+                                _this.createUserForm.querySelector('input[id="username"]').classList.add('animate-turnErrorColor');
                                 _this.showError("username", `${errorObj.userExist || errorObj.userLength}`);
                             } else {
                                 _this.clearError("username");
                             }
 
                             if (errorObj.emailExist || errorObj.emailInvalid) {
-                                _this.step1Register.querySelector('input[id="email"]').classList.add('animate-turnErrorColor');
+                                _this.createUserForm.querySelector('input[id="email"]').classList.add('animate-turnErrorColor');
                                 _this.showError("email", `${errorObj.emailExist || errorObj.emailInvalid}`);
                             } else {
                                 _this.clearError("email");
                             }
 
                             if (errorObj.passwordLength) {
-                                _this.step1Register.querySelector('input[id="password"]').classList.add('animate-turnErrorColor');
+                                _this.createUserForm.querySelector('input[id="password"]').classList.add('animate-turnErrorColor');
                                 _this.showError("password", `${errorObj.passwordLength}`);
                             } else {
                                 _this.clearError("password");
                             }
 
                             if (errorObj.confirm_password) {
-                                _this.step1Register.querySelector('input[id="confirm-password"]').classList.add('animate-turnErrorColor');
+                                _this.createUserForm.querySelector('input[id="confirm-password"]').classList.add('animate-turnErrorColor');
                                 _this.showError("confirm-password", `${errorObj.confirm_password}`);
                             } else {
                                 _this.clearError("confirm-password");
                             }
+
+                            if (tagName != '') {
+                                try {
+                                    const tagCheckResult = await _this.renderer.fetchData('../controllers/check_tagname.php', {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ tagName: tagName })
+                                    });
+                            
+                                    if (tagCheckResult.exists) {
+                                        _this.createUserForm.querySelector('input[id="tagname"]').classList.add('animate-turnErrorColor');
+                                        _this.showError("tagname", "Tag name is already taken.");
+                                        isValid = false;
+                                    } else {
+                                        _this.createUserForm.querySelector('input[id="tagname"]').classList.remove('animate-turnErrorColor');
+                                        _this.clearError("tagname");
+                                    }
+                                } catch (error) {
+                                console.error('Error checking tag name:', error);
+                                isValid = false;
+                                }
+                            }
                             isValid = false;
                         } else {
+                            if (isValid) {
+                                try {
+                                    const registerResult = await _this.renderer.fetchData('../controllers/register.php', {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ firstName: firstName, lastName: lastName, username: username, tagName: tagName, email: email, password: password })
+                                    });
                             
+                                    if (registerResult.error) {
+                                        console.log(registerResult.error);
+                                    } else {
+                                        window.location.href = '../views/main.html.php?page=admin';
+                                    }
+                                } catch (error) {
+                                    console.error('Error registering user:', error);
+                                }
+                            }
                         }
                     } catch (error) {
                         console.error('Error validating form:', error);
                     }
                 } else {
-                    if (_this.toastMessage.classList.contains('animate-toastSlide')) {
-                        return;
-                    } else { 
-                        _this.showToastMessage('Please fill out all information!', 'top-8', '-right-2');
-                    }
+                    _this.showToastMessage('Please fill out all information!', 'top-8', '-right-2');
                 }
                 
             });
@@ -1381,6 +1611,7 @@ class EventListener {
         
     }
 
+    // User functions
     async handleSavedPosts(postId, savedImage) {
         try {
             const savedPosts = await this.renderer.fetchData('../controllers/handle_savedpost.php' ,{
@@ -1624,10 +1855,10 @@ class EventListener {
                             <img src="${comment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
                             <div id="comment-information">
                                 <div class="flex items-center space-x-2">
-                                    <h2 class="font-medium text-md dark:text-white">${comment.fullname}</h2>
+                                    <h2 class="text-text font-medium text-md dark:text-white">${comment.fullname}</h2>
                                     <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(comment.created_at)}</span>
                                 </div>
-                                <p class="comment-content-${comment.comment_id} text-sm dark:text-gray-400">${comment.content}</p>
+                                <p class="comment-content-${comment.comment_id} text-text text-sm dark:text-gray-400">${comment.content}</p>
                             </div>
                         `;
 
@@ -1635,7 +1866,7 @@ class EventListener {
                             const actionButton = document.createElement('div')
                             actionButton.classList.add('flex', 'text-3xl', 'font-light', 'dark:text-gray-400', 'ml-auto', 'my-auto', 'text-center', 'space-x-2');
                             actionButton.innerHTML = `
-                                <span class="edit-comment-btn material-symbols-rounded custom-icon text-center rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-900 cursor-pointer active:scale-90">
+                                <span class="edit-comment-btn material-symbols-rounded custom-icon text-text text-center rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-900 dark:text-gray-400 cursor-pointer active:scale-90">
                                     edit
                                 </span>
                                 <span class="delete-comment-btn material-symbols-rounded custom-icon text-center rounded-full p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-200 cursor-pointer active:scale-90">
@@ -1697,7 +1928,7 @@ class EventListener {
             }, 3000);
         } else {
             const toast = document.createElement('div');
-            toast.classList.add('fixed', x, y, 'z-50', 'flex', 'items-center', 'w-full', 'max-w-xs', 'p-4', 'text-text', 'dark:bg-gray-800', 'border-2', 'border-[#3ea29a]', 'bg-white', 'animate-toastSlide');
+            toast.classList.add('fixed', x, y, 'z-60', 'flex', 'items-center', 'w-full', 'max-w-xs', 'p-4', 'text-text', 'dark:bg-gray-800', 'border-2', 'border-[#3ea29a]', 'bg-white', 'animate-toastSlide');
             toast.id = 'toast';
             toast.innerHTML = `
                 <div class="inline-flex items-center justify-center text-3xl shrink-0 w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200">
@@ -1740,7 +1971,7 @@ class EventListener {
         }
     }
 
-    validateRegister(form, username, email, password, confirmPassword, isValid) {
+    validateRegister(form, username, email, password, confirmPassword, firstName = null, lastName = null, tagName = null, isValid) {
         if (username === "") {
             form.querySelector('input[id="username"]').classList.add('animate-turnErrorColor');
             isValid = false;
@@ -1767,6 +1998,33 @@ class EventListener {
             isValid = false;
         } else {
             form.querySelector('input[id="confirm-password"]').classList.remove('animate-turnErrorColor');
+        }
+
+        if (this.currentURL.includes('admin')) {
+            if (firstName == "") {
+                form.querySelector('input[id="first-name"]').classList.add('animate-turnErrorColor');
+                this.showError("first-name", "First name is required.");
+                isValid = false;
+            } else {
+                form.querySelector('input[id="first-name"]').classList.remove('animate-turnErrorColor');
+                this.clearError('first-name')
+            }
+    
+            if (lastName == "") {
+                form.querySelector('input[id="last-name"]').classList.add('animate-turnErrorColor');
+                this.showError("last-name", "Last name is required.");
+                isValid = false;
+            } else {
+                form.querySelector('input[id="last-name"]').classList.remove('animate-turnErrorColor');
+                this.clearError("last-name");
+            }
+        
+            // Validation for tagName
+            if (tagName == "") {
+                form.querySelector('input[id="tagname"]').classList.add('animate-turnErrorColor');
+                this.showError("tagname", "Tag name is required.");
+                isValid = false;
+            }
         }
     }
 
@@ -1802,7 +2060,7 @@ class EventListener {
                     </div>
                 </div>
                 <div class="mt-1 p-2 px-4">
-                    <input type="text" name="followInput" id="follow-input" placeholder="Search users" class="border-1 w-full px-4 rounded-md h-8 dark:border-gray-600 focus:outline-0 dark:text-gray-400">
+                    <input type="text" name="followInput" id="follow-input" placeholder="Search users..." class="bg-transparent border-1 w-full px-4 rounded-md h-8 dark:border-gray-600 focus:outline-0 dark:text-gray-400">
                 </div>
 
                 <div id="follow-container" class="p-2 px-4 space-y-2 overflow-y-auto rounded-lg h-50 scroll">
@@ -1878,7 +2136,7 @@ class EventListener {
                     </div>
                 </div>
                 <div class="mt-1 p-2 px-4">
-                    <input type="text" name="followInput" id="follow-input" placeholder="Search" class="border-1 w-full px-4 rounded-md h-8 dark:border-gray-600 focus:outline-0 dark:text-gray-400">
+                    <input type="text" name="followInput" id="follow-input" placeholder="Search users..." class="bg-transparent border-1 w-full px-4 rounded-md h-8 dark:border-gray-600 focus:outline-0 dark:text-gray-400">
                 </div>
 
                 <div id="follow-container" class="p-2 px-4 space-y-4 overflow-y-auto rounded-lg h-50 scroll">
@@ -1994,7 +2252,6 @@ class EventListener {
         }
     }
 
-    
     sendNotification(userId, username, avatar, senderId, type, message, content, url, createdTime) {
         const conditions = userId && senderId && type && message && url && createdTime;
         if (conditions) {
@@ -2054,6 +2311,99 @@ class EventListener {
             newBadge.classList.add('absolute', 'text-xs', '-top-1', '-right-1', 'px-2', 'bg-red-500', 'rounded-full', 'text-white');
             newBadge.textContent = '1';
             this.notifyBtn.appendChild(newBadge);
+        }
+    }
+
+
+    // Admin functions
+
+    // Render user info for editing
+    async handleAdminEdit(userId) {
+        
+        try {
+            const editUserInfo = await this.renderer.fetchData(`../controllers/admin/get_edituser.php`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    userId: userId
+                })
+            });
+            this.renderer.renderEditUser(editUserInfo);
+
+
+        } catch (error) {
+            console.error('Error loading data:', error);
+        }
+    }
+
+    handleUpdateUser(userId) {
+        const _this = this;
+        this.adminEditForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const loadingOverlay = document.querySelector('#loading-overlay');
+
+            
+
+            const formData = new FormData(_this.adminEditForm);
+
+            // Define the desired order of social links
+            const socialLinkOrder = ['Facebook', 'Github', 'LinkedIn'];
+
+            // Combine social_links into an object with keys as names
+            const socialLinks = {};
+            socialLinkOrder.forEach(key => {
+                const value = formData.get(`social_links[${key}]`);
+                socialLinks[key] = value || ''; // Default to an empty string if the value is missing
+            });
+
+            // Add the social_links object as a JSON string to FormData
+            formData.set('social_links', JSON.stringify(socialLinks));
+
+            // Add userId and currentURL to FormData
+            formData.set('userId', userId);
+            formData.set('currentURL', window.location.href);
+
+            // Debugging: Log the FormData contents
+            for (const [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+            
+            try {
+                loadingOverlay.classList.remove('hidden');
+
+                const response = await _this.renderer.fetchData('../controllers/edit_userinfo.php', {
+                    method: 'POST',
+                    body: formData
+                })
+
+                if (response['admin']) {
+                    location.reload();
+                }
+            } catch (error) {
+                console.error(error)
+            } finally {
+                loadingOverlay.classList.add('hidden')
+
+                
+            }
+
+            
+        })
+    }
+
+    async handleDeleteUser(userId) {
+        const response = await this.renderer.fetchData('../controllers/admin/delete_users.php', {
+            method: "POST",
+            headers: { "Content-Type" : "application/json" },
+            body: JSON.stringify({
+                userId: userId
+            })
+        })
+
+        if (response['admin']) {
+            location.reload();
         }
     }
     

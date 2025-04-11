@@ -1,7 +1,7 @@
 <header class="font-poppins fixed top-0 w-full flex justify-between items-center z-60 p-3 shadow-lg bg-white dark:bg-gray-900  border-b border-gray-400 dark:border-gray-700">
     <div class="hidden md:flex items-center px-3 pt-3 pb-2">
         <img loading="lazy" src="../assets/images/weblogo.png" alt="" class="-mt-4 -mb-4 -ml-4 h-20">
-        <span class="text-sm md:text-lg font-semibold  dark:text-white ">Knowledge Nexus</span>
+        <span class="text-black text-sm md:text-lg font-semibold  dark:text-white ">Knowledge Nexus</span>
     </div>
 
     <button id="openMenu" class="text-3xl rounded-lg hover-bg-gray-100 md:hidden p-2 dark:text-gray-400">
@@ -11,11 +11,11 @@
     </button>
 
     <div class="relative group flex-1 md:mx-4 2xl:mx-8">
-        <div class="text-3xl font-light dark:text-gray-400">
+        <div class="text-black text-3xl font-light dark:text-gray-400">
             <span class="material-symbols-rounded custom-icon absolute right-4 top-1/6">search</span>
         </div>
         <div class="relative">
-            <input type="text" name="searchInput" id="searchInput" class="text-black border-1 text-lg rounded-lg h-10 pl-3 border-secondary w-full flex-1 e dark:text-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search question..." autocomplete="off">
+            <input type="text" name="searchInput" id="searchInput" class="bg-transparent text-black border-1 text-lg rounded-lg h-10 pl-3 border-secondary w-full flex-1 e dark:text-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search question..." autocomplete="off">
             <div id="searchSuggestions" class="absolute bg-white border border-gray-200 rounded-lg shadow-lg px-4 py-2 mt-1 w-full hidden group-focus:block">
 
             </div>
@@ -24,7 +24,7 @@
 
     <div class="flex items-center space-x-4">
         <button class="relative group">
-            <div id="notify-btn" class="relative text-3xl font-light dark:text-gray-400 hover:bg-gray-200 p-2 rounded-full active:scale-90">
+            <div id="notify-btn" class="text-black relative text-3xl font-light dark:text-gray-400 hover:bg-gray-200 p-2 rounded-full active:scale-90 dark:hover:bg-gray-700">
                 <span class="material-symbols-rounded custom-icon">notifications</span>
 
             </div>
@@ -45,13 +45,13 @@
         </button>
         <button class="relative group">
             <img id="user-btn" loading="lazy" src="<?= isset($_SESSION['avatarURL']) ? $_SESSION["avatarURL"] : '../assets/images/user.png'; ?>" alt="" class="h-10 rounded-full">
-            <div id="users-popup" class="absolute bg-white border-1 rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-64 z-70 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:border-gray-600">
-                <a href="main.html.php?page=profile&tag_name=<?= $_SESSION['tag_name'] ?>" class="flex items-center rounded-md text-3xl font-light space-x-4 p-3 hover:bg-gray-200 cursor-pointer dark:text-gray-400">
+            <div id="users-popup" class="text-text absolute bg-white border-1 rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-64 z-70 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:border-gray-600">
+                <a href="main.html.php?page=profile&tag_name=<?= $_SESSION['tag_name'] ?>" class="text-text flex items-center rounded-md text-3xl font-light space-x-4 p-3 hover:bg-gray-200 cursor-pointer dark:text-gray-400">
                     <span class="material-symbols-rounded custom-icon">account_circle</span>
                     <span class="text-lg font-normal">Profile</span>
                 </a>
 
-                <a href="../controllers/logout.php" class="flex items-center rounded-md text-3xl font-light space-x-4 p-3 hover:bg-gray-200 cursor-pointer dark:text-gray-400">
+                <a href="../controllers/logout.php" class="text-text flex items-center rounded-md text-3xl font-light space-x-4 p-3 hover:bg-gray-200 cursor-pointer dark:text-gray-400">
                     <span class="material-symbols-rounded custom-icon">logout</span>
                     <span class="text-lg font-normal">Logout</span>
                 </a>

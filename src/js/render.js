@@ -4,6 +4,7 @@ class QuestionRenderer {
         this.container = document.querySelector(containerId);
         this.filterContainer = document.querySelector(filterId);
         this.userId = userId;
+        this.currentURL = window.location.href;
     }
 
     async fetchData(url, options = {}) {
@@ -38,13 +39,13 @@ class QuestionRenderer {
                 const questionElement = document.createElement('div');
                 questionElement.id = `ques-${post.post_id}`;
                 questionElement.setAttribute('data-value', `${post.post_id}`);
-                questionElement.classList.add('font-poppins','mt-2', 'border-2', 'p-4', 'rounded-md', 'border-gray-200', 'hover:border-black', 'cursor-pointer', 'dark:border-gray-700', 'dark:hover:border-gray-500', 'dark:bg-gray-800', 'animate-postScale');
+                questionElement.classList.add('bg-transparent','font-poppins','mt-2', 'border-2', 'p-4', 'rounded-md', 'border-gray-200', 'hover:border-black', 'cursor-pointer', 'dark:border-gray-700', 'dark:hover:border-gray-500', 'dark:bg-gray-800', 'animate-postScale');
                 questionElement.innerHTML = `
                     <div class="flex flex-col">
                         <input type="hidden" name="post_id" value="${post.post_id}">
                         <div class="flex justify-between items-center">
                             <span data-module="${post.module_id}" class="w-fit module-name rounded-full text-xs ${post.bg_class} ${post.text_class} px-2 font-medium">${post.module_name}</span>
-                            <div class="relative group rounded-md text-4xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600">
+                            <div class="text-text relative group rounded-md text-4xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600">
                                 <span id="post-actions" class="material-symbols-rounded custom-icon more-icon active:scale-90">
                                     more_horiz
                                 </span>
@@ -56,7 +57,7 @@ class QuestionRenderer {
                                 </div>
                             </div>
                         </div>
-                        <h2 class="question-title mt-3 font-bold text-lg w-56 h-20 dark:text-white">${post.post_title}</h2>
+                        <h2 class="text-black question-title mt-3 font-bold text-lg w-56 h-20 dark:text-white">${post.post_title}</h2>
                         <p class="mt-3 text-text-light text-sm dark:text-gray-400 font-medium line-clamp-1">${post.post_content}</p>
                         <div>
                             <div class="mt-3 rounded-md">
@@ -81,33 +82,33 @@ class QuestionRenderer {
                                             </div>
                                         </div>
                                     </div>
-                                    <span class="text-xs dark:text-gray-400">${post.username}</span>
-                                    <span class="text-xs dark:text-gray-400">${this.timeAgo(post.created_at)}</span>
+                                    <span class="text-black text-xs dark:text-gray-400">${post.username}</span>
+                                    <span class="text-black text-xs dark:text-gray-400">${this.timeAgo(post.created_at)}</span>
                                 </div>
                                 <div id="tags-container-${post.post_id}" class="flex items-center space-x-2 text-sm"></div>
                             </div>
                             <div class="flex justify-between items-center mt-3">
-                                <div class="flex justify-between w-fit border-1 border-gray-400 dark:border-gray-700 rounded-md">
-                                    <button id="likes-btn" class="flex items-center space-x-1 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
+                                <div class="border-black flex justify-between w-fit border-1 dark:border-gray-700 rounded-md">
+                                    <button id="likes-btn" class="text-black flex items-center space-x-1 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
                                         <span class="material-symbols-rounded custom-icon like-img">
                                             thumb_up
                                         </span>
-                                        <span class="like-count-${post.post_id} text-lg" data-post-id="${post.post_id}"></span>
+                                        <span class="like-count-${post.post_id} text-lg font-normal" data-post-id="${post.post_id}"></span>
                                     </button>
-                                    <button id="comment-btn" class="flex items-center space-x-2 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
+                                    <button id="comment-btn" class="text-black flex items-center space-x-2 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
                                         <span class="material-symbols-rounded custom-icon">
                                             comment
                                         </span>
-                                        <span class="comment-count-${post.post_id} text-lg" data-post-id="${post.post_id}"></span>
+                                        <span class="comment-count-${post.post_id} text-lg font-normal" data-post-id="${post.post_id}"></span>
                                     </button>
                                 </div>
                                 <div class="flex items-center space-x-2 ">
-                                    <button id="save-btn" class="rounded-md text-4xl p-1 font-light hover:bg-gray-300 dark:text-gray-400 dark:hover:bg-gray-600 transition-all">
+                                    <button id="save-btn" class="text-black rounded-md text-4xl p-1 font-light hover:bg-gray-300 dark:text-gray-400 dark:hover:bg-gray-600 transition-all">
                                         <span class="material-symbols-rounded custom-icon saved-img">
                                             bookmark
                                         </span>
                                     </button>
-                                    <button id="link-btn" class="rounded-md text-4xl p-1 font-light hover:bg-gray-300 dark:text-gray-400 dark:hover:bg-gray-600 transition-all">
+                                    <button id="link-btn" class="text-black rounded-md text-4xl p-1 font-light hover:bg-gray-300 dark:text-gray-400 dark:hover:bg-gray-600 transition-all">
                                         <span class="material-symbols-rounded custom-icon">
                                             link
                                         </span>
@@ -336,24 +337,24 @@ class QuestionRenderer {
             const formattedDate = userJoinedTime.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
             questionElement.id = `ques-${question.post_id}`;
             questionElement.setAttribute('data-value', `${question.post_id}`);
-            questionElement.classList.add('mt-2', 'border-1', 'p-4', 'h-fit' , 'rounded-md', 'border-gray-200', 'hover:border-black', 'cursor-pointer', 'dark:border-gray-700', 'dark:hover:border-gray-500', 'dark:bg-gray-800');
+            questionElement.classList.add('bg-transparent','mt-2', 'border-1', 'p-4', 'h-fit' , 'rounded-md', 'border-gray-200', 'hover:border-black', 'cursor-pointer', 'dark:border-gray-700', 'dark:hover:border-gray-500', 'dark:bg-gray-800');
             questionElement.innerHTML = `
                 <div class="flex flex-col">
                     <input type="hidden" name="post_id" value="${question.post_id}">
                     <div class="flex justify-between items-center">
                         <span data-module="${question.module_id}" class="font-semibold w-fit module-name rounded-full text-xs ${question.bg_class} ${question.text_class} px-2">${question.module_name}</span>
-                        <div class="relative group rounded-md text-4xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600">
+                        <div class="text-black relative group rounded-md text-4xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600">
                             <span id="post-actions" class="material-symbols-rounded custom-icon more-icon active:scale-90">
                                 more_horiz
                             </span>
-                            <div id="action-popup" class="absolute bg-white rounded-md top-12 shadow-[0px_0px_5px_-1px] right-0 w-40 hidden before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:text-gray-400 dark:shadow-none">
+                            <div id="action-popup" class="absolute bg-white text-black font-normal rounded-md top-12 shadow-[0px_0px_5px_-1px] right-0 w-40 hidden before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:text-gray-400 dark:shadow-none">
                                 <button type="button" id="view-btn" class="flex w-full items-center rounded-md space-x-4 p-3 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer">
                                     <span class="text-lg">View Details</span>
                                 </button> 
                             </div>
                         </div>
                     </div>
-                    <h2 class="mt-3 font-bold text-lg w-56 h-16 line-clamp-2 dark:text-white">${question.post_title}</h2>
+                    <h2 class="text-black mt-3 font-bold text-lg w-56 h-16 line-clamp-2 dark:text-white">${question.post_title}</h2>
                     <p class="font-roboto mt-3 text-md text-text font-normal line-clamp-1 dark:text-gray-400">${question.post_content}</p>
                     <div>
                         <div class="mt-3 rounded-md">
@@ -379,34 +380,34 @@ class QuestionRenderer {
                                             </div>
                                         </div>
                                     </div>
-                                    <span class="text-xs dark:text-gray-400">${question.username}</span>
+                                    <span class="text-black text-xs dark:text-gray-400">${question.username}</span>
                                 </div>
-                                <span class="text-xs dark:text-gray-400">${this.timeAgo(question.created_at)}</span>
+                                <span class="text-black text-xs dark:text-gray-400">${this.timeAgo(question.created_at)}</span>
                             </div>
                             <div id="tags-container-${question.post_id}" class="flex items-center capitalize space-x-2 text-sm"></div>
                         </div>
                         <div class="flex justify-between items-center mt-3">
-                            <div class="flex justify-between w-fit border-1 border-gray-400 dark:border-gray-700 rounded-md">
-                                <button id="likes-btn" class="flex items-center space-x-1 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
+                            <div class="border-black flex justify-between w-fit border-1 dark:border-gray-700 rounded-md">
+                                <button id="likes-btn" class="text-black flex items-center space-x-1 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600 w-full transition-all">
                                     <span class="material-symbols-rounded custom-icon like-img">
                                         thumb_up
                                     </span>
-                                    <span class="like-count-${question.post_id} text-lg" data-post-id="${question.post_id}">$</span>
+                                    <span class="like-count-${question.post_id} text-lg font-normal" data-post-id="${question.post_id}">$</span>
                                 </button>
-                                <button id="comment-btn" class="flex items-center space-x-2 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
+                                <button id="comment-btn" class="text-black flex items-center space-x-2 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600 w-full transition-all">
                                     <span class="material-symbols-rounded custom-icon ">
                                         comment
                                     </span>
-                                    <span class="comment-count-${question.post_id} text-lg" data-post-id="${question.post_id}">$</span>
+                                    <span class="comment-count-${question.post_id} text-lg font-normal" data-post-id="${question.post_id}">$</span>
                                 </button>
                             </div>
                             <div class="flex items-center space-x-2 ">
-                                <button id="save-btn" class="rounded-md text-4xl p-1 font-light hover:bg-gray-300 dark:text-gray-400 dark:hover:bg-gray-600 transition-all">
+                                <button id="save-btn" class="text-black rounded-md text-4xl p-1 font-light hover:bg-gray-300 dark:text-gray-400 dark:hover:bg-gray-600 transition-all">
                                     <span class="material-symbols-rounded custom-icon saved-img">
                                         bookmark
                                     </span>
                                 </button>
-                                <button id="link-btn" class="rounded-md text-4xl p-1 font-light hover:bg-gray-300 dark:text-gray-400 dark:hover:bg-gray-600 transition-all">
+                                <button id="link-btn" class="text-black rounded-md text-4xl p-1 font-light hover:bg-gray-300 dark:text-gray-400 dark:hover:bg-gray-600 transition-all">
                                     <span class="material-symbols-rounded custom-icon">
                                         link
                                     </span>
@@ -688,7 +689,7 @@ class QuestionRenderer {
 
         modules.forEach(module => {
             const option = document.createElement('option');
-            option.classList.add('dark:bg-gray-800')
+            option.classList.add('bg-white', 'text-black' ,'dark:text-gray-400','dark:bg-gray-800')
             option.value = `${module.module_id}`;
             option.textContent = `${module.module_name}`;
             this.filterContainer.appendChild(option);
@@ -704,7 +705,7 @@ class QuestionRenderer {
             profileContainer.innerHTML = `<p class="text-red-500">${data.error}</p>`;
         } else {
             const username = document.querySelector('#username');
-            username.classList.add('dark:text-white');
+            username.classList.add('text-text', 'dark:text-white');
             username.textContent = data.fullname;
             document.querySelector('#user-img').src = data.avatar ?? '../assets/images/user.png';
 
@@ -723,20 +724,20 @@ class QuestionRenderer {
                     <span class="text-text-light font-medium dark:text-gray-400">Joined ${formattedDate}</span>
                 </div>
                 <div class="flex space-x-2">
-                    <div id="follower-btn" class="cursor-pointer active:scale-90">
-                        <span id="follower-count" class="dark:text-white">0</span>
-                        <span class="text-text dark:text-gray-400">Followers</span>
+                    <div id="follower-btn" class="text-text cursor-pointer active:scale-90">
+                        <span id="follower-count" class="text-text dark:text-white">0</span>
+                        <span class="text-text-light dark:text-gray-400">Followers</span>
                     </div>
                     <div id="following-btn" class="cursor-pointer active:scale-90">
-                        <span id="following-count" class="dark:text-white">0</span>
-                        <span class="text-text dark:text-gray-400">Following</span>
+                        <span id="following-count" class="text-text dark:text-white">0</span>
+                        <span class="text-text-light dark:text-gray-400">Following</span>
                     </div>
                 </div>
                 <div>
-                    <span id="view-count" class="dark:text-white">0</span>
-                    <span class="text-text dark:text-gray-400">Views</span>
-                    <span id="like-count" class="dark:text-white">0</span>
-                    <span class="text-text dark:text-gray-400">Likes</span>
+                    <span id="view-count" class="text-text dark:text-white">0</span>
+                    <span class="text-text-light dark:text-gray-400">Views</span>
+                    <span id="like-count" class="text-text dark:text-white">0</span>
+                    <span class="text-text-light dark:text-gray-400">Likes</span>
                 </div>
             `;
 
@@ -761,7 +762,7 @@ class QuestionRenderer {
                 if (link.url && link.platform) {
                     socialElement.href = link.url;
                     socialElement.target = '_blank';
-                    socialElement.classList.add('border-1', 'border-secondary', 'rounded-xl', 'px-4', 'py-1', 'font-semibold', 'dark:border-gray-600', 'dark:text-gray-400');
+                    socialElement.classList.add('text-text','border-1', 'border-secondary', 'rounded-xl', 'px-4', 'py-1', 'font-semibold', 'dark:border-gray-600', 'dark:text-gray-400');
                     socialElement.textContent = `@${link.platform}`;
                     socialContainer.appendChild(socialElement);
                 } else {
@@ -770,7 +771,7 @@ class QuestionRenderer {
             });
 
             const bioContext = document.createElement('span');
-            bioContext.classList.add('font-semibold', 'text-text-light');
+            bioContext.classList.add('font-semibold', 'text-text-light', 'dark:text-gray-400');
             bioContext.textContent = data.bio ?? '';
 
             bioContainer.appendChild(bioContext);
@@ -790,23 +791,23 @@ class QuestionRenderer {
                 if (myPost.user_id == userId) {
                     hasPosts = true;
                     const mypostElements = document.createElement('div');
-                    mypostElements.classList.add('flex', 'items-center', 'justify-between', 'border-2', 'border-secondary', 'mt-2', 'p-4', 'rounded-lg', 'w-full', 'hover:border-black', 'cursor-pointer', 'animate-slideRight', 'transition-all', 'dark:border-gray-700', 'dark:hover:border-gray-500', 'dark:bg-gray-800');
+                    mypostElements.classList.add('bg-transparent','flex', 'items-center', 'justify-between', 'border-1', 'border-secondary', 'mt-2', 'p-4', 'rounded-lg', 'w-full', 'hover:border-black', 'cursor-pointer', 'animate-slideRight', 'transition-all', 'dark:border-gray-700', 'dark:hover:border-gray-500', 'dark:bg-gray-800');
                     mypostElements.innerHTML = `
                         <div class="space-y-2 w-1/2">
-                            <h2 class="font-semibold text-xl line-clamp-2 dark:text-white">${myPost.post_title}</h2>
+                            <h2 class="text-black font-semibold text-xl line-clamp-2 dark:text-white">${myPost.post_title}</h2>
                             <p class="text-sm text-text-light font-medium line-clamp-3 break-words">${myPost.post_content}</p>
-                            <div class="flex justify-between w-fit border-1 border-gray-400 dark:border-gray-700 rounded-md">
-                                <button id="likes-btn" class="flex items-center space-x-1 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
+                            <div class="flex justify-between w-fit border-1 border-black dark:border-gray-700 rounded-md">
+                                <button id="likes-btn" class="text-black flex items-center space-x-1 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
                                     <span class="material-symbols-rounded custom-icon like-img">
                                         thumb_up
                                     </span>
-                                    <span class="like-count-${myPost.post_id} text-lg" data-post-id="${myPost.post_id}"></span>
+                                    <span class="like-count-${myPost.post_id} text-lg font-normal" data-post-id="${myPost.post_id}"></span>
                                 </button>
-                                <button id="comment-btn" class="flex items-center space-x-2 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
+                                <button id="comment-btn" class="text-black flex items-center space-x-2 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
                                     <span class="material-symbols-rounded custom-icon">
                                         comment
                                     </span>
-                                    <span class="comment-count-${myPost.post_id} text-lg" data-post-id="${myPost.post_id}"></span>
+                                    <span class="comment-count-${myPost.post_id} text-lg font-normal" data-post-id="${myPost.post_id}"></span>
                                 </button>
                             </div>
                         </div>
@@ -884,34 +885,35 @@ class QuestionRenderer {
         imageInput.insertBefore(imageElements, imageChildren);
 
         accountInput.innerHTML = `
-            <div class="relative flex items-center text-3xl font-light dark:text-gray-400 2xl:w-1/3">
+            <div class="text-text relative flex items-center text-3xl font-light dark:text-gray-400 2xl:w-1/3">
                 <span class="material-symbols-rounded custom-icon absolute top-1/5 left-4">
                     badge
                 </span>
-                <input type="text" name="firstnameValue" id="" class="border-1 border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your firstname" value="${userInfo.first_name}">
+                <input type="text" name="firstnameValue" id="edit-firstname" class="bg-transparent border-1 text-text border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your firstname" value="${userInfo.first_name}">
             </div>
-            <div class="relative flex items-center text-3xl font-light dark:text-gray-400 2xl:w-1/3">
+            <div class="text-text relative flex items-center text-3xl font-light dark:text-gray-400 2xl:w-1/3">
                 <span class="material-symbols-rounded custom-icon absolute top-1/5 left-4">
                     badge
                 </span>
-                <input type="text" name="lastnameValue" id="" class="border-1 border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your lastname" value="${userInfo.last_name}">
+                <input type="text" name="lastnameValue" id="edit-lastname" class="bg-transparent border-1 text-text border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your lastname" value="${userInfo.last_name}">
             </div>
-            <div class="relative flex items-center text-3xl font-light dark:text-gray-400 2xl:w-1/3">
+            <div class="text-text relative flex items-center text-3xl font-light dark:text-gray-400 2xl:w-1/3">
                 <span class="material-symbols-rounded custom-icon absolute top-1/5 left-4">
                     alternate_email
                 </span>
-                <input type="text" name="tagnameValue" id="" class="border-1 border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your tagname" value="${userInfo.tag_name ?? ''}">
+                <input type="text" name="tagnameValue" id="edit-tagname" class="bg-transparent border-1 text-text border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your tagname" value="${userInfo.tag_name ?? ''}">
             </div>
-            <div class="relative flex items-center text-3xl font-light dark:text-gray-400 2xl:w-1/3">
+            <div class="text-text relative flex items-center text-3xl font-light dark:text-gray-400 2xl:w-1/3">
                 <span class="material-symbols-rounded custom-icon absolute top-1/5 left-4">
                     mail
                 </span>
-                <input type="text" name="emailValue" id="" class="border-1 border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your email" value="${userInfo.email ?? ''}">
+                <input type="text" name="emailValue" id="edit-email" class="bg-transparent border-1 text-text border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your email" value="${userInfo.email ?? ''}">
             </div>
         `;
 
         const bioElement = document.createElement('textarea');
         bioElement.name = 'bioValue';
+        bioElement.id = 'edit-bio';
         bioElement.placeholder = 'Your bio...';
         bioElement.cols = '40';
         bioElement.rows = '8';
@@ -924,6 +926,21 @@ class QuestionRenderer {
         userInfo.socialLinks.forEach(link => {
             socialInput.querySelector(`input[id="${link.platform}"]`).value = `${link.url ?? ''}`;
         })
+
+        if (this.currentURL.includes('admin')) {
+            accountInput.querySelector('#edit-firstname').setAttribute('placeholder', 'First name');
+            accountInput.querySelector('#edit-firstname').classList.add('bg-transparent');
+            accountInput.querySelector('#edit-lastname').setAttribute('placeholder', 'Last name');
+            accountInput.querySelector('#edit-lastname').classList.add('bg-transparent');
+            accountInput.querySelector('#edit-tagname').setAttribute('placeholder', 'Tag name');
+            accountInput.querySelector('#edit-tagname').classList.add('bg-transparent');
+            accountInput.querySelector('#edit-email').setAttribute('placeholder', 'Email address');
+            accountInput.querySelector('#edit-email').classList.add('bg-transparent');
+            bioInput.querySelector('#edit-bio').setAttribute('placeholder', 'Bio...');
+            socialInput.querySelector('#Facebook').setAttribute('placeholder', 'Facebook link...');
+            socialInput.querySelector('#Github').setAttribute('placeholder', 'Github link...');
+            socialInput.querySelector('#LinkedIn').setAttribute('placeholder', 'LinkedIn link...');
+        }
     }
 
     async renderPostDetail(post, userId) {
@@ -967,13 +984,13 @@ class QuestionRenderer {
         selectElement.innerHTML = `
             <img src="../assets/images/dots.png" class="h-10 ${post.user_id == userId ? 'block' : 'hidden'} hover:bg-gray-300 p-2 rounded-full">
 
-            <div class="absolute bg-white rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 z-10 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent">
-                <button type="button" id="edit-btn"  class="flex items-center w-full space-x-4 p-3 hover:bg-gray-200 cursor-pointer">
-                    <span>Edit</span>
+            <div class="absolute bg-white rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-40 z-10 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-700">
+                <button type="button" id="edit-btn"  class="flex items-center rounded-md w-full space-x-4 p-3 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-600">
+                    <span class="text-text dark:text-gray-400">Edit</span>
                 </button>
                 <form action="../controllers/deletepost.php" method="post" class="${post.user_id == userId ? 'block' : 'hidden'} ">
                     <input type="hidden" name="post_id" value="${post.post_id}">
-                    <input type="submit" value="Delete" class="space-x-4 p-3 text-left cursor-pointer hover:bg-gray-200 text-red-400 w-full">
+                    <input type="submit" value="Delete" class="space-x-4 p-3 text-left rounded-md cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 text-red-400 w-full">
                 </form>
             </div>
         
@@ -1023,7 +1040,7 @@ class QuestionRenderer {
                     const existingTags = tagContainer.querySelectorAll('span');
                     if (existingTags.length === 0) {
                         const tagElement = document.createElement('span');
-                        tagElement.classList.add('bg-tags', 'p-1', 'rounded-md');
+                        tagElement.classList.add('bg-tags', 'bg-gray-300', 'p-1','text-black' , 'rounded-md', 'dark:bg-transparent', 'dark:text-gray-400', 'dark:border-1', 'dark:border-1' ,'dark:border-gray-500');
                         tagElement.textContent = `#${tag.tag_name}`;
                         tagContainer.appendChild(tagElement);
                     } else {
@@ -1044,7 +1061,7 @@ class QuestionRenderer {
                         } else {
                             const additionalTagElement = document.createElement('div');
     
-                            additionalTagElement.classList.add('relative', 'group', 'bg-tags', 'p-1', 'rounded-md', 'additional-tags');
+                            additionalTagElement.classList.add('relative', 'group', 'bg-tags', 'bg-gray-300', 'p-1', 'rounded-md', 'additional-tags', 'dark:bg-transparent' , 'dark:border-1','dark:text-gray-400', 'dark:border-gray-400');
                             additionalTagElement.setAttribute('data-count', 1);
                             additionalTagElement.innerHTML = `
                                 <span id="tag-count">+1</span>
@@ -1122,7 +1139,7 @@ class QuestionRenderer {
             historyElement.id = `elements-${date.toLowerCase()}`;
             const posts = groupedHistory[date];
             const dateElement = document.createElement('h2');
-            dateElement.classList.add('date-title', 'lg:text-3xl', 'animate-postSlideIn');
+            dateElement.classList.add('date-title', 'text-text' ,'lg:text-3xl', 'animate-postSlideIn', 'dark:text-gray-400');
             dateElement.textContent = date;
             historyElement.appendChild(dateElement);
 
@@ -1141,10 +1158,10 @@ class QuestionRenderer {
                             <img src="${post.imageURL}" alt="" class="history-images rounded-md w-40 h-20 lg:w-80 lg:h-40 2xl:w-60">
                         </div>
                         <div>
-                            <h2 class="history-title line-clamp-3 leading-5 text-text lg:text-3xl lg:leading-8 dark:text-white">${post.post_title}</h2>
-                            <div class="mt-2 flex items-center space-x-2 text-3xl text-text font-light dark:text-white">
+                            <h2 class="history-title line-clamp-3 leading-5 text-text lg:text-3xl lg:leading-8 dark:text-gray-400">${post.post_title}</h2>
+                            <div class="mt-2 flex items-center space-x-2 text-3xl text-text font-light dark:text-gray-400">
                                 <span class="material-symbols-rounded custom-icon">thumb_up</span>
-                                <span class="like-count-${post.post_id} text-lg"></span>
+                                <span class="like-count-${post.post_id} text-lg font-normal"></span>
                             </div>
                         </div>
                     `;
@@ -1180,7 +1197,7 @@ class QuestionRenderer {
 
         if (!container || container.length == 0) {
             const noResultsMessage = document.createElement('div');
-            noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
+            noResultsMessage.classList.add('text-text', 'text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
             noResultsMessage.textContent = 'There is no analysis data';
             this.container.appendChild(noResultsMessage);
             return;
@@ -1191,7 +1208,7 @@ class QuestionRenderer {
                 const tagElement = document.createElement('div');
                 tagElement.classList.add('relative', 'border-1', 'border-secondary', 'w-56', 'p-2', 'rounded-t-xl', 'shadow-lg', 'animate-slideRight');
                 tagElement.innerHTML = `
-                    <div class="flex justify-between text-sm text-text-light  dark:text-gray-400">
+                    <div class="flex justify-between text-sm text-text  dark:text-gray-400">
                         <span class="text-sm font-semibold">#${tag.tag_name}</span>
                         <span class="font-semibold">${parseInt(tag.percentage)}%</span>
                     </div>
@@ -1282,7 +1299,7 @@ class QuestionRenderer {
 
         if (!notifications || notifications.length === 0) {
             const noResultsMessage = document.createElement('div');
-            noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
+            noResultsMessage.classList.add('text-text','text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
             noResultsMessage.textContent = 'There is no notifications';
             this.container.appendChild(noResultsMessage);
             return;
@@ -1298,20 +1315,20 @@ class QuestionRenderer {
             const timeInHour = new Date(notification.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             notifyElement.classList.add(`notify-${notification.notification_id}`, 'relative' ,'w-full', 'group', 'flex', 'justify-between', 'border-1', 'dark:border-gray-600', 'p-4', 'rounded-md', 'bg-gray-100', 'dark:bg-gray-800', 'md:w-2/3', 'lg:w-1/2', 'animate-slideRight', 'cursor-pointer', 'hover:border-black/20', 'dark:hover:border-gray-400');
             notifyElement.innerHTML = `
-                <div class="flex space-x-2  dark:text-gray-500 rounded-lg text-3xl font-light 2xl:w-1/2">
+                <div class="flex space-x-2 text-text  dark:text-gray-500 rounded-lg text-3xl font-light 2xl:w-1/2">
                     <span class="material-symbols-rounded custom-icon">
                         notifications_active
                     </span>
                     <div>
-                        <img src="${notification.avatar ?? '../assets/images/user.png'}" alt="" class="h-8">
+                        <img src="${notification.avatar ?? '../assets/images/user.png'}" alt="" class="h-8 rounded-full">
 
                         <div class="text-lg font-normal">
-                            <h2 class="dark:text-gray-400"><b>${notification.username}</b> ${notification.message}</h2>
+                            <h2 class="text-text  dark:text-gray-400"><b>${notification.username}</b> ${notification.message}</h2>
                             <h3 class="text-gray-500">${notification.message_content || 'Check it out!'}</h3>
                         </div>
                     </div>
                 </div>
-                <div class="text-sm text-right flex justify-end flex-col dark:text-gray-400 w-fit">
+                <div class="text-sm text-right text-text flex justify-end flex-col dark:text-gray-400 w-fit">
                     <div class="flex flex-col text-nowrap">
                         <span>${timeInMonth}</span>
                         <span>${timeInHour}</span>
@@ -1361,7 +1378,7 @@ class QuestionRenderer {
             followerElement.innerHTML = `
                 <img src="${follower.avatar || '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
                 <div class="flex flex-col -space-y-1 text-sm">
-                    <span class="follow-tagname dark:text-white">${follower.tag_name}</span>
+                    <span class="follow-tagname text-text dark:text-white">${follower.tag_name}</span>
                     <span class="follow-fullname dark:text-gray-400">${follower.fullname}</span>
                 </div>
             `;
@@ -1390,7 +1407,7 @@ class QuestionRenderer {
             followerElement.innerHTML = `
                 <img src="${follower.avatar || '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
                 <div class="flex flex-col -space-y-1 text-sm">
-                    <span class="follow-tagname dark:text-white">${follower.tag_name}</span>
+                    <span class="follow-tagname text-text dark:text-white">${follower.tag_name}</span>
                     <span class="follow-fullname dark:text-gray-400">${follower.fullname}</span>
                 </div>
             `;
@@ -1468,45 +1485,48 @@ class QuestionRenderer {
         totalUsers.textContent = userList.length;
 
         userList.forEach(user => {
-            console.log(user.create_at)
-            const createdAt = new Date(user.created_at);
-        const formattedDate = createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-            const userElement = document.createElement('tr');
-            userElement.setAttribute('data-value', user.user_id);
-            userElement.innerHTML = `
-                <td class="text-left">
-                    <div class="flex space-x-4">
-                        <img src="${user.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
-                        <div>
-                            <span class="font-semibold text-white">${user.fullname}</span>
-                            <span class="text-sm">@${user.tag_name}</span>
-                            <p>${user.email ?? 'No information'}</p>
+            if (user.user_id != this.userId) {
+                const createdAt = new Date(user.created_at);
+                const formattedDate = createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const userElement = document.createElement('tr');
+                userElement.setAttribute('data-value', user.user_id);
+                userElement.innerHTML = `
+                    <td class="text-left">
+                        <div class="flex space-x-4">
+                            <img src="${user.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+                            <div>
+                                <span class="fullname font-semibold text-white">${user.fullname}</span>
+                                <span class="tagname text-sm">@${user.tag_name}</span>
+                                <p>${user.email ?? 'No information'}</p>
+                            </div>
                         </div>
-                    </div>
-                </td>
-                <td>${user.username}</td>
-                <td>${user.role_id == 2 ? 'Admin' : 'User'}</td>
-                <td>
-                    <span class="bg-green-100 text-green-600 font-semibold   rounded-full p-2">Active</span>
-                </td>
-                <td>
-                    ${formattedDate}
-                </td>
-                <td>
-                    <div class="flex text-2xl text-center justify-center">
-                        <span class="view-userbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
-                            visibility
-                        </span>
-                        <span class="edit-userbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
-                            edit
-                        </span>
-                        <span class="delete-userbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
-                            delete
-                        </span>
-                    </div>
-                </td>
-            `;
-            this.container.appendChild(userElement);
+                    </td>
+                    <td>${user.username}</td>
+                    <td class="user-role">${user.role_id == 2 ? 'Admin' : 'User'}</td>
+                    <td>
+                        <span class="user-status bg-green-100 text-green-600 font-semibold   rounded-full p-2">Active</span>
+                    </td>
+                    <td>
+                        ${formattedDate}
+                    </td>
+                    <td>
+                        <div id="user-actions" class="flex text-2xl text-center justify-center">
+                            <span class="view-userbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
+                                visibility
+                            </span>
+                            <span class="edit-userbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
+                                edit
+                            </span>
+                            <span class="delete-userbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
+                                delete
+                            </span>
+                        </div>
+                    </td>
+                `;
+
+
+                this.container.appendChild(userElement);
+            }
         })
 
     }

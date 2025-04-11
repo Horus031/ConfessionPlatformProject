@@ -1,4 +1,4 @@
-<main class="dark:bg-gray-900 font-poppins flex flex-col overflow-hidden h-fit px-2 mt-24 items-end w-full md:pl-[2%] lg:mt-28 2xl:pl-[2.5%] 2xl:pr-[2.5%]">
+<main class="bg-white font-poppins flex flex-col overflow-hidden h-fit px-2 mt-24 items-end w-full md:pl-[2%] lg:mt-28 2xl:pl-[2.5%] 2xl:pr-[2.5%] dark:bg-gray-900 ">
     <div class="flex justify-between w-full items-center rounded-xl p-3 bg-linear-160 z-30 from-gradient1 via-[#3ea29a] to-gradient2 md:w-3/4 lg:w-5/6 lg:px-8 animate-postSlideIn transition-all">
         <div class="md:w-72 lg:w-96 2xl:w-2xl animate-fadeIn">
             <h1 class="text-2xl text-white font-bold leading-10 lg:leading-15 lg:text-6xl">Welcome to Knowledge Nexus, <?= isset($_SESSION['fullname']) ? $_SESSION["fullname"] : 'Users'; ?></h1>

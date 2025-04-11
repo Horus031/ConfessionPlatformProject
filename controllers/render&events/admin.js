@@ -3,7 +3,10 @@ import QuestionRenderer from '../../src/js/render.js';
 
 document.addEventListener('DOMContentLoaded', async function() {
     const eventListener = new EventListener();
-    const renderer = new QuestionRenderer('#user-container');
+    await eventListener.initSessionData();
+
+    const renderer = new QuestionRenderer('#user-container', null, eventListener.userId);
+
 
     const userList = await renderer.fetchData('../controllers/admin/get_users.php');
     

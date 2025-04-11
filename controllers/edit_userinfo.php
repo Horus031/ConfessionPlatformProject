@@ -8,48 +8,54 @@ include '../includes/dbfunctions.php';
 $database = new Database($pdo);
 
 try {
-    if (isset($_POST['Edit'])) {
-        $action = $_POST['Edit'];
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $userId = $_POST['userId'] ?? $_SESSION['user_id'];
+        $currentURL = $_POST['currentURL'] ?? null;
+        $firstname = $_POST['firstnameValue'] ?? null;
+        $lastname = $_POST['lastnameValue'] ?? null;
+        $tag_name = $_POST['tagnameValue'] ?? null;
+        $email = $_POST['emailValue'] ?? null;
+        $bio = $_POST['bioValue'] ?? null;
+        $social_links = isset($_POST['social_links']) ? json_decode($_POST['social_links'], true) : $_POST['social_links'];
 
-        if ($action == "Save") {
-            try {
-                $pdo->beginTransaction();
 
-                $user_id = $_SESSION['user_id'];
-                $firstname = $_POST['firstnameValue'];
-                $lastname = $_POST['lastnameValue'];
-                $username = $_POST['usernameValue'];
-                $tag_name = $_POST['tagnameValue'];
-                $email = $_POST['emailValue'];
-                $bio = $_POST['bioValue'];
-                $social_links = $_POST['social_links'];
 
-                $existingAvatarURL = $database->fetchExistingAvatarURL($user_id);
+        try {
+            $pdo->beginTransaction();
 
+            // Handle avatar upload
+            $existingAvatarURL = $database->fetchExistingAvatarURL($userId);
+            if (isset($_FILES['avatarURL']) && $_FILES['avatarURL']['tmp_name']) {
                 include '../includes/upload_avatar.php';
+            }
 
-                if (isset($uploadData['error'])) {
-                    throw new Exception($uploadData['error']);
-                }
+            if (isset($uploadData['error'])) {
+                throw new Exception($uploadData['error']);
+            }
 
-                $avatarURL = $avatarURL ?? $existingAvatarURL;
+            $avatarURL = $avatarURL ?? $existingAvatarURL;
 
-                $database->updateUser($user_id, $firstname, $lastname, $tag_name, $email, $avatarURL, $bio);
-                $database->updateUserSocialLinks($user_id, $social_links);
+            // Update user information
+            $database->updateUser($userId, $firstname, $lastname, $tag_name, $email, $avatarURL, $bio);
+            $database->updateUserSocialLinks($userId, $social_links);
 
-                $_SESSION['username'] = $username;
+            // Update session data
+            if ($userId == $_SESSION['user_id']) {
                 $_SESSION['fullname'] = $firstname . ' ' . $lastname;
                 $_SESSION['tag_name'] = $tag_name;
                 $_SESSION['avatarURL'] = $avatarURL;
-
-                $pdo->commit();
-                header('Location: ../views/main.html.php?page=profile&tag_name=' . $_POST['tagnameValue']);
-            } catch (Exception $e) {
-                $pdo->rollBack();
-                echo json_encode(['error' => $e->getMessage()]);
             }
-        } else if ($action == "Cancel") {
-            header('Location: ../views/main.html.php?page=profile&tag_name=' . $_POST['tagnameValue']);
+
+            $pdo->commit();
+
+            if (str_contains($currentURL, 'admin')) {
+                echo json_encode(['admin' => 'success']);
+            } else {
+                echo json_encode(['user' => 'success']);
+            }
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            echo json_encode(['error' => $e->getMessage()]);
         }
     }
 } catch (PDOException $e) {
