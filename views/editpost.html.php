@@ -2,10 +2,10 @@
     <h1 class="text-2xl text-text font-semibold lg:text-4xl dark:text-white animate-slideRight">Edit your post</h1>
 
 
-    <form id="edit-form" action="../controllers/edit_userinfo.php" method="post" enctype="multipart/form-data" class="animate-slideRight">
+    <form id="edit-post-form" action="../controllers/editpost.php" method="post" enctype="multipart/form-data" class="animate-slideRight">
         <input type="hidden" name="postValues" id="post-value">
         <div class="mt-2 space-y-4">
-            <input type="text" name="titleValue" id="title" class="border-1 text-text border-text rounded-lg p-2 q px-4 w-full md:w-5/8 lg:w-4/9 dark:border-gray-600 dark:text-gray-400" placeholder="Post title">
+            <input type="text" name="titleValue" id="title" class="bg-transparent border-1 text-text border-text rounded-lg p-2 q px-4 w-full md:w-5/8 lg:w-4/9 dark:border-gray-600 dark:text-gray-400" placeholder="Post title">
         </div>
 
         <div class="mt-6 flex flex-col w-fit">

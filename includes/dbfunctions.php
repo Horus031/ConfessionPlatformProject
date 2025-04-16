@@ -272,7 +272,7 @@ class Database
 
     public function fetchAllPosts()
     {
-        $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, users.tag_name, users.created_at AS userJoinedTime, modules.module_id, modules.module_name, modules.bg_class, modules.text_class 
+        $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.view_count, posts.created_at, posts.imageURL, CONCAT(users.first_name, " ", users.last_name) AS fullname, users.avatar, users.username, users.tag_name, users.created_at AS userJoinedTime, modules.module_id, modules.module_name, modules.bg_class, modules.text_class 
                 FROM ((((posts  
                 INNER JOIN users ON posts.user_id = users.user_id)
                 INNER JOIN modules ON posts.module_id = modules.module_id)
@@ -744,5 +744,20 @@ class Database
         $sql = "DELETE FROM users WHERE user_id = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$user_id]);
+    }
+
+    public function getModulesFromAdmin($module_array)
+    {
+        if (!empty($module_array)) {
+            $placeholders = implode(',', array_fill(0, count($module_array), '?'));
+            $sql = "SELECT modules.*, COUNT(posts.module_id) AS post_using FROM modules
+                    LEFT JOIN posts ON posts.module_id = modules.module_id
+                    WHERE modules.module_name IN ($placeholders)
+                    GROUP BY modules.module_id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($module_array);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
     }
 }

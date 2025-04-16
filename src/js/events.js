@@ -6,6 +6,7 @@ class EventListener {
         this.currentURL = window.location.href;
         this.renderedComments = new Set(); // Tạo Set lưu trữ các id của comment
         this.loadingOverlay = document.querySelector('#loading-overlay');
+        this.popupModal = document.querySelector('#popup-modal');
 
 
         if (this.currentURL.includes('main.html.php')) {
@@ -174,6 +175,7 @@ class EventListener {
         this.step2Register = document.querySelector('#step2-container');
         this.step2Form = document.querySelector('#step2-form');
         this.editUserForm = document.querySelector('#edit-form');
+        this.editPostForm = document.querySelector('#edit-post-form');
         this.contactForm = document.querySelector('#contactForm');
         this.toastMessage = document.querySelector('#toast-container');
         this.loginForm = document.querySelector('#login-form');
@@ -219,11 +221,16 @@ class EventListener {
     }
 
     initAdminElements() {
+        this.sectionContainer = document.querySelector('#section-container');
+        this.sectionChild = this.sectionContainer.children;
         this.backHomeBtn = document.querySelector('#backToHome');
         this.addUserBtn = document.querySelector('#adduser-btn');
+        this.adminMenu = document.querySelector('#admin-menu');
         this.userManagement = document.querySelector('#user-management');
         this.newUserContainer = document.querySelector('#new-user');
         this.editUserContainer = document.querySelector('#edit-user');
+        this.questionManagement = document.querySelector('#question-management');
+        this.editQuestionContainer = document.querySelector('#edit-question');
         this.createUserForm = document.querySelector('#create-user-form');
         this.cancelCreateUsers = document.querySelector('#cancel-create');
         this.userTab = document.querySelector('#user-tab');
@@ -232,8 +239,10 @@ class EventListener {
         this.userContainer = document.querySelector('#user-container')
         this.userActions = document.querySelector('#user-actions');
         this.userSearch = document.querySelector('#user-search');
+        this.questionContainer = document.querySelector('#question-container');
         this.toastMessage = document.querySelector('#toast');
         this.adminEditForm = document.querySelector('#admin-edit');
+        this.adminEditPostForm = document.querySelector('#admin-edit-post');
 
     }
 
@@ -627,6 +636,33 @@ class EventListener {
                 
             }
 
+            if (this.editPostForm) {
+                this.editPostForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(_this.editPostForm);
+
+                    formData.set('currentURL', window.location.href);
+
+                    try {
+                        _this.loadingOverlay.classList.remove('hidden');
+
+                        const response = await _this.renderer.fetchData('../controllers/editpost.php', {
+                            method: 'POST',
+                            body: formData
+                        })
+
+                        if (response['user']) {
+                            window.location.href = `../views/main.html.php`;
+                        }
+                    } catch (error) {
+                        console.error(error);
+                    } finally {
+                        _this.loadingOverlay.classList.add('hidden');
+                    }
+                })
+            }
+
             if (this.contactForm) {
                 this.contactForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
@@ -707,11 +743,7 @@ class EventListener {
             
                         formData.set('currentURL', window.location.href);
             
-                        // Debugging: Log the FormData contents
-                        for (const [key, value] of formData.entries()) {
-                            console.log(key, value);
-                        }
-
+                    
                         try {
                             _this.loadingOverlay.classList.remove('hidden');
 
@@ -1403,6 +1435,30 @@ class EventListener {
         await this.initSessionData();
        
 
+        if (this.adminMenu) {
+            const menuTabs = this.adminMenu.querySelectorAll('div[id$="-tab"]');
+            menuTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    menuTabs.forEach(tab => {
+                        tab.classList.remove('bg-gray-700')
+                    })
+
+                    tab.classList.add('bg-gray-700')
+                    const tabName = tab.id.split('-')[0];
+                    const sectionArr = Array.from(_this.sectionChild);
+
+                    sectionArr.forEach(section => {
+                        section.classList.add('hidden');
+
+                        if (section.id.includes(tabName)) {
+                            section.classList.remove('hidden');
+                        }
+                    })
+
+                })
+            })
+        }
+
         if (this.backHomeBtn) {
             this.backHomeBtn.addEventListener('click', function() {
                 window.location.href = '../views/main.html.php';
@@ -1433,11 +1489,84 @@ class EventListener {
             })
         }
 
+        if (this.questionContainer) {
+            const questionLists = this.questionContainer.querySelectorAll('tr');
+            const moduleFilter = document.querySelector('#module-filter');
+            const fromDateInput = document.querySelector('#from-date');
+            const toDateInput = document.querySelector('#to-date');
+            let questionInput = document.querySelector('#question-search').value.trim().toLowerCase();
+            questionLists.forEach(question => {
+                const questionActions = question.querySelector('#question-actions');
+                const questionId = question.getAttribute('data-value');
+                questionActions.addEventListener('click', function(e) {
+                    if (e.target.closest('span[class^="view-quesbtn"]')) {
+                        window.open(`main.html.php?page=postdetails&id=${questionId}`, '_blank');
+                    } else if (e.target.closest('span[class^="edit-quesbtn"]')) {
+                        _this.handleFetchEditPost(questionId);
+                        
+                        _this.questionManagement.classList.add('hidden');
+                        _this.editQuestionContainer.classList.remove('hidden');
+
+                        _this.handleUpdateQuestions();
+                    } else {
+                        _this.handleDeleteQuestion(questionId);
+                    }
+                })
+            })
+
+            
+
+            // Function to filter questions
+            function filterQuestions() {
+                const selectedModule = moduleFilter.value.toLowerCase();
+                const fromDate = new Date(fromDateInput.value);
+                const toDate = new Date(toDateInput.value);
+                fromDate.setHours(0, 0, 0, 0); // Set to the beginning of the day
+                const questionRows = _this.questionContainer.querySelectorAll('tr');
+
+                questionRows.forEach(row => {
+                    const postTitle = row.querySelector('h3[class^="post-title"]').textContent.trim().toLowerCase();
+                    const moduleValue = row.querySelector('td:nth-child(2)').textContent.trim().toLowerCase(); // Module column
+                    const dateValue = new Date(row.querySelector('td:nth-child(4)').textContent); // Posted date column
+
+                    const matchesModule = selectedModule === 'all' || moduleValue === selectedModule;
+                    const matchesDate =
+                        (!fromDateInput.value || dateValue >= fromDate) &&
+                        (!toDateInput.value || dateValue <= toDate);
+                    const matchesTitle = questionInput === '' || postTitle.includes(questionInput);
+
+                    if (matchesModule && matchesDate && matchesTitle) {
+                        row.classList.remove('hidden');
+                    } else {
+                        row.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Add event listeners for filtering
+            moduleFilter.addEventListener('change', filterQuestions);
+            fromDateInput.addEventListener('change', filterQuestions);
+            toDateInput.addEventListener('change', filterQuestions);
+            document.querySelector('#question-search').addEventListener('input', function () {
+                questionInput = this.value.trim().toLowerCase();
+                filterQuestions();
+            });
+        }
+
         if (this.editUserContainer) {
             this.editUserContainer.addEventListener('click', function(e) {
                 if (e.target.closest('button[id^="cancel-"]')) {
                     _this.userManagement.classList.remove('hidden');
                     _this.editUserContainer.classList.add('hidden');
+                }
+            })
+        }
+
+        if (this.adminEditPostForm) {
+            this.adminEditPostForm.addEventListener('click', function(e) {
+                if (e.target.closest('button[id="cancel-edit-post"]')) {
+                    _this.editQuestionContainer.classList.add('hidden');
+                    _this.questionManagement.classList.remove('hidden');
                 }
             })
         }
@@ -1603,12 +1732,7 @@ class EventListener {
                 
             });
         }
-
-        if (this.userTab && this.questionTab && this.moduleTab) {
-            
-        }
-
-        
+    
     }
 
     // User functions
@@ -2316,7 +2440,6 @@ class EventListener {
 
 
     // Admin functions
-
     // Render user info for editing
     async handleAdminEdit(userId) {
         
@@ -2393,6 +2516,51 @@ class EventListener {
         })
     }
 
+    async handleFetchEditPost(postId) {
+        try {
+            const editPostInfo = await this.renderer.fetchData(`../controllers/get_postdetails.php`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ post_id: postId })
+            })
+            const modules = await this.renderer.fetchData('../controllers/list_modules.php');
+
+            this.renderer.renderEditPosts(editPostInfo, postId);
+            this.renderer.renderTagsWithType();
+            this.renderer.renderModules(modules);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    handleUpdateQuestions() {
+        const _this = this;
+        this.adminEditPostForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const loadingOverlay = document.querySelector('#loading-overlay');
+
+            const formData = new FormData(_this.adminEditPostForm);
+            formData.set('currentURL', window.location.href);
+            try {
+                loadingOverlay.classList.remove('hidden');
+
+                const response = await _this.renderer.fetchData('../controllers/editpost.php', {
+                    method: 'POST',
+                    body: formData
+                })
+
+                if (response['admin']) {
+                    location.reload();
+                }
+
+            } catch (error) {
+                console.log(error);
+            } finally {
+                loadingOverlay.classList.add('hidden');
+            }
+        })
+    }
+
     async handleDeleteUser(userId) {
         const response = await this.renderer.fetchData('../controllers/admin/delete_users.php', {
             method: "POST",
@@ -2406,8 +2574,20 @@ class EventListener {
             location.reload();
         }
     }
-    
-    
+
+    async handleDeleteQuestion(postId) {
+        const currentURL = window.location.href
+        const response = await this.renderer.fetchData('../controllers/deletepost.php', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ post_id: postId, currentURL: currentURL })
+        });
+
+        if (response['admin']) {
+            location.reload();
+        }
+    }
+
     async start() {
         // Apply dark mode preference on page load
         await this.applyDarkModePreference();

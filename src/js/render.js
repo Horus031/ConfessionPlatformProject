@@ -647,6 +647,7 @@ class QuestionRenderer {
                         tagInput.classList.remove('hidden');
                         data.forEach(tag => {
                             const tagElement = document.createElement('option');
+                            tagElement.classList.add('bg-transparent');
                             tagElement.value = `${tag.tag_name}`;
                             tagElement.textContent = `${tag.tag_name}`;
                             tagList.appendChild(tagElement);
@@ -679,9 +680,12 @@ class QuestionRenderer {
             }
         });
 
-        document.querySelector('#cancel-btn').addEventListener('click', function() {
-            window.history.back();
-        })
+        if (document.querySelector('#cancel-btn')) {
+            document.querySelector('#cancel-btn').addEventListener('click', function() {
+                window.history.back();
+            })
+        }
+        
     }
 
     renderModules(modules) {
@@ -876,7 +880,15 @@ class QuestionRenderer {
         const accountInput = document.querySelector('#accountinfo-container');
         const bioInput = document.querySelector('#bio-container');
         const socialInput = document.querySelector('#social-container');
-        
+
+        // Clear previous user information
+        if (imageInput.querySelector('img[id="image"]')) {
+            const image = imageInput.querySelector('img[id="image"]')
+            imageInput.removeChild(image);
+        }
+        accountInput.innerHTML = '';
+        bioInput.innerHTML = '';
+        socialInput.querySelectorAll('input').forEach(input => input.value = '');
 
         const imageElements = document.createElement('img');
         imageElements.id = 'image';
@@ -922,10 +934,9 @@ class QuestionRenderer {
 
         bioInput.appendChild(bioElement);
 
-
         userInfo.socialLinks.forEach(link => {
             socialInput.querySelector(`input[id="${link.platform}"]`).value = `${link.url ?? ''}`;
-        })
+        });
 
         if (this.currentURL.includes('admin')) {
             accountInput.querySelector('#edit-firstname').setAttribute('placeholder', 'First name');
@@ -1485,50 +1496,194 @@ class QuestionRenderer {
         totalUsers.textContent = userList.length;
 
         userList.forEach(user => {
-            if (user.user_id != this.userId) {
-                const createdAt = new Date(user.created_at);
-                const formattedDate = createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                const userElement = document.createElement('tr');
-                userElement.setAttribute('data-value', user.user_id);
-                userElement.innerHTML = `
-                    <td class="text-left">
-                        <div class="flex space-x-4">
-                            <img src="${user.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
-                            <div>
-                                <span class="fullname font-semibold text-white">${user.fullname}</span>
-                                <span class="tagname text-sm">@${user.tag_name}</span>
-                                <p>${user.email ?? 'No information'}</p>
-                            </div>
+            const createdAt = new Date(user.created_at);
+            const formattedDate = createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const userElement = document.createElement('tr');
+            userElement.setAttribute('data-value', user.user_id);
+            userElement.innerHTML = `
+                <td class="text-left">
+                    <div class="flex space-x-4">
+                        <img src="${user.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+                        <div>
+                            <span class="fullname font-semibold text-white">${user.fullname}</span>
+                            <span class="tagname text-sm">@${user.tag_name}</span>
+                            <p>${user.email ?? 'No information'}</p>
                         </div>
-                    </td>
-                    <td>${user.username}</td>
-                    <td class="user-role">${user.role_id == 2 ? 'Admin' : 'User'}</td>
-                    <td>
-                        <span class="user-status bg-green-100 text-green-600 font-semibold   rounded-full p-2">Active</span>
-                    </td>
-                    <td>
-                        ${formattedDate}
-                    </td>
-                    <td>
-                        <div id="user-actions" class="flex text-2xl text-center justify-center">
-                            <span class="view-userbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
-                                visibility
-                            </span>
-                            <span class="edit-userbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
-                                edit
-                            </span>
-                            <span class="delete-userbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
-                                delete
-                            </span>
-                        </div>
-                    </td>
-                `;
+                    </div>
+                </td>
+                <td>${user.username}</td>
+                <td class="user-role">${user.role_id == 2 ? 'Admin' : 'User'}</td>
+                <td>
+                    <span class="user-status bg-green-100 text-green-600 font-semibold   rounded-full p-2">Active</span>
+                </td>
+                <td>
+                    ${formattedDate}
+                </td>
+                <td>
+                    <div id="user-actions" class="flex text-2xl text-center justify-center">
+                        <span class="view-userbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
+                            visibility
+                        </span>
+                        <span class="edit-userbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
+                            edit
+                        </span>
+                        <span class="delete-userbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
+                            delete
+                        </span>
+                    </div>
+                </td>
+            `;
 
 
-                this.container.appendChild(userElement);
-            }
+            this.container.appendChild(userElement);
         })
 
+    }
+
+    renderAdminQuestions(questionList) {
+        if (!questionList || questionList.length == 0) {
+            const noResultsMessage = document.createElement('div');
+            noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
+            noResultsMessage.textContent = 'You have not followed anyone yet';
+            followingContainer.appendChild(noResultsMessage);
+            return;
+        }
+
+        const totalQuestions = document.querySelector('#total-questions');
+        totalQuestions.textContent = questionList.length;
+
+        questionList.forEach(async question => {
+            const createdAt = new Date(question.created_at);
+            const formattedDate = createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const questionElement = document.createElement('tr');
+            questionElement.setAttribute('data-value', question.post_id);
+
+            questionElement.innerHTML = `
+                <td class="text-left">
+                    <h3 class="post-title text-lg text-white font-semibold">${question.post_title}</h3>
+                    <p>${question.post_content}</p>
+                </td>
+
+                <td>
+                    <span class="text-sm font-medium rounded-full p-1 ${question.bg_class} ${question.text_class}">${question.module_name}</span>
+                </td>
+
+                <td class="text-left">
+                    <div class="flex space-x-4 justify-center items-center"> 
+                        <img src="${question.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+                        <div class="flex flex-col">
+                            <span class="fullname font-semibold text-white">${question.fullname}</span>
+                            <span class="tagname text-sm">@${question.tag_name}
+                        </div>
+                    </div>
+                </td>
+
+                <td>
+                    <span>
+                        ${formattedDate}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="comment-count">
+                        0
+                    </span>
+                </td>
+
+                <td>
+                    <span class="view-count">
+                        ${question.view_count}
+                    </span>
+                </td>
+
+                <td>
+                    <div id="question-actions" class="flex text-2xl text-center justify-center">
+                        <span class="view-quesbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
+                            visibility
+                        </span>
+                        <span class="edit-quesbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
+                            edit
+                        </span>
+                        <span data-modal-target="popup-modal" data-modal-toggle="popup-modal" class="delete-quesbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
+                            delete
+                        </span>
+                    </div>
+                </td>
+            `;
+
+
+            try {
+                const commentCount = await this.fetchData('../controllers/get_commentcount.php', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ post_id: question.post_id })
+                });
+
+                questionElement.querySelector(`.comment-count`).textContent = commentCount.comment_count;
+
+
+
+
+            } catch (error) {
+                console.log(error);
+            }
+
+
+
+            this.container.appendChild(questionElement)
+        })
+        
+    }
+
+    renderAdminModules(moduleList) {
+        if (!moduleList || moduleList.length == 0) {
+            const noResultsMessage = document.createElement('div');
+            noResultsMessage.classList.add('text-center', 'text-xl', 'mt-4', 'dark:text-gray-400');
+            noResultsMessage.textContent = 'You have not followed anyone yet';
+            followingContainer.appendChild(noResultsMessage);
+            return;
+        }
+
+        const totalModules = document.querySelector('#total-modules');
+        totalModules.textContent = moduleList.length;
+
+        moduleList.forEach(module => {
+            const moduleElement = document.createElement('tr');
+            moduleElement.setAttribute('data-value', module.module_id);
+
+            moduleElement.innerHTML = `
+                <td class="text-left">
+                    <span class="text-sm font-medium rounded-full p-1 ${module.bg_class} ${module.text_class}">${module.module_name}</span>
+                </td>
+            
+                <td>
+                    <span>${module.post_using}</span>
+                </td>
+
+                <td>
+                    <div id="module-actions" class="flex text-2xl text-center justify-center">
+                        <span class="edit-modulebtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
+                            edit
+                        </span>
+                        <span class="delete-modulebtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
+                            delete
+                        </span>
+                    </div>
+                </td>
+            `;
+
+            this.container.appendChild(moduleElement);
+        })
+    }
+
+    renderAdminModulesFilter(filterContainer) {
+        filterContainer.forEach(module => {
+            const option = document.createElement('option');
+            option.classList.add('bg-white', 'text-black' ,'dark:text-gray-400','dark:bg-gray-800')
+            option.value = `${module.module_name}`;
+            option.textContent = `${module.module_name}`;
+            this.filterContainer.appendChild(option);
+        });
     }
 }
 
