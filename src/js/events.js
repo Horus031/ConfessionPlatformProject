@@ -1,5 +1,5 @@
 import QuestionRenderer from "../js/render.js";
-
+import culori from "./culori.js";
 class EventListener {
     constructor() {
         this.renderer = new QuestionRenderer();
@@ -8,7 +8,7 @@ class EventListener {
         this.loadingOverlay = document.querySelector('#loading-overlay');
         this.popupModal = document.querySelector('#popup-modal');
 
-
+        console.log(culori);
         if (this.currentURL.includes('main.html.php')) {
             this.initSessionData().then(() => {
                 this.socket = new WebSocket(`ws://localhost:8080?user_id=${this.userId}`);
@@ -228,6 +228,7 @@ class EventListener {
         this.adminMenu = document.querySelector('#admin-menu');
         this.userManagement = document.querySelector('#user-management');
         this.moduleManagement = document.querySelector('#module-management');
+        this.moduleContainer = document.querySelector('#module-container');
         this.addNewModuleContainer = document.querySelector('#new-module')
         this.addModuleForm = document.querySelector('#create-module-form');
         this.newUserContainer = document.querySelector('#new-user');
@@ -1745,6 +1746,25 @@ class EventListener {
             })
         }
 
+        if (this.moduleContainer) {
+            const moduleLists = this.moduleContainer.querySelectorAll('tr');
+            moduleLists.forEach(module => {
+                const moduleActions = module.querySelector('#module-actions');
+                const moduleId = module.getAttribute('data-value');
+                moduleActions.addEventListener('click', function(e) {
+                    if (e.target.closest('span[class^="edit-modulebtn"]')) {
+                        console.log('edit');
+                    } else {
+                        if (moduleId == '0') {
+                            _this.showConfirmModal('You cannot delete this module!', true);
+                        } else {
+                            _this.handleDeleteModule(moduleId);
+                        }
+                    }
+                })
+            })
+        }
+
         if (this.addNewModuleContainer) {
             this.addNewModuleContainer.addEventListener('click', function(e) {
                 if (e.target.closest('button[id="cancel-create-module"]')) {
@@ -1762,43 +1782,47 @@ class EventListener {
         }
 
         if (this.addModuleForm) {
+            const colorCanvas = this.addModuleForm.querySelector('#color-canvas');
+            const colorType = this.addModuleForm.querySelector('#color-type')
             const moduleName = this.addModuleForm.querySelector('input[id="module-name"]');
             const moduleBgColor = this.addModuleForm.querySelector('input[id="module-bg"]');
             const moduleTextColor = this.addModuleForm.querySelector('input[id="module-text-color"]');
             const previewModule = this.addModuleForm.querySelector('span[id="module-preview"]');
+
+            colorCanvas.addEventListener('click', function(e) {
+                if (e.target.closest('div[class^="color-box"]')) {
+                    const selectedBgColor = e.target.getAttribute('data-bg-color');
+                    const selectedTextColor = e.target.getAttribute('data-text-color');
+                    console.log(selectedBgColor, selectedTextColor);
+                    if (colorType.value === "background") {
+                        const rgbColor = _this.getComputedColor(selectedBgColor); // Extract the RGB color
+                        previewModule.style.backgroundColor = rgbColor; // Apply the color to the preview
+                        moduleBgColor.value = rgbColor; // Set the input value
+                        moduleBgColor.setAttribute('data-bg-color', selectedBgColor);
+                    } else if (colorType.value === "text") {
+                        const rgbColor = _this.getComputedColor(selectedBgColor); // Extract the RGB color
+                        previewModule.style.color = rgbColor; // Apply the color to the preview
+                        moduleTextColor.value = rgbColor; // Set the input value
+                        moduleTextColor.setAttribute('data-text-color', selectedTextColor);
+                    }
+                }
+            });
 
             moduleName.addEventListener('input', function() {
                 const nameValue = moduleName.value.trim();
                 previewModule.textContent = nameValue;
             });
 
-            moduleBgColor.addEventListener('input', function() {
-                const backgroundColor = moduleBgColor.value;
-
-                // Remove any existing background color style
-                previewModule.style.removeProperty('background-color');
-
-                // Add the new background color
-                previewModule.style.backgroundColor = backgroundColor;
-            });
-
-            moduleTextColor.addEventListener('input', function() {
-                const textColor = moduleTextColor.value;
-
-                // Remove any existing background color style
-                previewModule.style.removeProperty('color');
-
-                // Add the new background color
-                previewModule.style.color = textColor;
-            });
-
-        
             this.addModuleForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
+                const backgroundData = moduleBgColor.getAttribute('data-bg-color');
+                const textData = moduleTextColor.getAttribute('data-text-color');
+
+                console.log(backgroundData,textData)
 
                 const formData = new FormData(_this.addModuleForm);
-                formData.set('moduleBackground', `bg-[${moduleBgColor.value}]`)
-                formData.set('moduleTextColor', `text-[${moduleTextColor.value}]`)
+                formData.set('moduleBackground', backgroundData)
+                formData.set('moduleTextColor', textData)
 
                 const response = await _this.renderer.fetchData('../controllers/admin/add_modules.php', {
                     method: "POST",
@@ -2517,35 +2541,87 @@ class EventListener {
     }
 
 
-    showConfirmModal(modalMessage) {
+    showConfirmModal(modalMessage, isModule = false) {
         return new Promise((resolve) => {
             const modal = document.getElementById("popup-modal");
-            const yesBtn = document.getElementById("modal-confirm");
-            const noBtn = document.getElementById("modal-cancel");
+            const yesBtn = modal.querySelector("#modal-confirm");
+            const noBtn = modal.querySelector("#modal-cancel");
+            const buttonParent = modal.querySelector('div[class^="p-4"]');
 
-            modal.querySelector('#modal-message').textContent = modalMessage;
+            modal.querySelector("#modal-message").textContent = modalMessage;
+
+            if (isModule) {
+                yesBtn?.remove();
+                noBtn.textContent = "Ok";
+            } else {
+                if (!yesBtn) {
+                    const confirmBtn = document.createElement("button");
+                    confirmBtn.id = "modal-confirm";
+                    confirmBtn.type = "button";
+                    confirmBtn.className = "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center";
+                    confirmBtn.textContent = "Yes, I'm sure";
+                    buttonParent.insertBefore(confirmBtn, noBtn);
+                }
+                noBtn.textContent = "Cancel";
+            }
+
             modal.classList.remove("hidden");
 
             const cleanup = () => {
                 modal.classList.add("hidden");
-                yesBtn.removeEventListener("click", onYes);
+                yesBtn?.removeEventListener("click", onYes);
                 noBtn.removeEventListener("click", onNo);
-              };
-          
-              const onYes = () => {
+            };
+
+            const onYes = () => {
                 cleanup();
                 resolve(true);
-              };
-          
-              const onNo = () => {
+            };
+
+            const onNo = () => {
                 cleanup();
                 resolve(false);
-              };
-          
-              yesBtn.addEventListener("click", onYes);
-              noBtn.addEventListener("click", onNo);
+            };
+
+            yesBtn?.addEventListener("click", onYes);
+            noBtn.addEventListener("click", onNo);
         });
     }
+
+    // Function to extract the computed color from a Tailwind class
+    getComputedColor(tailwindClass) {
+        const tempElement = document.createElement('div');
+        tempElement.className = tailwindClass;
+        tempElement.style.display = 'none';
+        document.body.appendChild(tempElement);
+
+        const computedStyle = getComputedStyle(tempElement);
+        const color = computedStyle.backgroundColor || computedStyle.color;
+
+        document.body.removeChild(tempElement);
+
+        const rgbColor = this.convertOklchToRgb(color);
+        return rgbColor ? this.rgbToHex(rgbColor) : null;
+    }
+
+    rgbToHex(rgbColor) {
+        const match = rgbColor.match(/\d+/g);
+        if (!match || match.length < 3) return null;
+
+        const [r, g, b] = match.map(Number);
+        const toHex = (value) => value.toString(16).padStart(2, '0');
+        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    }
+
+    convertOklchToRgb(oklchStr) {
+        const parsed = culori.parse(oklchStr); // parse oklch string
+        const toRgb = culori.converter('rgb');   // converter to rgb
+        const rgb = toRgb(parsed);
+    
+        if (!rgb) return null;
+    
+        return `rgb(${Math.round(rgb.r * 255)}, ${Math.round(rgb.g * 255)}, ${Math.round(rgb.b * 255)})`;
+      }
 
     
 
@@ -2706,9 +2782,12 @@ class EventListener {
                 location.reload();
             }
         } else {
-            return
+            return;
         }
-        
+    }
+
+    async handleDeleteModule(moduleId) {
+        const userConfirm = await this.showConfirmModal("Are you sure you want to delete this module?");
     }
 
     async start() {
