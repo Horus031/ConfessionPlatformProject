@@ -227,6 +227,9 @@ class EventListener {
         this.addUserBtn = document.querySelector('#adduser-btn');
         this.adminMenu = document.querySelector('#admin-menu');
         this.userManagement = document.querySelector('#user-management');
+        this.moduleManagement = document.querySelector('#module-management');
+        this.addNewModuleContainer = document.querySelector('#new-module')
+        this.addModuleForm = document.querySelector('#create-module-form');
         this.newUserContainer = document.querySelector('#new-user');
         this.editUserContainer = document.querySelector('#edit-user');
         this.questionManagement = document.querySelector('#question-management');
@@ -1732,6 +1735,81 @@ class EventListener {
                 
             });
         }
+
+        if (this.moduleManagement) {
+            this.moduleManagement.addEventListener('click', function(e) {
+                if (e.target.closest('div[id="addmodule-btn"]')) {
+                    _this.moduleManagement.classList.add('hidden');
+                    _this.addNewModuleContainer.classList.remove('hidden');
+                }
+            })
+        }
+
+        if (this.addNewModuleContainer) {
+            this.addNewModuleContainer.addEventListener('click', function(e) {
+                if (e.target.closest('button[id="cancel-create-module"]')) {
+                    _this.addNewModuleContainer.classList.add('hidden');
+                    _this.moduleManagement.classList.remove('hidden');
+
+                    _this.addNewModuleContainer.querySelector('input[id="module-name"]').value = '';
+                    _this.addNewModuleContainer.querySelector('input[id="module-bg"]').value = '#000000';
+                    _this.addNewModuleContainer.querySelector('input[id="module-text-color"]').value = '#000000';
+                    _this.addNewModuleContainer.querySelector('span[id="module-preview"]').style.removeProperty('background-color');
+                    _this.addNewModuleContainer.querySelector('span[id="module-preview"]').style.removeProperty('color');
+                    _this.addNewModuleContainer.querySelector('span[id="module-preview"]').textContent = '';
+                }
+            })
+        }
+
+        if (this.addModuleForm) {
+            const moduleName = this.addModuleForm.querySelector('input[id="module-name"]');
+            const moduleBgColor = this.addModuleForm.querySelector('input[id="module-bg"]');
+            const moduleTextColor = this.addModuleForm.querySelector('input[id="module-text-color"]');
+            const previewModule = this.addModuleForm.querySelector('span[id="module-preview"]');
+
+            moduleName.addEventListener('input', function() {
+                const nameValue = moduleName.value.trim();
+                previewModule.textContent = nameValue;
+            });
+
+            moduleBgColor.addEventListener('input', function() {
+                const backgroundColor = moduleBgColor.value;
+
+                // Remove any existing background color style
+                previewModule.style.removeProperty('background-color');
+
+                // Add the new background color
+                previewModule.style.backgroundColor = backgroundColor;
+            });
+
+            moduleTextColor.addEventListener('input', function() {
+                const textColor = moduleTextColor.value;
+
+                // Remove any existing background color style
+                previewModule.style.removeProperty('color');
+
+                // Add the new background color
+                previewModule.style.color = textColor;
+            });
+
+        
+            this.addModuleForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(_this.addModuleForm);
+                formData.set('moduleBackground', `bg-[${moduleBgColor.value}]`)
+                formData.set('moduleTextColor', `text-[${moduleTextColor.value}]`)
+
+                const response = await _this.renderer.fetchData('../controllers/admin/add_modules.php', {
+                    method: "POST",
+                    body: formData
+                })
+
+                if (response['admin']) {
+                    location.reload();
+                }
+            });
+        }
     
     }
 
@@ -2439,6 +2517,38 @@ class EventListener {
     }
 
 
+    showConfirmModal(modalMessage) {
+        return new Promise((resolve) => {
+            const modal = document.getElementById("popup-modal");
+            const yesBtn = document.getElementById("modal-confirm");
+            const noBtn = document.getElementById("modal-cancel");
+
+            modal.querySelector('#modal-message').textContent = modalMessage;
+            modal.classList.remove("hidden");
+
+            const cleanup = () => {
+                modal.classList.add("hidden");
+                yesBtn.removeEventListener("click", onYes);
+                noBtn.removeEventListener("click", onNo);
+              };
+          
+              const onYes = () => {
+                cleanup();
+                resolve(true);
+              };
+          
+              const onNo = () => {
+                cleanup();
+                resolve(false);
+              };
+          
+              yesBtn.addEventListener("click", onYes);
+              noBtn.addEventListener("click", onNo);
+        });
+    }
+
+    
+
     // Admin functions
     // Render user info for editing
     async handleAdminEdit(userId) {
@@ -2562,30 +2672,43 @@ class EventListener {
     }
 
     async handleDeleteUser(userId) {
-        const response = await this.renderer.fetchData('../controllers/admin/delete_users.php', {
-            method: "POST",
-            headers: { "Content-Type" : "application/json" },
-            body: JSON.stringify({
-                userId: userId
-            })
-        })
+        const userConfirm = await this.showConfirmModal("Are you sure you want to delete this user?");
 
-        if (response['admin']) {
-            location.reload();
+        if (userConfirm) {
+            const response = await this.renderer.fetchData('../controllers/admin/delete_users.php', {
+                method: "POST",
+                headers: { "Content-Type" : "application/json" },
+                body: JSON.stringify({
+                    userId: userId
+                })
+            })
+    
+            if (response['admin']) {
+                location.reload();
+            }
+        } else {
+            return;
         }
     }
 
     async handleDeleteQuestion(postId) {
-        const currentURL = window.location.href
-        const response = await this.renderer.fetchData('../controllers/deletepost.php', {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ post_id: postId, currentURL: currentURL })
-        });
+        const userConfirm = await this.showConfirmModal("Are you sure you want to delete this post?");
 
-        if (response['admin']) {
-            location.reload();
+        if (userConfirm) {
+            const currentURL = window.location.href
+            const response = await this.renderer.fetchData('../controllers/deletepost.php', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ post_id: postId, currentURL: currentURL })
+            });
+
+            if (response['admin']) {
+                location.reload();
+            }
+        } else {
+            return
         }
+        
     }
 
     async start() {

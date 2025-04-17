@@ -81,7 +81,7 @@
                     <input type="text" name="userInput" id="user-search" placeholder="Search users..." class="bg-transparent text-lg font-normal w-full rounded-lg border-1 border-gray-600 pl-10 p-4 focus:outline-none">
                 </div>
 
-                <div id="adduser-btn" class="relative text-3xl font-light text-white active:scale-90">
+                <div id="adduser-btn" class="relative text-3xl font-light text-white active:scale-90 cursor-pointer">
                     <span class="material-symbols-rounded custom-icon absolute top-1/4 left-4">
                         add
                     </span>
@@ -404,7 +404,7 @@
                     <input type="text" name="moduleInput" id="module-search" placeholder="Search modules by name" class="bg-transparent text-lg font-normal w-full rounded-lg border-1 border-gray-600 pl-10 p-4 focus:outline-none">
                 </div>
 
-                <div id="addmodule-btn" class="relative text-3xl font-light text-white active:scale-90">
+                <div id="addmodule-btn" class="relative text-3xl font-light text-white active:scale-90 cursor-pointer">
                     <span class="material-symbols-rounded custom-icon absolute top-1/4 left-4">
                         add
                     </span>
@@ -444,6 +444,60 @@
                 </div>
             </div>
         </section>
+
+        <section id="new-module" class="mt-4 hidden">
+            <div class="text-2xl font-bold  bg-gray-800 p-4 rounded-lg w-full">
+                Add New Module
+            </div>
+
+            <form id="create-module-form" action="" method="post" class="bg-gray-800 mt-4 p-4 rounded-lg ">
+                <div class="w-1/2 flex flex-col space-y-4 px-4">
+                    <div class="relative">
+                        <input type="text" name="newModuleName" id="module-name" class="w-full bg-transparent p-4 border-0 border-b-1 border-gray-600 focus:outline-0 focus:ring-0" placeholder="Enter module name...">
+                        <span class="font-light"></span>
+                    </div>
+                    <div class="relative flex items-center space-x-2">
+                        <label for="moduleBackground">Module Background Color:</label>
+                        <input type="color" name="moduleBackground" id="module-bg" class="focus:outline-0 focus:ring-0 cursor-pointer" placeholder="Enter last name...">
+                    </div>
+                    <div class="relative flex items-center space-x-2">
+                        <label for="moduleTextColor">Module Text Color:</label>
+                        <input type="color" name="moduleTextColor" id="module-text-color" class="border-gray-600 focus:outline-0 focus:ring-0 cursor-pointer" placeholder="Enter username...">
+                    </div>
+
+                    <div id="color-canvas" class="relative not-prose grid grid-cols-[auto_minmax(0,_1fr)] items-center gap-4 bg-black rounded-lg p-4">
+                        <div class="sticky top-28 z-9 bg-white lg:top-14 dark:bg-gray-950">&nbsp;</div>
+                        <div class="sticky top-28 z-9 col-start-2 grid grid-cols-11 justify-items-center gap-1.5 bg-white font-medium text-gray-950 *:rotate-180 *:[writing-mode:vertical-lr] max-sm:py-1 sm:gap-4 sm:*:rotate-0 sm:*:[writing-mode:horizontal-tb] lg:top-14 dark:bg-gray-950 dark:text-white">
+                            <div>50</div>
+                            <div>100</div>
+                            <div>200</div>
+                            <div>300</div>
+                            <div>400</div>
+                            <div>500</div>
+                            <div>600</div>
+                            <div>700</div>
+                            <div>800</div>
+                            <div>900</div>
+                            <div>950</div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="flex justify-between p-4">
+                    <button type="button" id="cancel-create-module" class="border-1 border-gray-600 p-2 px-8 rounded-lg cursor-pointer">Cancel</button>
+                    <button type="submit" class="bg-blue-500 text-white p-2 px-8 rounded-lg cursor-pointer">Create</button>
+                </div>
+    </div>
+
+    <div class="flex space-x-4">
+        <span class="font-medium">Preview your module:</span>
+
+        <span id="module-preview" class="w-fit h-fit text-sm font-medium rounded-full p-1 "></span>
+    </div>
+
+    </form>
+    </section>
     </div>
 
 

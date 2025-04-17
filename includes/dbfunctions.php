@@ -760,4 +760,12 @@ class Database
         }
         return [];
     }
+
+    public function addModulesFromAdmin($module_name, $bg_class, $text_class)
+    {
+        $sql = "INSERT INTO modules (module_name, bg_class, text_class)
+                VALUES (?, ?, ?)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$module_name, $bg_class, $text_class]);
+    }
 }
