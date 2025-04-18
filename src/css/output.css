@@ -1114,6 +1114,9 @@
   .h-6 {
     height: calc(var(--spacing) * 6);
   }
+  .h-7 {
+    height: calc(var(--spacing) * 7);
+  }
   .h-8 {
     height: calc(var(--spacing) * 8);
   }
@@ -2288,9 +2291,6 @@
   }
   .bg-\[\#f8f8f8\] {
     background-color: #f8f8f8;
-  }
-  .bg-\[\$\{moduleBgColor\.value\}\] {
-    background-color: ${moduleBgColor.value};
   }
   .bg-\[color\:var\(--my-color\)\] {
     background-color: var(--my-color);
@@ -3560,9 +3560,6 @@
   }
   .text-\[\#2691BF\] {
     color: #2691BF;
-  }
-  .text-\[\$\{moduleTextColor\.value\}\] {
-    color: ${moduleTextColor.value};
   }
   .text-amber-50 {
     color: var(--color-amber-50);

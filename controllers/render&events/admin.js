@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const userRenderer = new QuestionRenderer('#user-container', '#modules', eventListener.userId);
     const questionRenderer = new QuestionRenderer('#question-container');
     const moduleRenderer = new QuestionRenderer('#module-container', '#module-filter');
-    const canvasRenderer = new QuestionRenderer('#color-canvas')
+    const canvasRenderer = new QuestionRenderer('#color-canvas', '#edit-color-canvas')
 
 
     const userList = await userRenderer.fetchData('../controllers/admin/get_users.php');
@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     userRenderer.renderModules(moduleFilter);
     canvasRenderer.renderColorHolder();
     canvasRenderer.renderColorCanvas();
+    canvasRenderer.renderEditCanvas();
 
     eventListener.start();
 });

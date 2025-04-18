@@ -761,11 +761,41 @@ class Database
         return [];
     }
 
+    public function getModuleByName($module_name)
+    {
+        $sql = "SELECT * FROM modules WHERE module_name = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$module_name]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function addModulesFromAdmin($module_name, $bg_class, $text_class)
     {
         $sql = "INSERT INTO modules (module_name, bg_class, text_class)
                 VALUES (?, ?, ?)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$module_name, $bg_class, $text_class]);
+    }
+
+    public function updateModulesFromAdmin($module_id, $module_name, $bg_class, $text_class)
+    {
+        $sql = "UPDATE modules SET module_name = ?, bg_class = ?, text_class = ? WHERE module_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$module_name, $bg_class, $text_class, $module_id]);
+    }
+
+    public function deleteModulesFromAdmin($module_id, $module_post_count)
+    {
+        if ($module_post_count > 0) {
+            // Update posts to have module_id as 0 (Uncategorized)
+            $updateSql = "UPDATE posts SET module_id = 0 WHERE module_id = ?";
+            $updateStmt = $this->pdo->prepare($updateSql);
+            $updateStmt->execute([$module_id]);
+        }
+
+        // Delete the module
+        $deleteSql = "DELETE FROM modules WHERE module_id = ?";
+        $deleteStmt = $this->pdo->prepare($deleteSql);
+        $deleteStmt->execute([$module_id]);
     }
 }

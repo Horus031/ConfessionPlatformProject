@@ -231,6 +231,8 @@ class EventListener {
         this.moduleContainer = document.querySelector('#module-container');
         this.addNewModuleContainer = document.querySelector('#new-module')
         this.addModuleForm = document.querySelector('#create-module-form');
+        this.editModuleContainer = document.querySelector('#edit-module');
+        this.editModuleForm = document.querySelector('#edit-module-form');
         this.newUserContainer = document.querySelector('#new-user');
         this.editUserContainer = document.querySelector('#edit-user');
         this.questionManagement = document.querySelector('#question-management');
@@ -643,6 +645,30 @@ class EventListener {
             if (this.editPostForm) {
                 this.editPostForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
+                    const postTitle = _this.editPostForm.querySelector('#title');
+                    const postContent = _this.editPostForm.querySelector('#content');
+
+                    if (postTitle.value == '' && postContent.value == '') {
+                        _this.showError('title', 'Title is required');
+                        _this.showError('content', 'Content is required');
+                        return;
+                    }
+
+                    if (postTitle.value == '') {
+                        _this.clearError('content')
+                        _this.showError('title', 'Title is required');
+                        return;
+                    }
+
+                    if (postContent.value == '') {
+                        _this.clearError('title')
+                        _this.showError('content', 'Content is required');
+                        return;
+                    }
+
+
+                    _this.clearError('title')
+                    _this.clearError('content')
 
                     const formData = new FormData(_this.editPostForm);
 
@@ -1748,20 +1774,65 @@ class EventListener {
 
         if (this.moduleContainer) {
             const moduleLists = this.moduleContainer.querySelectorAll('tr');
+            
             moduleLists.forEach(module => {
                 const moduleActions = module.querySelector('#module-actions');
                 const moduleId = module.getAttribute('data-value');
                 moduleActions.addEventListener('click', function(e) {
+                    
                     if (e.target.closest('span[class^="edit-modulebtn"]')) {
-                        console.log('edit');
+                        const moduleData = module.querySelector('td:nth-child(1)');
+                        const moduleName = moduleData.querySelector('span').textContent;
+                        const moduleBgData = moduleData.querySelector('span').getAttribute('data-bg-color');
+                        const moduleTextData = moduleData.querySelector('span').getAttribute('data-text-color');
+                        const previewEditModule = document.querySelector('#edit-preview');
+                        _this.handleGetModuleInfo(moduleId, moduleName, moduleBgData, moduleTextData);
+
+                        _this.moduleManagement.classList.add('hidden');
+                        _this.editModuleContainer.classList.remove('hidden');
                     } else {
                         if (moduleId == '0') {
                             _this.showConfirmModal('You cannot delete this module!', true);
                         } else {
-                            _this.handleDeleteModule(moduleId);
+                            const modulePostCount = module.querySelector('#module-post-count').textContent;
+                            console.log(modulePostCount);
+                            _this.handleDeleteModule(moduleId, parseInt(modulePostCount));
                         }
                     }
                 })
+            })
+
+            const moduleSearch = this.moduleManagement.querySelector('#module-search');
+            moduleSearch.addEventListener('input', function() {
+                const searchValue = moduleSearch.value.trim().toLowerCase();
+                moduleLists.forEach(module => {
+                    const moduleName = module.querySelector('td:nth-child(1)').textContent.trim().toLowerCase();
+                    if (moduleName.includes(searchValue)) {
+                        module.classList.remove('hidden');
+                    } else {
+                        module.classList.add('hidden');
+                    }
+                });
+            });
+
+        }
+
+        if (this.editModuleContainer) {
+            this.editModuleContainer.addEventListener('click', function(e) {
+                if (e.target.closest('button[id="cancel-edit-module"]')) {
+                    _this.editModuleContainer.classList.add('hidden');
+                    _this.moduleManagement.classList.remove('hidden');
+
+
+                    _this.editModuleContainer.querySelector('input[id="edit-module-name"]').value = '';
+                    _this.editModuleContainer.querySelector('span[id="edit-bg"]').style.backgroundColor = '#000000';
+                    _this.editModuleContainer.querySelector('span[id="edit-bg"]').setAttribute('data-bg-color', '');
+                    _this.editModuleContainer.querySelector('span[id="edit-text-color"]').style.backgroundColor = '#000000';
+                    _this.editModuleContainer.querySelector('span[id="edit-text-color"]').setAttribute('data-text-color', '');
+                    _this.editModuleContainer.querySelector('span[id="edit-preview"]').style.removeProperty('background-color');
+                    _this.editModuleContainer.querySelector('span[id="edit-preview"]').style.removeProperty('color');
+                    _this.editModuleContainer.querySelector('span[id="edit-preview"]').textContent = '';
+                }
             })
         }
 
@@ -1772,8 +1843,10 @@ class EventListener {
                     _this.moduleManagement.classList.remove('hidden');
 
                     _this.addNewModuleContainer.querySelector('input[id="module-name"]').value = '';
-                    _this.addNewModuleContainer.querySelector('input[id="module-bg"]').value = '#000000';
-                    _this.addNewModuleContainer.querySelector('input[id="module-text-color"]').value = '#000000';
+                    _this.addNewModuleContainer.querySelector('span[id="module-bg"]').style.backgroundColor = '#000000';
+                    _this.addNewModuleContainer.querySelector('span[id="module-bg"]').setAttribute('data-bg-color', '');
+                    _this.addNewModuleContainer.querySelector('span[id="module-text-color"]').style.backgroundColor = '#000000';
+                    _this.addNewModuleContainer.querySelector('span[id="module-text-color"]').setAttribute('data-text-color', '');
                     _this.addNewModuleContainer.querySelector('span[id="module-preview"]').style.removeProperty('background-color');
                     _this.addNewModuleContainer.querySelector('span[id="module-preview"]').style.removeProperty('color');
                     _this.addNewModuleContainer.querySelector('span[id="module-preview"]').textContent = '';
@@ -1785,29 +1858,13 @@ class EventListener {
             const colorCanvas = this.addModuleForm.querySelector('#color-canvas');
             const colorType = this.addModuleForm.querySelector('#color-type')
             const moduleName = this.addModuleForm.querySelector('input[id="module-name"]');
-            const moduleBgColor = this.addModuleForm.querySelector('input[id="module-bg"]');
-            const moduleTextColor = this.addModuleForm.querySelector('input[id="module-text-color"]');
+            const moduleBgColor = this.addModuleForm.querySelector('span[id="module-bg"]');
+            const moduleTextColor = this.addModuleForm.querySelector('span[id="module-text-color"]');
             const previewModule = this.addModuleForm.querySelector('span[id="module-preview"]');
 
-            colorCanvas.addEventListener('click', function(e) {
-                if (e.target.closest('div[class^="color-box"]')) {
-                    const selectedBgColor = e.target.getAttribute('data-bg-color');
-                    const selectedTextColor = e.target.getAttribute('data-text-color');
-                    console.log(selectedBgColor, selectedTextColor);
-                    if (colorType.value === "background") {
-                        const rgbColor = _this.getComputedColor(selectedBgColor); // Extract the RGB color
-                        previewModule.style.backgroundColor = rgbColor; // Apply the color to the preview
-                        moduleBgColor.value = rgbColor; // Set the input value
-                        moduleBgColor.setAttribute('data-bg-color', selectedBgColor);
-                    } else if (colorType.value === "text") {
-                        const rgbColor = _this.getComputedColor(selectedBgColor); // Extract the RGB color
-                        previewModule.style.color = rgbColor; // Apply the color to the preview
-                        moduleTextColor.value = rgbColor; // Set the input value
-                        moduleTextColor.setAttribute('data-text-color', selectedTextColor);
-                    }
-                }
-            });
 
+            this.handleColorCanvas(colorCanvas, colorType, moduleBgColor, moduleTextColor, previewModule);
+            
             moduleName.addEventListener('input', function() {
                 const nameValue = moduleName.value.trim();
                 previewModule.textContent = nameValue;
@@ -1815,24 +1872,122 @@ class EventListener {
 
             this.addModuleForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
+                const formData = new FormData(_this.addModuleForm);
                 const backgroundData = moduleBgColor.getAttribute('data-bg-color');
                 const textData = moduleTextColor.getAttribute('data-text-color');
+                let isValid = true;
 
-                console.log(backgroundData,textData)
 
-                const formData = new FormData(_this.addModuleForm);
-                formData.set('moduleBackground', backgroundData)
-                formData.set('moduleTextColor', textData)
 
-                const response = await _this.renderer.fetchData('../controllers/admin/add_modules.php', {
-                    method: "POST",
-                    body: formData
-                })
+                if (moduleName.value == '') {
+                    moduleName.classList.add('animate-turnErrorColor');
+                    _this.showError('module-name', 'Module name is required.')
+                    isValid = false;
+                } else {
+                    try {
+                        const moduleValid = await _this.renderer.fetchData('../controllers/admin/validate_modules.php', {
+                            method: "POST",
+                            body: formData
+                        })
 
-                if (response['admin']) {
-                    location.reload();
+                        if (moduleValid.existingModule) {
+                            console.log(true);
+                            moduleName.classList.add('animate-turnErrorColor');
+                            _this.showError('module-name', 'This  module name is already taken, please try again')
+                            isValid = false;
+                        } else {
+                            moduleName.classList.remove('animate-turnErrorColor');
+                            _this.clearError('module-name');
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+                    
+                }
+
+                if (isValid) {
+                    formData.set('moduleBackground', backgroundData)
+                    formData.set('moduleTextColor', textData)
+
+                    const response = await _this.renderer.fetchData('../controllers/admin/add_modules.php', {
+                        method: "POST",
+                        body: formData
+                    })
+
+                    if (response['admin']) {
+                        location.reload();
+                    }
                 }
             });
+        }
+
+        if (this.editModuleForm) {
+            const editColorCanvas = this.editModuleForm.querySelector('#edit-color-canvas');
+            const colorType = this.editModuleForm.querySelector('#color-edit-type')
+            const moduleName = this.editModuleForm.querySelector('input[id="edit-module-name"]');
+            const moduleBgColor = this.editModuleForm.querySelector('span[id="edit-bg"]');
+            const moduleTextColor = this.editModuleForm.querySelector('span[id="edit-text-color"]');
+            const previewModule = this.editModuleForm.querySelector('span[id="edit-preview"]');
+
+            this.handleColorCanvas(editColorCanvas, colorType, moduleBgColor, moduleTextColor, previewModule);
+
+            moduleName.addEventListener('input', function() {
+                const nameValue = moduleName.value.trim();
+                previewModule.textContent = nameValue;
+            });
+
+            this.editModuleForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formData = new FormData(_this.editModuleForm);
+                const backgroundData = moduleBgColor.getAttribute('data-bg-color');
+                const textData = moduleTextColor.getAttribute('data-text-color');
+                let isValid = true;
+
+
+
+                if (moduleName.value == '') {
+                    moduleName.classList.add('animate-turnErrorColor');
+                    _this.showError('edit-module-name', 'Module name is required.')
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    formData.set('moduleId', moduleName.getAttribute('data-module-id'));
+                    formData.set('editBackground', backgroundData)
+                    formData.set('editText', textData)
+
+                    const response = await _this.renderer.fetchData('../controllers/admin/update_modules.php', {
+                        method: "POST",
+                        body: formData
+                    })
+
+                    if (response['admin']) {
+                        location.reload();
+                    }
+                }
+            });
+
+            // this.editModuleForm.addEventListener('submit', async function(e) {
+            //     e.preventDefault();
+
+            //     const backgroundData = moduleBgColor.getAttribute('data-bg-color');
+            //     const textData = moduleTextColor.getAttribute('data-text-color');
+
+
+            //     const formData = new FormData(_this.editModuleForm);
+            //     formData.set('moduleId', moduleName.getAttribute('data-module-id'));
+            //     formData.set('editBackground', backgroundData)
+            //     formData.set('editText', textData)
+
+            //     const response = await _this.renderer.fetchData('../controllers/admin/update_modules.php', {
+            //         method: "POST",
+            //         body: formData
+            //     })
+
+            //     if (response['admin']) {
+            //         location.reload();
+            //     }
+            // });
         }
     
     }
@@ -2544,7 +2699,7 @@ class EventListener {
     showConfirmModal(modalMessage, isModule = false) {
         return new Promise((resolve) => {
             const modal = document.getElementById("popup-modal");
-            const yesBtn = modal.querySelector("#modal-confirm");
+            let yesBtn = modal.querySelector("#modal-confirm");
             const noBtn = modal.querySelector("#modal-cancel");
             const buttonParent = modal.querySelector('div[class^="p-4"]');
 
@@ -2561,6 +2716,7 @@ class EventListener {
                     confirmBtn.className = "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center";
                     confirmBtn.textContent = "Yes, I'm sure";
                     buttonParent.insertBefore(confirmBtn, noBtn);
+                    yesBtn = confirmBtn;
                 }
                 noBtn.textContent = "Cancel";
             }
@@ -2592,39 +2748,58 @@ class EventListener {
     getComputedColor(tailwindClass) {
         const tempElement = document.createElement('div');
         tempElement.className = tailwindClass;
+        tempElement.textContent = 'Text';
         tempElement.style.display = 'none';
         document.body.appendChild(tempElement);
 
         const computedStyle = getComputedStyle(tempElement);
-        const color = computedStyle.backgroundColor || computedStyle.color;
+        let color;
+
+        // Check if the class is a text color class
+        if (tailwindClass.startsWith('text-')) {
+            color = computedStyle.color;
+        } else if (tailwindClass.startsWith('bg-')) {
+            color = computedStyle.backgroundColor;
+        }
 
         document.body.removeChild(tempElement);
 
         const rgbColor = this.convertOklchToRgb(color);
-        return rgbColor ? this.rgbToHex(rgbColor) : null;
-    }
-
-    rgbToHex(rgbColor) {
-        const match = rgbColor.match(/\d+/g);
-        if (!match || match.length < 3) return null;
-
-        const [r, g, b] = match.map(Number);
-        const toHex = (value) => value.toString(16).padStart(2, '0');
-        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+        return rgbColor ? rgbColor : null;
     }
 
     convertOklchToRgb(oklchStr) {
-        const parsed = culori.parse(oklchStr); // parse oklch string
-        const toRgb = culori.converter('rgb');   // converter to rgb
-        const rgb = toRgb(parsed);
-    
-        if (!rgb) return null;
-    
-        return `rgb(${Math.round(rgb.r * 255)}, ${Math.round(rgb.g * 255)}, ${Math.round(rgb.b * 255)})`;
-      }
+        // Check if the input is already in rgba format
+        if (oklchStr.startsWith('rgba')) {
+            return oklchStr; // Return the rgba color as-is
+        }
 
-    
+        // Handle OKLCH or other formats
+        try {
+            const parsed = culori.parse(oklchStr); // Parse the color
+            if (!parsed) {
+                console.error('Invalid color input:', oklchStr);
+                return null;
+            }
 
+            // Convert to RGB
+            const toRgb = culori.converter('rgb');
+            const rgb = toRgb(parsed);
+
+            if (!rgb) {
+                console.error('Failed to convert color:', parsed);
+                return null;
+            }
+
+            // Return the RGB color without alpha to conform to input value
+            const alpha = rgb.alpha !== undefined ? rgb.alpha : 1; // Default to 1 if alpha is not present
+            return `rgba(${Math.round(rgb.r * 255)}, ${Math.round(rgb.g * 255)}, ${Math.round(rgb.b * 255)}, ${alpha})`;
+        } catch (error) {
+            console.error('Error processing color input:', error);
+            return null;
+        }
+    }
+    
     // Admin functions
     // Render user info for editing
     async handleAdminEdit(userId) {
@@ -2652,8 +2827,6 @@ class EventListener {
         this.adminEditForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             const loadingOverlay = document.querySelector('#loading-overlay');
-
-            
 
             const formData = new FormData(_this.adminEditForm);
 
@@ -2723,7 +2896,29 @@ class EventListener {
         const _this = this;
         this.adminEditPostForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            const postTitle = _this.adminEditPostForm.querySelector('#title');
+            const postContent = _this.adminEditPostForm.querySelector('#content');
+
+            if (postTitle.value == '' && postContent.value == '') {
+                _this.showError('title', 'Title is required');
+                _this.showError('content', 'Content is required');
+                return;
+            }
+
+            if (postTitle.value == '') {
+                _this.clearError('content')
+                _this.showError('title', 'Title is required');
+                return;
+            }
+
+            if (postContent.value == '') {
+                _this.clearError('title')
+                _this.showError('content', 'Content is required');
+                return;
+            }
+
             const loadingOverlay = document.querySelector('#loading-overlay');
+
 
             const formData = new FormData(_this.adminEditPostForm);
             formData.set('currentURL', window.location.href);
@@ -2786,8 +2981,107 @@ class EventListener {
         }
     }
 
-    async handleDeleteModule(moduleId) {
-        const userConfirm = await this.showConfirmModal("Are you sure you want to delete this module?");
+    handleGetModuleInfo(moduleId, moduleName, backgroundColor, textColor) {
+        const editModuleName = this.editModuleForm.querySelector('#edit-module-name');
+        const editBgColor = this.editModuleForm.querySelector('#edit-bg');
+        const editTextColor = this.editModuleForm.querySelector('#edit-text-color');
+        const editprevModule = this.editModuleForm.querySelector('#edit-preview');
+
+        console.log(editModuleName, editBgColor, editTextColor, editprevModule);
+
+        const rgbColor = this.getComputedColor(backgroundColor);
+        const rgbText = this.getComputedColor(textColor);
+
+        editModuleName.value = moduleName;
+        editModuleName.setAttribute('data-module-id', moduleId);
+        editBgColor.style.backgroundColor = rgbColor;
+        editBgColor.setAttribute('data-bg-color', backgroundColor);
+        editTextColor.style.backgroundColor = rgbText;
+        editTextColor.setAttribute('data-text-color', textColor);
+        editprevModule.style.backgroundColor = rgbColor;
+        editprevModule.style.color = rgbText;
+        editprevModule.textContent = moduleName;
+
+    }
+
+    handleUpdateModules(moduleId, bgColor, textColor) {
+        
+    }
+
+    async handleDeleteModule(moduleId, modulePostCount) {
+        let userConfirm
+
+        try {
+            if (modulePostCount > 0) {
+                userConfirm = await this.showConfirmModal(`There are posts using this module (${modulePostCount}), these posts will be switch to "Uncategorized" module after deleting. Are you sure?`)
+            } else {
+                userConfirm = await this.showConfirmModal("Are you sure you want to delete this module?");
+            }
+
+
+            if (userConfirm) {
+                this.loadingOverlay.classList.remove('hidden');
+
+                const response = await this.renderer.fetchData('../controllers/admin/delete_modules.php', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        module_id: moduleId,
+                        module_post_count: modulePostCount
+                     })
+                })
+    
+                if (response['admin']) {
+                    location.reload();
+                }
+            } else {
+                return
+            }
+        } catch (error) {
+            console.log(error)
+        } finally {
+            this.loadingOverlay.classList.add('hidden');
+        }
+    }
+
+    handleColorCanvas(canvasContainer, colorType, moduleBgColor, moduleTextColor, previewModule) {
+        const _this = this;
+        canvasContainer.addEventListener('click', function (e) {
+            if (e.target.closest('div[class^="color-box"]')) {
+                const selectedBgColor = e.target.getAttribute('data-bg-color');
+                const selectedTextColor = e.target.getAttribute('data-text-color');
+        
+                console.log(selectedBgColor, selectedTextColor);
+        
+                if (colorType.value === "background") {
+                    const rgbColor = _this.getComputedColor(selectedBgColor); // Extract the RGB color
+                    if (rgbColor.startsWith('rgba')) {
+                        previewModule.style.backgroundColor = rgbColor; // Apply the rgba color
+                        moduleBgColor.style.backgroundColor = rgbColor; // Set the input value
+                        moduleBgColor.setAttribute('data-bg-color', selectedBgColor);
+                    } else if (_this.isValidHexColor(rgbColor)) {
+                        previewModule.style.backgroundColor = rgbColor; // Apply the hex color
+                        moduleBgColor.style.backgroundColor = rgbColor; // Set the input value
+                        moduleBgColor.setAttribute('data-bg-color', selectedBgColor);
+                    } else {
+                        console.error('Invalid color format:', rgbColor);
+                    }
+                } else if (colorType.value === "text") {
+                    const rgbColor = _this.getComputedColor(selectedTextColor); // Extract the RGB color
+                    if (rgbColor.startsWith('rgba')) {
+                        previewModule.style.color = rgbColor; // Apply the rgba color
+                        moduleTextColor.style.backgroundColor = rgbColor; // Set the input value
+                        moduleTextColor.setAttribute('data-text-color', selectedTextColor);
+                    } else if (_this.isValidHexColor(rgbColor)) {
+                        previewModule.style.color = rgbColor; // Apply the hex color
+                        moduleTextColor.style.backgroundColor = rgbColor; // Set the input value
+                        moduleTextColor.setAttribute('data-text-color', selectedTextColor);
+                    } else {
+                        console.error('Invalid color format:', rgbColor);
+                    }
+                }
+            }
+        });
     }
 
     async start() {

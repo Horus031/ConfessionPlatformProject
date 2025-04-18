@@ -329,14 +329,16 @@
 
             <form id="admin-edit-post" action="../controllers/edit_post.php" method="post" enctype="multipart/form-data" class="bg-gray-800 mt-4 p-4 rounded-lg ">
                 <input type="hidden" name="postValues" id="post-value">
-                <div class="mt-2 space-y-4">
+                <div class="relative mt-2 space-y-4">
                     <input type="text" name="titleValue" id="title" class="bg-transparent border-1 text-text border-text rounded-lg p-2 q px-4 w-full md:w-5/8 lg:w-4/9 dark:border-gray-600 dark:text-gray-400" placeholder="Post title">
+                    <span class="error-message absolute text-red-500 bottom-0 left-0 text-xs"></span>
                 </div>
 
-                <div class="mt-6 flex flex-col w-fit">
+                <div class="relative mt-6 flex flex-col w-fit">
                     <textarea name="contentValue" id="content" cols="40" rows="8" class="p-2 text-text border-1 border-text rounded-lg dark:border-gray-600 dark:text-gray-400" placeholder="Post content"></textarea>
+                    <span class="error-message absolute text-red-500 top-54 left-0 text-xs"></span>
 
-                    <div class="mt-4">
+                    <div class="mt-10">
                         <label for="imageURL" class="block py-1.5 px-3 cursor-pointer border-1 border-secondary rounded-md bg-[#f8f8f8] text-text text-center hover:bg-[#e8e8e8] dark:bg-transparent dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700">
                             <input type="file" name="imageURL" id="imageURL" class="hidden">
                             <span id="file-name" class="w-44 text-wrap line-clamp-1 m-auto">Upload your image</span>
@@ -457,12 +459,12 @@
                         <span class="font-light"></span>
                     </div>
                     <div class="relative flex items-center space-x-2">
-                        <label for="moduleBackground">Module Background Color:</label>
-                        <input type="color" disabled name="moduleBackground" id="module-bg" class="focus:outline-0 focus:ring-0" placeholder="Enter last name...">
+                        <span>Module Background Color:</span>
+                        <span name="moduleBackground" id="module-bg" class="w-12 h-7"></span>
                     </div>
                     <div class="relative flex items-center space-x-2">
-                        <label for="moduleTextColor">Module Text Color:</label>
-                        <input type="color" disabled name="moduleTextColor" id="module-text-color" class="border-gray-600 focus:outline-0 focus:ring-0" placeholder="Enter username...">
+                        <span>Module Text Color:</span>
+                        <span name="moduleTextColor" id="module-text-color" class="w-12 h-7"></span>
                     </div>
 
                     <div class="flex space-x-4">
@@ -482,6 +484,64 @@
                     <h3 class="text-2xl font-medium text-white">Choose Module Color:</h3>
                     <div id="color-canvas" class="relative not-prose grid grid-cols-[auto_minmax(0,_1fr)] items-center gap-4 bg-black rounded-lg p-4">
                         <select id="color-type" class="sticky flex items-center top-28 z-9 bg-white lg:top-14 dark:bg-gray-950 cursor-pointer focus:outline-0 focus:ring-0">
+                            <option value="background">Background Color</option>
+                            <option value="text">Text Color</option>
+                        </select>
+                        <div class="sticky top-28 z-9 col-start-2 grid grid-cols-11 justify-items-center gap-1.5 bg-white font-medium text-gray-950 *:rotate-180 *:[writing-mode:vertical-lr] max-sm:py-1 sm:gap-4 sm:*:rotate-0 sm:*:[writing-mode:horizontal-tb] lg:top-14 dark:bg-gray-950 dark:text-white">
+                            <div>50</div>
+                            <div>100</div>
+                            <div>200</div>
+                            <div>300</div>
+                            <div>400</div>
+                            <div>500</div>
+                            <div>600</div>
+                            <div>700</div>
+                            <div>800</div>
+                            <div>900</div>
+                            <div>950</div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <section id="edit-module" class="mt-4 hidden">
+            <div class="text-2xl font-bold  bg-gray-800 p-4 rounded-lg w-full">
+                Edit Module
+            </div>
+
+            <form action="" id="edit-module-form" method="post" class="bg-gray-800 flex justify-between mt-4 p-4 rounded-lg">
+                <div class="w-1/2 flex flex-col space-y-4 px-4">
+                    <div class="relative">
+                        <input type="text" name="editModuleName" id="edit-module-name" class="w-full bg-transparent p-4 border-0 border-b-1 border-gray-600 focus:outline-0 focus:ring-0" placeholder="Enter module name...">
+                        <span class="font-light"></span>
+                    </div>
+                    <div class="relative flex items-center space-x-2">
+                        <span>Module Background Color:</span>
+                        <span name="editBackground" id="edit-bg" class="w-12 h-7"></span>
+                    </div>
+                    <div class="relative flex items-center space-x-2">
+                        <span>Module Text Color:</span>
+                        <span name="editText" id="edit-text-color" class="w-12 h-7"></span>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <span class="font-medium">Preview your module:</span>
+
+                        <span id="edit-preview" class="w-fit h-fit text-sm font-medium rounded-full p-1 "></span>
+                    </div>
+
+                    <div class="flex justify-between p-4">
+                        <button type="button" id="cancel-edit-module" class="border-1 border-gray-600 p-2 px-8 rounded-lg cursor-pointer">Cancel</button>
+                        <button type="submit" class="bg-blue-500 text-white p-2 px-8 rounded-lg cursor-pointer">Save</button>
+                    </div>
+                </div>
+
+
+                <div>
+                    <h3 class="text-2xl font-medium text-white">Choose Module Color:</h3>
+                    <div id="edit-color-canvas" class="relative not-prose grid grid-cols-[auto_minmax(0,_1fr)] items-center gap-4 bg-black rounded-lg p-4">
+                        <select id="color-edit-type" class="sticky flex items-center top-28 z-9 bg-white lg:top-14 dark:bg-gray-950 cursor-pointer focus:outline-0 focus:ring-0">
                             <option value="background">Background Color</option>
                             <option value="text">Text Color</option>
                         </select>

@@ -1653,11 +1653,11 @@ class QuestionRenderer {
 
             moduleElement.innerHTML = `
                 <td class="text-left">
-                    <span class="text-sm font-medium rounded-full p-1 ${module.bg_class} ${module.text_class}">${module.module_name}</span>
+                    <span class="text-sm font-medium rounded-full p-1 ${module.bg_class} ${module.text_class}" data-bg-color="${module.bg_class}" data-text-color="${module.text_class}">${module.module_name}</span>
                 </td>
             
                 <td>
-                    <span>${module.post_using}</span>
+                    <span id="module-post-count">${module.post_using}</span>
                 </td>
 
                 <td>
@@ -1707,11 +1707,37 @@ class QuestionRenderer {
                 colorBox.title = `${color}-${shade}`;
                 colorRow.appendChild(colorBox)
             });
-            this.container.appendChild(colorTitle);
-            this.container.appendChild(colorRow);
-        });
 
-        
+            this.container.appendChild(colorTitle);
+            this.container.appendChild(colorRow); 
+        });
+    }
+
+    renderEditCanvas() {
+        const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose', 'slate', 'gray', 'zinc', 'neutral', 'stone'];
+        const shades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+
+        const container = document.createElement('div');
+        container.classList.add('grid', 'grid-cols-11', 'gap-2', 'p-4');
+
+        colors.forEach(color => {
+            const colorTitle = document.createElement('p');
+            colorTitle.classList.add('font-medium', 'text-white', 'capitalize', 'sm:pr-12')
+            colorTitle.textContent = color;
+            const colorRow = document.createElement('div');
+            colorRow.classList.add('grid', 'grid-cols-11', 'gap-1.5', 'sm:gap-4');
+            shades.forEach(shade => {
+                const colorBox = document.createElement('div');
+                colorBox.setAttribute('data-bg-color', `bg-${color}-${shade}`);
+                colorBox.setAttribute('data-text-color', `text-${color}-${shade}`);
+                colorBox.classList.add('color-box', `bg-${color}-${shade}`, 'aspect-1/1', 'w-full', 'rounded-sm', 'border', 'border-white/20', 'outline', '-outline-offset-1', 'outline-black/10', 'sm:rounded-md', 'hover:scale-110', 'active:scale-90')
+                colorBox.title = `${color}-${shade}`;
+                colorRow.appendChild(colorBox)
+            });
+
+            this.filterContainer.appendChild(colorTitle);
+            this.filterContainer.appendChild(colorRow); 
+        });
     }
 
     renderColorHolder() {
