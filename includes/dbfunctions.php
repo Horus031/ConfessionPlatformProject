@@ -729,6 +729,28 @@ class Database
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function verifyPassword($userId, $currentPassword)
+    {
+        $sql = "SELECT password FROM users WHERE user_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$userId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($result && password_verify($currentPassword, $result['password'])) {
+            return true;
+        }
+        return false;
+    }
+
+    public function changePassword($userId, $newPassword)
+    {
+        $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+
+        $sql = "UPDATE users SET password = ? WHERE user_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$hashedPassword, $userId]);
+    }
+
 
     // Admin Functions
     public function getUsersFromAdmin()

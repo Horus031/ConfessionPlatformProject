@@ -921,6 +921,8 @@ class QuestionRenderer {
                 </span>
                 <input type="text" name="emailValue" id="edit-email" class="bg-transparent border-1 text-text border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your email" value="${userInfo.email ?? ''}">
             </div>
+
+            <button type="button" id="change-password-btn" class="w-fit text-white bg-black p-4 font-medium rounded-lg dark:border-1 dark:text-gray-400 dark:bg-transparent dark:border-gray-700 cursor-pointer active:scale-90">Change your password</button>
         `;
 
         const bioElement = document.createElement('textarea');

@@ -1,0 +1,14 @@
+"filename", "language", "PHP", "JavaScript", "PostCSS", "comment", "blank", "total"
+"d:\xampp\htdocs\mywebsite\controllers\admin\add_modules.php", "PHP", 6, 0, 0, 0, 0, 6
+"d:\xampp\htdocs\mywebsite\controllers\admin\update_modules.php", "PHP", 17, 0, 0, 0, 6, 23
+"d:\xampp\htdocs\mywebsite\controllers\admin\validate_modules.php", "PHP", 18, 0, 0, 0, 4, 22
+"d:\xampp\htdocs\mywebsite\controllers\change_password.php", "PHP", 0, 0, 0, 0, 1, 1
+"d:\xampp\htdocs\mywebsite\controllers\render&events\admin.js", "JavaScript", 0, 1, 0, 0, 0, 1
+"d:\xampp\htdocs\mywebsite\includes\dbfunctions.php", "PHP", 13, 0, 0, 0, 2, 15
+"d:\xampp\htdocs\mywebsite\src\css\output.css", "PostCSS", 0, 0, 99, 0, 0, 99
+"d:\xampp\htdocs\mywebsite\src\js\events.js", "JavaScript", 0, 272, 0, 21, 58, 351
+"d:\xampp\htdocs\mywebsite\src\js\render.js", "JavaScript", 0, 24, 0, 0, 4, 28
+"d:\xampp\htdocs\mywebsite\views\admin.html.php", "PHP", 53, 0, 0, 0, 7, 60
+"d:\xampp\htdocs\mywebsite\views\editpost.html.php", "PHP", 2, 0, 0, 0, 0, 2
+"d:\xampp\htdocs\mywebsite\views\login.html.php", "PHP", 3, 0, 0, 0, 0, 3
+"Total", "-", 112, 297, 99, 21, 82, 611

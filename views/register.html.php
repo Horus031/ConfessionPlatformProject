@@ -73,7 +73,11 @@
                     <span class="absolute left-2 bottom-2 material-symbols-rounded custom-icon">
                         lock
                     </span>
+                    <span class="password-visible absolute right-3 top-1/5 material-symbols-rounded custom-icon text-gray-900 dark:text-gray-400 cursor-pointer select-none">
+                        visibility_off
+                    </span>
                     <input type="password" id="password" placeholder="Password" class="border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black focus:outline-0" autocomplete="true">
+
                     <span class="error-message absolute text-red-500 -bottom-6 left-0 text-xs"></span>
                 </div>
 
@@ -82,7 +86,11 @@
                     <span class="absolute left-2 bottom-2 material-symbols-rounded custom-icon">
                         lock
                     </span>
+                    <span class="password-visible absolute right-3 top-1/5 material-symbols-rounded custom-icon text-gray-900 dark:text-gray-400 cursor-pointer select-none">
+                        visibility_off
+                    </span>
                     <input type="password" id="confirm-password" placeholder="Confirm password" class="border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black focus:outline-0" autocomplete="true">
+
                     <span class="error-message absolute text-red-500 -bottom-6 left-0 text-xs"></span>
                 </div>
 

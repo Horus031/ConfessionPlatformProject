@@ -259,6 +259,15 @@ class EventListener {
         console.log('main')
 
         if (this.loginForm) {
+            const passwordIcon = this.loginForm.querySelector('span[class^="password-visible"]');
+            console.log(passwordIcon)
+            const passwordInput = passwordIcon.nextElementSibling;
+
+            passwordIcon.addEventListener('click', function(e) {
+                _this.handleShowPassword(passwordIcon, passwordInput)
+            })
+
+
             this.loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 let username = _this.loginForm.querySelector('#username').value;
@@ -297,6 +306,16 @@ class EventListener {
                     }
                 }
                 
+            })
+        }
+
+        if (this.step1Register) {
+            const passwordIcon = this.step1Register.querySelectorAll('span[class^="password-visible"]');
+            passwordIcon.forEach(password => {
+                password.addEventListener('click', function(e) {
+                    const passwordInput = e.target.nextElementSibling;
+                    _this.handleShowPassword(e.target, passwordInput);
+                })
             })
         }
 
@@ -480,7 +499,7 @@ class EventListener {
         
                         results.forEach(result => {
                             const suggestion = document.createElement('div');
-                            suggestion.classList.add('py-2', 'px-4', 'text-xl', 'hover:bg-gray-200', 'cursor-pointer');
+                            suggestion.classList.add('text-text', 'py-2', 'px-4', 'text-xl', 'hover:bg-gray-200', 'dark:text-gray-400', 'dark:hover:bg-gray-700','cursor-pointer');
         
                             if (result.type === 'title') {
                                 searchTitle.textContent = `Result by posts' title with your search`;
@@ -747,9 +766,13 @@ class EventListener {
            if (this.editUserForm) {
                 const tagNameValue = document.querySelector('input[id="edit-tagname"]');
 
-                this.editUserForm.addEventListener('click', function(e) {
+                this.editUserForm.addEventListener('click', async function(e) {
                     if (e.target.closest('button[id^="cancel-"]')) {
                         window.location.href = `../views/main.html.php?page=profile&tag_name=${tagNameValue.value}`;
+                    } else if (e.target.closest('button[id="change-password-btn"]')) {
+                        const passwordForm = _this.createPasswordModal();
+
+                        _this.handleUpdatePassword(passwordForm);
                     }
                 })
 
@@ -2742,6 +2765,170 @@ class EventListener {
             yesBtn?.addEventListener("click", onYes);
             noBtn.addEventListener("click", onNo);
         });
+    }
+
+    createPasswordModal() {
+        const _this = this;
+        const passwordModal = document.createElement('div');
+        passwordModal.id = "overlay";
+        passwordModal.className = `bg-black/60 fixed w-full h-full justify-center items-center z-50 top-0 left-0`;
+        passwordModal.innerHTML = `
+            <div tabindex="-1" class="flex fixed overflow-y-auto overflow-x-hidden z-60 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                <div class="relative p-4 w-full max-w-md max-h-full">
+                    <!-- Modal content -->
+                    <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                                Change your password
+                            </h3>
+                            <button id="close-password-btn" type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-4 md:p-5">
+                            <form id="change-password-form" class="space-y-4" action="#">
+                                <div class="relative text-3xl font-light">
+                                    <label for="currentPassword" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your current password</label>
+                                    <span class="password-visible absolute right-3 top-1/2 material-symbols-rounded custom-icon text-gray-900 dark:text-gray-400 cursor-pointer select-none">
+                                        visibility_off
+                                    </span>
+                                    <input type="password" name="currentPassword" id="currentPassword" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white font-normal" placeholder="" autocomplete="true" />
+                                    <span class="error-message absolute text-red-500 font-bold left-0 text-xs"></span>
+                                    
+                                </div>
+                                <div class="relative text-3xl font-light">
+                                    <label for="newPassword" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your new password</label>
+                                    <span class="password-visible absolute right-3 top-1/2 material-symbols-rounded custom-icon text-gray-900 dark:text-gray-400 cursor-pointer select-none">
+                                        visibility_off
+                                    </span>
+                                    <input type="password" name="newPassword" id="newPassword" placeholder="" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white font-normal" autocomplete="true"/>
+                                    <span class="error-message absolute text-red-500 font-bold left-0 text-xs"></span>
+                                </div>
+                                <div class="relative text-3xl font-light ">
+                                    <label for="confirmPassword" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
+                                    <span class="password-visible absolute right-3 top-1/2 material-symbols-rounded custom-icon text-gray-900 dark:text-gray-400 cursor-pointer select-none">
+                                        visibility_off
+                                    </span>
+                                    <input type="password" name="confirmPassword" id="confirmPassword" placeholder="" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white font-normal" autocomplete="true"/>
+                                    <span class="error-message absolute text-red-500 font-bold left-0 text-xs"></span>
+                                </div>
+        
+                                <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Change password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        `;
+
+        document.body.appendChild(passwordModal)
+
+        document.querySelector('#close-password-btn').addEventListener('click', function() {
+            document.body.removeChild(passwordModal);
+        })
+
+        document.querySelector('#overlay').addEventListener('click', function() {
+            document.body.removeChild(passwordModal);
+        })
+
+        const passwordIcon = document.querySelectorAll('span[class^="password-visible"]')
+        passwordIcon.forEach(password => {
+            const passwordInput = password.nextElementSibling;
+            password.addEventListener('click', function(e) {
+                _this.handleShowPassword(e.target, passwordInput)
+            })
+        })
+
+
+        return document.querySelector('#change-password-form');
+    }
+
+    handleShowPassword(showButton, passwordInput) {
+        if (showButton.textContent.includes('off')) {
+            showButton.textContent = 'visibility';
+            passwordInput.type = 'text';
+        } else {
+            showButton.textContent = 'visibility_off';
+            passwordInput.type = 'password';
+        }
+    }
+
+    handleUpdatePassword(passwordForm) {
+        const _this = this;
+        const currentPassword = passwordForm.querySelector('input[id="currentPassword"]');
+        const newPassword = passwordForm.querySelector('input[id="newPassword"]');
+        const confirmPassword = passwordForm.querySelector('input[id="confirmPassword"]');
+        passwordForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            let isValid = true;
+
+            const formData = new FormData(passwordForm);
+            formData.set('userId', _this.userId);
+
+            if (currentPassword.value.trim() == '') {
+                _this.showError('currentPassword', 'Password is required')
+                let isValid = false;
+                return
+            } else {
+                _this.clearError('currentPassword');
+            }
+
+            const response = await _this.renderer.fetchData('../controllers/validate_password.php', {
+                method: "POST",
+                body: formData
+            })
+
+            if (response['wrongPassword']) {
+                _this.showError('currentPassword', 'Incorrect password, please try again')
+                return
+            } else {
+                _this.clearError('currentPassword');
+            }
+
+            if (currentPassword.value.trim() !== '' && newPassword.value.trim() == '') {
+                _this.showError('newPassword', 'New password is required');
+                isValid = false;
+                return
+            } else {
+                _this.clearError('newPassword');
+            }
+
+            if (currentPassword.value.trim() !== '' && confirmPassword.value.trim() == '') {
+                _this.showError('confirmPassword', 'Confirm password is required');
+                isValid = false;
+                return
+            } else {
+                _this.clearError('confirmPassword');
+            }
+
+            if (newPassword.value.trim() !== confirmPassword.value.trim()) {
+                _this.showError('confirmPassword', 'Password does not match');
+                isValid = false;
+                return
+            } else {
+                _this.clearError('confirmPassword');
+            }
+
+            if (isValid) {
+                const changePasswordResult = await _this.renderer.fetchData('../controllers/change_password.php', {
+                    method: "POST",
+                    body: formData
+                })
+
+                if (changePasswordResult['error']) {
+                    console.log('Error changing password:', changePasswordResult['error'])
+                } else {
+                    location.reload();
+                }
+            }
+
+
+        })
     }
 
     // Function to extract the computed color from a Tailwind class
