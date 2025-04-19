@@ -751,6 +751,13 @@ class Database
         $stmt->execute([$hashedPassword, $userId]);
     }
 
+    public function changePasswordByEmail($email, $hashedPassword)
+    {
+        $sql = "UPDATE users SET password = ? WHERE email = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$hashedPassword, $email]);
+    }
+
 
     // Admin Functions
     public function getUsersFromAdmin()

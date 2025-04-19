@@ -56,7 +56,7 @@
                     <span class="absolute left-2 bottom-2 material-symbols-outlined custom-icon">
                         account_circle
                     </span>
-                    <input type="text" id="username" placeholder="Username" class="border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black focus:outline-0" autocomplete="true">
+                    <input type="text" id="username" placeholder="Username" class="border-0 border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black focus:outline-0 focus:ring-0" autocomplete="true">
                     <span class="error-message absolute text-red-500 -bottom-6 left-0 text-xs"></span>
                 </div>
 
@@ -65,7 +65,7 @@
                     <span class="absolute left-2 bottom-2 material-symbols-outlined custom-icon">
                         mail
                     </span>
-                    <input type="email" id="email" placeholder="Email" class="border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black focus:outline-0" autocomplete="true">
+                    <input type="email" id="email" placeholder="Email" class="border-0 border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black focus:outline-0 focus:ring-0" autocomplete="true">
                     <span class="error-message absolute text-red-500 -bottom-6 left-0 text-xs"></span>
                 </div>
 
@@ -76,7 +76,7 @@
                     <span class="password-visible absolute right-3 top-1/5 material-symbols-rounded custom-icon text-gray-900 dark:text-gray-400 cursor-pointer select-none">
                         visibility_off
                     </span>
-                    <input type="password" id="password" placeholder="Password" class="border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black focus:outline-0" autocomplete="true">
+                    <input type="password" id="password" placeholder="Password" class="border-0 border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black focus:outline-0 focus:ring-0" autocomplete="true">
 
                     <span class="error-message absolute text-red-500 -bottom-6 left-0 text-xs"></span>
                 </div>
@@ -89,14 +89,14 @@
                     <span class="password-visible absolute right-3 top-1/5 material-symbols-rounded custom-icon text-gray-900 dark:text-gray-400 cursor-pointer select-none">
                         visibility_off
                     </span>
-                    <input type="password" id="confirm-password" placeholder="Confirm password" class="border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black focus:outline-0" autocomplete="true">
+                    <input type="password" id="confirm-password" placeholder="Confirm password" class="border-0 border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black focus:outline-0 focus:ring-0" autocomplete="true">
 
                     <span class="error-message absolute text-red-500 -bottom-6 left-0 text-xs"></span>
                 </div>
 
 
                 <div class="flex flex-col justify-center items-center">
-                    <input type="button" id="registerNextBtn" value="Register" class="bg-linear-to-br from-gradient1 to-gradient2 rounded-full mt-9 p-3 pl-8 w-72 text-white text-xl text-center font-semibold shadow-text shadow-[0_6px_16px_-6px]">
+                    <input type="button" id="registerNextBtn" value="Register" class="bg-linear-to-br from-gradient1 to-gradient2 rounded-full mt-9 p-3 pl-8 w-72 text-white text-xl text-center font-semibold shadow-text shadow-[0_6px_16px_-6px] cursor-pointer">
                     <div class="mt-8">
                         <span class="text-text-light">Already have account?</span>
                         <a href="./login.html.php" class="text-form-btn">Login</a>

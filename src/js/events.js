@@ -179,6 +179,12 @@ class EventListener {
         this.contactForm = document.querySelector('#contactForm');
         this.toastMessage = document.querySelector('#toast-container');
         this.loginForm = document.querySelector('#login-form');
+        this.validEmailContainer = document.querySelector('#valid-email-container');
+        this.validEmailForm = document.querySelector('#valid-email-form');
+        this.otpContainer = document.querySelector('#otp-container');
+        this.otpForm = document.querySelector('#otp-form');
+        this.newPasswordContainer = document.querySelector('#new-password-container');
+        this.newPasswordForm = document.querySelector('#new-password-form');
         this.menuBtn = document.querySelector('#openMenu');
         this.closeBtn = document.querySelector('#closeMenu');
         this.menu = document.querySelector('#menu');
@@ -260,7 +266,6 @@ class EventListener {
 
         if (this.loginForm) {
             const passwordIcon = this.loginForm.querySelector('span[class^="password-visible"]');
-            console.log(passwordIcon)
             const passwordInput = passwordIcon.nextElementSibling;
 
             passwordIcon.addEventListener('click', function(e) {
@@ -478,6 +483,151 @@ class EventListener {
                 }
             }
             });
+        }
+
+        if (this.validEmailForm) {
+            this.validEmailForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const emailInput = _this.validEmailForm.querySelector('#email')
+            const emailValue = emailInput.value.trim();
+
+
+            // Validate email
+            if (emailValue === '') {
+                _this.showError('email', 'Email is required')
+                emailInput.classList.add('animate-turnErrorColor');
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+                _this.showError('email', 'Invalid email format');
+                emailInput.classList.add('animate-turnErrorColor');
+            } else {
+                emailInput.classList.remove('animate-turnErrorColor');
+                const formData = new FormData(_this.validEmailForm);
+
+
+                try {
+                    _this.loadingOverlay.classList.remove('hidden')
+
+                    const existingEmail = await _this.renderer.fetchData('../controllers/send_otp.php', {
+                        method: "POST",
+                        body: formData
+                    })
+    
+                    if (existingEmail['wrongEmail']) {
+                        _this.showError('email', 'Email not found, please try again')
+                    } else {
+                        _this.validEmailContainer.classList.remove('animate-slideLeft');
+                        _this.validEmailContainer.classList.add('animate-slideAndFadeOut');
+    
+                        setTimeout(function() {
+                            _this.otpContainer.classList.remove('hidden');
+                            _this.otpContainer.classList.add('animate-slideLeft');
+                        }, 1500)
+                    }
+                } catch (error) {
+                    console.log(error)
+                } finally {
+                    _this.loadingOverlay.classList.add('hidden')
+                }
+            } 
+            });
+        }
+
+        if (this.otpForm) {
+            this.otpForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const codeList = _this.otpForm.querySelectorAll('input[id^="code-"]');
+                let mergedCode = '';
+                codeList.forEach(code => {
+                    mergedCode += code.value;
+                })
+
+                const OtpValidation = await _this.renderer.fetchData('../controllers/verify_otp.php', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json"},
+                    body: JSON.stringify({ otp: mergedCode })
+                });
+
+                if (OtpValidation['wrongOTP']) {
+                    _this.showError('code-container', 'Invalid OTP, please try again.')
+                } else {
+                    _this.clearError('code-container');
+
+                    _this.otpContainer.classList.remove('animate-slideLeft');
+                    _this.otpContainer.classList.add('animate-slideAndFadeOut');
+
+                    setTimeout(function() {
+                        _this.newPasswordContainer.classList.remove('hidden');
+                        _this.newPasswordContainer.classList.add('animate-slideLeft');
+                    }, 1500)
+                } 
+            })
+        }
+
+        if (this.newPasswordForm) {
+            const passwordIcon = _this.newPasswordForm.querySelectorAll('span[class^="password-visible"]');
+
+            passwordIcon.forEach(password => {
+                const passwordInput = password.nextElementSibling;
+                password.addEventListener('click', function(e) {
+                    _this.handleShowPassword(e.target, passwordInput)
+                })
+            })
+
+            this.newPasswordForm.addEventListener('submit', async function(e) {
+                
+
+
+                e.preventDefault();
+                const newPassword = _this.newPasswordForm.querySelector('#new-password');
+                const confirmPassword = _this.newPasswordForm.querySelector('#confirm-password');
+
+                if (newPassword.value.trim() == "") {
+                    newPassword.classList.add('animate-turnErrorColor')
+                    _this.showError('new-password', 'New password is required');
+                    return;
+                } else {
+                    newPassword.classList.remove('animate-turnErrorColor')
+                    _this.clearError('new-password');
+                }
+
+                if (confirmPassword.value.trim() == '') {
+                    confirmPassword.classList.add('animate-turnErrorColor')
+                    _this.showError('confirm-password', 'Confirm password is required');
+                    return;
+                } else {
+                    confirmPassword.classList.remove('animate-turnErrorColor')
+                    _this.clearError('confirm-password');
+                }
+
+                if (confirmPassword.value.trim() !== newPassword.value.trim()) {
+                    confirmPassword.classList.add('animate-turnErrorColor');
+                    _this.showError('confirm-password', 'Password does not match, please try again');
+                    return
+                } else {
+                    confirmPassword.classList.remove('animate-turnErrorColor');
+                    _this.clear('confirm-password');
+                }
+
+                try {
+                    _this.loadingOverlay.classList.remove('hidden');
+                    const formData = new FormData(_this.newPasswordForm);
+
+                    const passwordResponse = await _this.renderer.fetchData('../controllers/update_password.php', {
+                        method: "POST",
+                        body: formData
+                    })
+
+                    if (passwordResponse['success']) {
+                        window.location.href = './login.html.php';
+                    }
+                } catch (error) {
+                    console.log(error)
+                } finally {
+                    _this.loadingOverlay.classList.add('hidden');
+                }
+
+            })
         }
 
 

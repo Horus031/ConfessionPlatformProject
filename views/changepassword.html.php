@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Change Password</title>
     <link rel="stylesheet" href="/mywebsite/src/css/output.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
@@ -30,19 +30,89 @@
             <path d="M1042 1024L1034 995.5C1026 967 1010 910 1025 853.2C1040 796.3 1086 739.7 1088 682.8C1090 626 1048 569 1014.2 512C980.3 455 954.7 398 978.2 341.2C1001.7 284.3 1074.3 227.7 1083.5 170.8C1092.7 114 1038.3 57 1011.2 28.5L984 0L1919 0L1919 28.5C1919 57 1919 114 1919 170.8C1919 227.7 1919 284.3 1919 341.2C1919 398 1919 455 1919 512C1919 569 1919 626 1919 682.8C1919 739.7 1919 796.3 1919 853.2C1919 910 1919 967 1919 995.5L1919 1024Z" fill="#FFFFFF" stroke-linecap="round" stroke-linejoin="miter" />
         </svg>
 
-        <div class="absolute top-[30%] right-[14%] w-[26%] animate-slideLeft transition-all">
+        <div id="valid-email-container" class="absolute top-[30%] right-[14%] w-[26%] animate-slideLeft transition-all">
             <div class="text-[#3ea29a] space-y-4">
                 <h1 class="text-4xl font-semibold">
-                    Login
+                    Change your password
                 </h1>
-                <p>Sign in to your account</p>
+                <p>Please provide us your email's account</p>
             </div>
-            <form id="login-form" action="../controllers/login.php" method="post" class="font-poppins mx-auto ml-8 mt-8 space-y-8 w-full">
+            <form id="valid-email-form" action="" method="post" class="font-poppins mx-auto ml-8 mt-8 space-y-8 w-full">
                 <div class="relative text-gray-500 text-3xl">
                     <span class="absolute left-2 bottom-2 material-symbols-rounded custom-icon">
-                        person
+                        mail
                     </span>
-                    <input type="text" name="username" id="username" placeholder="Username" class="border-0 border-b-1 border-[#3ea29a] px-12 pb-2 w-full text-lg text-black focus:outline-0 focus:ring-0 valid:border-[#3ea29a]">
+                    <input type="text" name="email" id="email" placeholder="Email" class="border-0 border-b-1 border-[#3ea29a] px-12 pb-2 w-full text-lg text-black focus:outline-0 focus:ring-0 valid:border-[#3ea29a]">
+                    <span class="error-message absolute text-red-500 -bottom-6 left-0 text-xs"></span>
+                </div>
+
+                <div class="flex flex-col justify-center items-center">
+                    <input type="submit" name="confirmEmail" value="Confirm" class="bg-linear-to-br from-gradient1 to-gradient2 rounded-full p-3 w-72 text-white text-xl text-center font-semibold shadow-text shadow-[0_6px_16px_-6px] cursor-pointer">
+                    <div class="mt-8">
+                        <span class="text-text-light">Want to back to login page?</span>
+                        <a href="./login.html.php" class="text-form-btn">Login</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div id="otp-container" class="absolute top-[30%] right-[14%] w-[26%] animate-slideLeft transition-all hidden">
+            <div class="text-[#3ea29a] space-y-4">
+                <h1 class="text-4xl font-semibold">
+                    OTP Validation
+                </h1>
+                <p>Please introduce the 6 digit code we sent via email.</p>
+            </div>
+            <form id="otp-form" class="max-w-sm mx-auto mt-6">
+                <div id="code-container" class="flex mb-2 space-x-2 justify-center rtl:space-x-reverse">
+                    <div>
+                        <label for="code-1" class="sr-only">First code</label>
+                        <input type="text" maxlength="1" data-focus-input-init data-focus-input-next="code-2" id="code-1" class="block w-12 h-12 py-3 text-sm font-extrabold text-center text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required />
+                    </div>
+                    <div>
+                        <label for="code-2" class="sr-only">Second code</label>
+                        <input type="text" maxlength="1" data-focus-input-init data-focus-input-prev="code-1" data-focus-input-next="code-3" id="code-2" class="block w-12 h-12 py-3 text-sm font-extrabold text-center text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required />
+                    </div>
+                    <div>
+                        <label for="code-3" class="sr-only">Third code</label>
+                        <input type="text" maxlength="1" data-focus-input-init data-focus-input-prev="code-2" data-focus-input-next="code-4" id="code-3" class="block w-12 h-12 py-3 text-sm font-extrabold text-center text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required />
+                    </div>
+                    <div>
+                        <label for="code-4" class="sr-only">Fourth code</label>
+                        <input type="text" maxlength="1" data-focus-input-init data-focus-input-prev="code-3" data-focus-input-next="code-5" id="code-4" class="block w-12 h-12 py-3 text-sm font-extrabold text-center text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required />
+                    </div>
+                    <div>
+                        <label for="code-5" class="sr-only">Fifth code</label>
+                        <input type="text" maxlength="1" data-focus-input-init data-focus-input-prev="code-4" data-focus-input-next="code-6" id="code-5" class="block w-12 h-12 py-3 text-sm font-extrabold text-center text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required />
+                    </div>
+                    <div>
+                        <label for="code-6" class="sr-only">Sixth code</label>
+                        <input type="text" maxlength="1" data-focus-input-init data-focus-input-prev="code-5" id="code-6" class="block w-12 h-12 py-3 text-sm font-extrabold text-center text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required />
+                    </div>
+                </div>
+                <span class="error-message absolute text-red-500 left-1/3 text-xs"></span>
+                <div class="flex flex-col justify-center items-center mt-10">
+                    <input type="submit" name="confirmEmail" value="Confirm" class="bg-linear-to-br from-gradient1 to-gradient2 rounded-full p-3 w-72 text-white text-xl text-center font-semibold shadow-text shadow-[0_6px_16px_-6px] cursor-pointer">
+                </div>
+            </form>
+        </div>
+
+        <div id="new-password-container" class="absolute top-[30%] right-[14%] w-[26%] animate-slideLeft transition-all hidden">
+            <div class="text-[#3ea29a] space-y-4">
+                <h1 class="text-4xl font-semibold">
+                    Verification Complete
+                </h1>
+                <p>Now you can renew your password!</p>
+            </div>
+            <form id="new-password-form" action="" method="post" class="font-poppins mx-auto ml-8 mt-8 space-y-8 w-full">
+                <div class="relative text-gray-500 text-3xl">
+                    <span class="absolute left-2 bottom-2 material-symbols-rounded custom-icon">
+                        lock
+                    </span>
+                    <span class="password-visible absolute right-3 top-1/5 material-symbols-rounded custom-icon text-gray-900 dark:text-gray-400 cursor-pointer select-none">
+                        visibility_off
+                    </span>
+                    <input type="password" name="newPassword" id="new-password" placeholder="New Password" class="border-0 border-b-1 border-[#3ea29a] px-12 pb-2 w-full text-lg text-black focus:outline-0 focus:ring-0 valid:border-[#3ea29a]" autocomplete="TRUE">
                     <span class="error-message absolute text-red-500 -bottom-6 left-0 text-xs"></span>
                 </div>
 
@@ -53,28 +123,12 @@
                     <span class="password-visible absolute right-3 top-1/5 material-symbols-rounded custom-icon text-gray-900 dark:text-gray-400 cursor-pointer select-none">
                         visibility_off
                     </span>
-                    <input type="password" name="password" id="password" placeholder="Password" class="border-0 border-b-1 border-[#3ea29a] px-12 pb-2 w-full text-lg text-black focus:outline-0 focus:ring-0">
-
+                    <input type="password" name="confirmPassword" id="confirm-password" placeholder="Confirm Password" class="border-0 border-b-1 border-[#3ea29a] px-12 pb-2 w-full text-lg text-black focus:outline-0 focus:ring-0 valid:border-[#3ea29a]" autocomplete="TRUE">
                     <span class="error-message absolute text-red-500 -bottom-6 left-0 text-xs"></span>
                 </div>
 
-                <div class="text-[#3ea29a] flex justify-between items-center ">
-                    <div class="flex space-x-2">
-                        <input type="checkbox" name="remember_me" id="remember_me" class="accent-[#3ea29a]">
-                        <label for="remember_me" class="text-sm">Remember me</label>
-                    </div>
-
-                    <a href="./changepassword.html.php" class="text-right text-sm underline  decoration-solid font-medium">
-                        Forgot your password?
-                    </a>
-                </div>
-
                 <div class="flex flex-col justify-center items-center">
-                    <input type="submit" name="login" value="Login" class="bg-linear-to-br from-gradient1 to-gradient2 rounded-full mt-9 p-3 w-72 text-white text-xl text-center font-semibold shadow-text shadow-[0_6px_16px_-6px] cursor-pointer">
-                    <div class="mt-8">
-                        <span class="text-text-light">Don't have account?</span>
-                        <a href="/mywebsite/views/register.html.php" class="text-form-btn">Sign up</a>
-                    </div>
+                    <input type="submit" name="confirm" value="Confirm" class="bg-linear-to-br from-gradient1 to-gradient2 rounded-full p-3 w-72 text-white text-xl text-center font-semibold shadow-text shadow-[0_6px_16px_-6px] cursor-pointer">
                 </div>
             </form>
         </div>
@@ -166,11 +220,19 @@
         <p class="font-poppins text-center text-sm mt-20 text-gray-100 px-8">Knowledge Nexus provides the perfect space for meaningful exchanges. Join our growing community today to ask questions, provide valuable answers, and build your professional network while expanding your knowledge horizon. Together, we're building the most comprehensive knowledge base on the web—one question at a time.</p>
     </div>
 
-
+    <div id="loading-overlay" class="fixed w-full h-full top-0 left-0 overlay bg-black/60 z-60 hidden">
+        <div role="status" class="flex justify-center items-center h-full">
+            <svg aria-hidden="true" class="absolute w-40 h-40 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+            </svg>
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
 
 </body>
 
 
-<script type="module" src="../controllers/render&events/login&register.js"></script>
+<script type="module" src="../controllers/render&events/changepassword.js"></script>
 
 </html>

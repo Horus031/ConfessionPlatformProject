@@ -1,22 +1,23 @@
 <?php
+include '../includes/dbconnection.php';
 include '../includes/dbfunctions.php';
-include '../includes/PHPMailer/PHPMailer.php';
-include '../includes/PHPMailer/SMTP.php';
-include '../includes/PHPMailer/Exception.php';
+
+include '../vendor/phpmailer/phpmailer/src/Exception.php';
+include '../vendor/phpmailer/phpmailer/src/PHPMailer.php';
+include '../vendor/phpmailer/phpmailer/src/SMTP.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-session_start();
-$db = new Database($pdo);
+$database = new Database($pdo);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
 
     // Check if the email exists in the database
-    $user = $db->checkEmailExists($email);
+    $user = $database->checkEmailExists($email);
     if (!$user) {
-        echo json_encode(['error' => 'Email not found']);
+        echo json_encode(['wrongEmail' => 'Email not found']);
         exit;
     }
 
@@ -29,14 +30,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
-        $mail->Host = 'smtp.example.com'; // Replace with your SMTP server
+        $mail->Host = 'smtp.gmail.com'; // Replace with your SMTP server
         $mail->SMTPAuth = true;
         $mail->Username = 'mailsystemkn@gmail.com'; // Replace with your email
         $mail->Password = 'hjdk prmd ftvu zoho'; // Replace with your email password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
-        $mail->setFrom($user, 'Your Website');
+        $mail->setFrom('mailsystemkn@gmail.com', 'Knowledge Nexus');
         $mail->addAddress($email);
 
         $mail->isHTML(true);
