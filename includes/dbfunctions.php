@@ -197,7 +197,7 @@ class Database
 
     public function fetchAllComments($post_id)
     {
-        $sql = 'SELECT comments.comment_id, comments.user_id, comments.post_id, comments.content, comments.created_at, CONCAT(first_name, " ", last_name) AS fullname, users.username, users.avatar
+        $sql = 'SELECT comments.comment_id, comments.user_id, comments.post_id, comments.content, comments.created_at, CONCAT(first_name, " ", last_name) AS fullname, users.username, users.avatar, users.tag_name
                 FROM ((comments
                 INNER JOIN posts ON comments.post_id = posts.post_id)
                 INNER JOIN users ON comments.user_id = users.user_id)
@@ -234,7 +234,7 @@ class Database
 
     public function fetchPostDetails($post_id)
     {
-        $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, COUNT(DISTINCT likes.like_id) as likes, COUNT(DISTINCT comments.comment_id) as comments, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
+        $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, CONCAT(users.first_name, " ", users.last_name) AS fullname ,users.username, COUNT(DISTINCT likes.like_id) as likes, COUNT(DISTINCT comments.comment_id) as comments, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
                 FROM ((((posts 
                 INNER JOIN users ON posts.user_id = users.user_id)
                 INNER JOIN modules ON posts.module_id = modules.module_id)
@@ -456,7 +456,7 @@ class Database
 
     public function getAllSavedPosts()
     {
-        $sql = 'SELECT user_saved_posts.user_id AS user_savedid,posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class FROM (((posts
+        $sql = 'SELECT user_saved_posts.user_id AS user_savedid,posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, CONCAT(users.first_name, " ", users.last_name) AS fullname, users.username, users.tag_name, modules.module_id, modules.module_name, modules.bg_class, modules.text_class FROM (((posts
         INNER JOIN user_saved_posts ON posts.post_id = user_saved_posts.post_id)
         INNER JOIN users ON posts.user_id = users.user_id)
         INNER JOIN modules ON posts.module_id = modules.module_id)';

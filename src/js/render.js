@@ -30,6 +30,7 @@ class QuestionRenderer {
         if (!this.container) return;
         this.container.innerHTML = '';
 
+        console.log(posts);
         const fragment = document.createDocumentFragment();
 
         posts.forEach(async post => {
@@ -46,10 +47,10 @@ class QuestionRenderer {
                         <div class="flex justify-between items-center">
                             <span data-module="${post.module_id}" class="w-fit module-name rounded-full text-xs ${post.bg_class} ${post.text_class} px-2 font-medium">${post.module_name}</span>
                             <div class="text-text relative group rounded-md text-4xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600">
-                                <span id="post-actions" class="material-symbols-rounded custom-icon more-icon active:scale-90">
+                                <span class="post-actions material-symbols-rounded custom-icon more-icon active:scale-90">
                                     more_horiz
                                 </span>
-                                <div id="action-popup" class="absolute bg-white rounded-md top-12 shadow-[0px_0px_5px_-1px] right-0 w-40 hidden before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:text-gray-400 dark:shadow-none">
+                                <div class="action-popup absolute bg-white rounded-md top-12 shadow-[0px_0px_5px_-1px] right-0 w-40 hidden before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:text-gray-400 dark:shadow-none">
                                     <button type="button" id="view-btn" class="flex w-full items-center rounded-md space-x-4 p-3 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer">
                                         <span class="text-lg">View Details</span>
                                     </button> 
@@ -57,45 +58,47 @@ class QuestionRenderer {
                                 </div>
                             </div>
                         </div>
-                        <h2 class="text-black question-title mt-3 font-bold text-lg w-56 h-20 dark:text-white">${post.post_title}</h2>
+                        <h2 class="text-black question-title mt-3 font-bold text-lg w-56 h-14 dark:text-white line-clamp-2">${post.post_title}</h2>
                         <p class="mt-3 text-text-light text-sm dark:text-gray-400 font-medium line-clamp-1">${post.post_content}</p>
                         <div>
                             <div class="mt-3 rounded-md">
-                                <img loading="lazy" src="${post.imageURL ?? ''}" alt="Post image" width="100%" height="100px" class="rounded-md lazy-load">
+                                <img loading="lazy" src="${post.imageURL ?? ''}" alt="Post image" width="100%" class="rounded-md lazy-load h-64">
                             </div>
                             <div class="flex justify-between items-center mt-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="relative group">
-                                        <img id="profile-hover" data-value="${post.user_id}" loading="lazy" src="${post.avatar ? post.avatar : '../assets/images/user.png'}" alt="" class="user-${post.user_id} h-10 rounded-full">
+                                <div class="flex items-center space-x-2 font-normal md:space-y-2 md:flex-wrap 2xl:flex-nowrap 2xl:space-y-0">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="relative group">
+                                            <img data-value="${post.user_id}" loading="lazy" src="${post.avatar ? post.avatar : '../assets/images/user.png'}" alt="" class="profile-hover user-${post.user_id} h-10 rounded-full">
 
-                                        <div id="profile-popup" class="absolute bg-white w-66 rounded-md p-2 -top-26 left-0 border-1 border-gray-600 before:content-[''] before:absolute before:w-full before:h-0 before:right-0 before:-bottom-2 before:border-4 before:border-transparent group-hover:block hidden transition-all dark:bg-gray-800 dark:border-gray-400">
-                                            <div class="flex items_center space-x-4">
-                                                <img loading="lazy" src="${post.avatar ? post.avatar : '../assets/images/user.png'}" class="h-20 rounded-full">
-                                                <div>
-                                                    <h4 id="post-username" class="text-lg font-medium dark:text-white">${post.username}</h4>
-                                                    <div class="text-sm">
-                                                        <span class="text-text tagname dark:text-gray-400">@${post.tag_name ?? ''}</span>
-                                                        <span class="text-text dark:text-gray-400">•</span>
-                                                        <span class="text-text-light dark:text-gray-400">Joined ${formattedDate}</span>
+                                            <div class="profile-popup absolute bg-white w-66 rounded-md p-2 -top-26 left-0 border-1 border-gray-600 before:content-[''] before:absolute before:w-full before:h-0 before:right-0 before:-bottom-2 before:border-4 before:border-transparent group-hover:block hidden transition-all dark:bg-gray-800 dark:border-gray-400">
+                                                <div class="flex items_center space-x-4">
+                                                    <img loading="lazy" src="${post.avatar ? post.avatar : '../assets/images/user.png'}" class="h-20 rounded-full">
+                                                    <div>
+                                                        <h4 id="post-username" class="text-lg text-text font-medium dark:text-white">${post.fullname}</h4>
+                                                        <div class="text-sm">
+                                                            <h4 class="tagname text-text dark:text-gray-400">@${post.tag_name ?? ''}</h4>
+                                                            <span class="text-text-light dark:text-gray-400">•</span>
+                                                            <span class="text-text-light dark:text-gray-400">Joined ${formattedDate}</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    <span class="text-black text-xs dark:text-gray-400">${post.fullname}</span>
                                     </div>
-                                    <span class="text-black text-xs dark:text-gray-400">${post.username}</span>
                                     <span class="text-black text-xs dark:text-gray-400">${this.timeAgo(post.created_at)}</span>
                                 </div>
                                 <div id="tags-container-${post.post_id}" class="flex items-center space-x-2 text-sm"></div>
                             </div>
                             <div class="flex justify-between items-center mt-3">
                                 <div class="border-black flex justify-between w-fit border-1 dark:border-gray-700 rounded-md">
-                                    <button id="likes-btn" class="text-black flex items-center space-x-1 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
+                                    <button id="likes-btn" class="text-black flex items-center space-x-1 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 w-full transition-all">
                                         <span class="material-symbols-rounded custom-icon like-img">
                                             thumb_up
                                         </span>
                                         <span class="like-count-${post.post_id} text-lg font-normal" data-post-id="${post.post_id}"></span>
                                     </button>
-                                    <button id="comment-btn" class="text-black flex items-center space-x-2 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 w-full transition-all">
+                                    <button id="comment-btn" class="text-black flex items-center space-x-2 p-2 rounded-md text-3xl font-light dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 w-full transition-all">
                                         <span class="material-symbols-rounded custom-icon">
                                             comment
                                         </span>
@@ -119,7 +122,7 @@ class QuestionRenderer {
                     </div>
                 `;
 
-                const actionPopup = questionElement.querySelector('#action-popup');
+                const actionPopup = questionElement.querySelector('div[class^="action-popup"]');
                 if (post.user_id == userId) {
                     const editButton = document.createElement('button');
                     editButton.className = `flex w-full items-center rounded-md space-x-4 p-3 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer`;
@@ -172,7 +175,7 @@ class QuestionRenderer {
                             const existingTags = tagContainer.querySelectorAll('span');
                             if (existingTags.length === 0) {
                                 const tagElement = document.createElement('span');
-                                tagElement.classList.add('bg-gray-300', 'p-1','text-black' , 'rounded-md', 'dark:bg-transparent', 'dark:text-gray-400', 'dark:border-1', 'dark:border-1' ,'dark:border-gray-500');
+                                tagElement.classList.add('bg-gray-300', 'p-1','text-text' , 'rounded-md', 'dark:bg-transparent', 'dark:text-gray-400', 'dark:border-1', 'dark:border-1' ,'dark:border-gray-500', 'dark:text-gray-400');
                                 tagElement.textContent = `#${tag.tag_name}`;
                                 tagContainer.appendChild(tagElement);
                             } else {
@@ -192,12 +195,12 @@ class QuestionRenderer {
                                 } else {
                                     const additionalTagElement = document.createElement('div');
             
-                                    additionalTagElement.classList.add('relative', 'group', 'bg-tags', 'p-1', 'rounded-md', 'additional-tags', 'dark:border-gray-800');
+                                    additionalTagElement.classList.add('relative', 'group', 'bg-gray-300','text-text', 'p-1', 'rounded-md', 'additional-tags', 'dark:border-gray-400', 'dark:text-gray-400', 'dark:border-1' ,'dark:bg-transparent');
                                     additionalTagElement.setAttribute('data-count', 1);
                                     additionalTagElement.innerHTML = `
                                         <span id="tag-count">+1</span>
             
-                                        <div id="tags-popup" class="absolute space-y-2 bg-tags  p-2 rounded-md right-1 top-8 shadow-lg hidden group-hover:block before:absolute before:content-[''] before:-top-2 before:w-6 before:h-3 before:right-0 before:bg-transparent dark:border-1 dark:border-gray-800">
+                                        <div id="tags-popup" class="absolute bg-gray-300 space-y-2 p-2 rounded-md right-1 top-8 shadow-lg hidden group-hover:block before:absolute before:content-[''] before:-top-2 before:w-6 before:h-3 before:right-0 before:bg-transparent dark:border-1 dark:border-gray-800 dark:bg-gray-900">
                                             <span class="p-2">#${tag.tag_name}</span>
                                         </div>
                                     `;
@@ -329,6 +332,8 @@ class QuestionRenderer {
             return;
         }
 
+        console.log(questions);
+
         const fragment = document.createDocumentFragment();
 
         questions.forEach(async question => {
@@ -344,35 +349,35 @@ class QuestionRenderer {
                     <div class="flex justify-between items-center">
                         <span data-module="${question.module_id}" class="font-semibold w-fit module-name rounded-full text-xs ${question.bg_class} ${question.text_class} px-2">${question.module_name}</span>
                         <div class="text-black relative group rounded-md text-4xl font-light dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600">
-                            <span id="post-actions" class="material-symbols-rounded custom-icon more-icon active:scale-90">
+                            <span class="post-actions material-symbols-rounded custom-icon more-icon active:scale-90">
                                 more_horiz
                             </span>
-                            <div id="action-popup" class="absolute bg-white text-black font-normal rounded-md top-12 shadow-[0px_0px_5px_-1px] right-0 w-40 hidden before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:text-gray-400 dark:shadow-none">
+                            <div class="action-popup absolute bg-white text-black font-normal rounded-md top-12 shadow-[0px_0px_5px_-1px] right-0 w-40 hidden before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:text-gray-400 dark:shadow-none">
                                 <button type="button" id="view-btn" class="flex w-full items-center rounded-md space-x-4 p-3 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer">
                                     <span class="text-lg">View Details</span>
                                 </button> 
                             </div>
                         </div>
                     </div>
-                    <h2 class="text-black mt-3 font-bold text-lg w-56 h-16 line-clamp-2 dark:text-white">${question.post_title}</h2>
+                    <h2 class="text-black mt-3 font-bold text-lg w-56 h-14 line-clamp-2 dark:text-white">${question.post_title}</h2>
                     <p class="font-roboto mt-3 text-md text-text font-normal line-clamp-1 dark:text-gray-400">${question.post_content}</p>
                     <div>
                         <div class="mt-3 rounded-md">
-                            <img id="post-image" loading="lazy" src="${question.imageURL ?? ''}" alt="Post image" width="100%" height="100px" class="rounded-md lazy-load">
+                            <img id="post-image" loading="lazy" src="${question.imageURL ?? ''}" alt="Post image" width="100%" class="rounded-md lazy-load h-64">
                         </div>
                         <div class="flex justify-between items-center mt-3">
                             <div class="flex items-center space-x-2 font-normal md:space-y-2 md:flex-wrap 2xl:flex-nowrap 2xl:space-y-0">
                                 <div class="flex items-center space-x-2">
                                     <div class="relative group">
-                                        <img id="profile-hover" data-value="${question.user_id}" loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" alt="" class="user-${question.user_id} h-10 rounded-full">
+                                        <img data-value="${question.user_id}" loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" alt="" class="profile-hover user-${question.user_id} h-10 rounded-full">
 
-                                        <div id="profile-popup" class="absolute bg-white w-66 rounded-md p-2 -top-26 left-0 border-1 border-gray-600 before:content-[''] before:absolute before:w-full before:h-0 before:right-0 before:-bottom-2 before:border-4 before:border-transparent group-hover:block hidden transition-all dark:bg-gray-800 dark:border-gray-400">
-                                            <div class="flex items_center space-x-4">
+                                        <div class="profile-popup absolute bg-white w-66 rounded-md p-2 -top-26 left-0 border-1 border-gray-600 before:content-[''] before:absolute before:w-full before:h-0 before:right-0 before:-bottom-2 before:border-4 before:border-transparent group-hover:block hidden transition-all dark:bg-gray-800 dark:border-gray-400">
+                                            <div class="flex items_center space-x-4 w-full">
                                                 <img loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" class="h-20 rounded-full">
                                                 <div>
-                                                    <h4 id="post-username" class="text-lg font-medium dark:text-white">${question.username}</h4>
+                                                    <h4 id="post-username" class="text-text w-fit text-lg font-medium dark:text-white">${question.fullname}</h4>
                                                     <div class="text-sm">
-                                                        <span class="text-text tagname dark:text-gray-400">@${question.tag_name ?? ''}</span>
+                                                        <h4 class="text-text tagname dark:text-gray-400">@${question.tag_name ?? ''}</h4>
                                                         <span class="text-text dark:text-gray-400">•</span>
                                                         <span class="text-text-light dark:text-gray-400">Joined ${formattedDate}</span>
                                                     </div>
@@ -380,7 +385,7 @@ class QuestionRenderer {
                                             </div>
                                         </div>
                                     </div>
-                                    <span class="text-black text-xs dark:text-gray-400">${question.username}</span>
+                                    <span class="text-black text-xs dark:text-gray-400">${question.fullname}</span>
                                 </div>
                                 <span class="text-black text-xs dark:text-gray-400">${this.timeAgo(question.created_at)}</span>
                             </div>
@@ -418,7 +423,7 @@ class QuestionRenderer {
                 </div>
             `;
 
-            const actionPopup = questionElement.querySelector('#action-popup');
+            const actionPopup = questionElement.querySelector('div[class^="action-popup"]');
             if (question.user_id == userId) {
                 const editButton = document.createElement('button');
                 editButton.className = `flex w-full items-center rounded-md space-x-4 p-3 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer`;
@@ -475,7 +480,7 @@ class QuestionRenderer {
                         const existingTags = tagContainer.querySelectorAll('span');
                         if (existingTags.length === 0) {
                             const tagElement = document.createElement('span');
-                            tagElement.classList.add('tagname', 'bg-gray-300', 'p-1','text-black' , 'rounded-md', 'dark:bg-transparent', 'dark:text-gray-400', 'dark:border-1', 'dark:border-1' ,'dark:border-gray-500');
+                            tagElement.classList.add('tagname', 'bg-gray-300', 'text-text' ,'p-1','text-black' , 'rounded-md', 'dark:bg-transparent', 'dark:text-gray-400', 'dark:border-1', 'dark:border-1' ,'dark:border-gray-500');
                             tagElement.textContent = `#${tag.tag_name}`;
                             tagContainer.appendChild(tagElement);
                         } else {
@@ -495,13 +500,13 @@ class QuestionRenderer {
                             } else {
                                 const additionalTagElement = document.createElement('div');
         
-                                additionalTagElement.classList.add('relative', 'group', 'bg-gray-300', 'p-1', 'rounded-md', 'additional-tags', 'dark:bg-transparent' , 'dark:border-1','dark:text-gray-400', 'dark:border-gray-400');
+                                additionalTagElement.classList.add('relative', 'group', 'bg-gray-300', 'text-text' ,'p-1', 'rounded-md', 'additional-tags', 'dark:bg-transparent' , 'dark:border-1','dark:text-gray-400', 'dark:border-gray-400');
                                 additionalTagElement.setAttribute('data-count', 1);
                                 additionalTagElement.innerHTML = `
                                     <span id="tag-count">+1</span>
         
-                                    <div id="tags-popup" class="absolute space-y-2 bg-gray-300  p-2 rounded-md right-1 top-8 shadow-lg hidden group-hover:block before:absolute before:content-[''] before:-top-2 before:w-6 before:h-3 before:right-0 before:bg-transparent dark:bg-gray-900 dark:border-1 dark:border-gray-600">
-                                        <span class="tagname p-2 dark:text-gray-400">#${tag.tag_name}</span>
+                                    <div id="tags-popup" class="absolute space-y-2 bg-gray-300 text-text  p-2 rounded-md right-1 top-8 shadow-lg hidden group-hover:block before:absolute before:content-[''] before:-top-2 before:w-6 before:h-3 before:right-0 before:bg-transparent dark:bg-gray-900 dark:border-1 dark:border-gray-600 dark:text-gray-400">
+                                        <span class="tagname text-text p-2 dark:text-gray-400">#${tag.tag_name}</span>
                                     </div>
                                 `;
                                 tagContainer.appendChild(additionalTagElement);
@@ -730,6 +735,7 @@ class QuestionRenderer {
             username.classList.add('text-text', 'dark:text-white');
             username.textContent = data.fullname;
             document.querySelector('#user-img').src = data.avatar ?? '../assets/images/user.png';
+            document.querySelector('#user-avatar-container').href = data.avatar ?? '../assets/images/user.png';
 
             profileAction.setAttribute('data-value', data.user_id);
             profileAction.setAttribute('data-tagname', data.tag_name);
@@ -908,9 +914,10 @@ class QuestionRenderer {
         bioInput.innerHTML = '';
         socialInput.querySelectorAll('input').forEach(input => input.value = '');
 
+
         const imageElements = document.createElement('img');
         imageElements.id = 'image';
-        imageElements.classList.add('h-20', 'rounded-full');
+        imageElements.classList.add('h-30', 'w-30','rounded-full');
         imageElements.src = userInfo.avatar ?? '../assets/images/user.png';
         imageInput.insertBefore(imageElements, imageChildren);
 
@@ -967,6 +974,7 @@ class QuestionRenderer {
             accountInput.querySelector('#edit-tagname').classList.add('bg-transparent');
             accountInput.querySelector('#edit-email').setAttribute('placeholder', 'Email address');
             accountInput.querySelector('#edit-email').classList.add('bg-transparent');
+            document.querySelector('#change-password-btn').remove();
             bioInput.querySelector('#edit-bio').setAttribute('placeholder', 'Bio...');
             socialInput.querySelector('#Facebook').setAttribute('placeholder', 'Facebook link...');
             socialInput.querySelector('#Github').setAttribute('placeholder', 'Github link...');
@@ -1000,8 +1008,8 @@ class QuestionRenderer {
         document.querySelector('#post-title').textContent = post.post_title;
         document.querySelector('#user-avatar').src = post.avatar ?? '../assets/images/user.png';
         document.querySelector('#user-avatar').setAttribute('data-value', post.user_id);
-        document.querySelector('#user-avatar').className = (`user-${post.user_id} h-10 rounded-full md:h-14 2xl:h-16`);
-        document.querySelector('#username').textContent = post.username;
+        document.querySelector('#user-avatar').classList.add(`user-${post.user_id}`);
+        document.querySelector('#username').textContent = post.fullname;
         document.querySelector('#created-at').textContent = this.timeAgo(post.created_at);
         document.querySelector('#post-content').textContent = post.post_content;
         document.querySelector('#post-image-container').href = `${post.imageURL}`;
@@ -1315,7 +1323,7 @@ class QuestionRenderer {
             notifyElement.classList.add('flex', 'justify-between' ,'px-2', 'py-2' ,'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer', 'dark:hover:bg-gray-700');
 
             if (notify.is_read == '0') {
-                notifyElement.classList.add('bg-blue-200', 'dark:bg-gray-200');
+                notifyElement.classList.add('bg-blue-200', 'dark:bg-gray-600');
             }
 
             notifyElement.href = `${notify.url}`;
@@ -1327,9 +1335,9 @@ class QuestionRenderer {
                     <img loading="lazy" src="${notify.avatar ?? '../assets/images/user.png'}" alt="" class="h-8 rounded-full">
 
                     <div class="flex flex-col space-y-1 dark:text-gray-400">
-                        <span class="text-text"><b>${notify.fullname}</b> ${notify.message}</span>
+                        <span class="text-text dark:text-white"><b>${notify.fullname}</b> ${notify.message}</span>
 
-                        <span class="text-text-light break-all line-clamp-1 dark:text-gray-600">${notify.message_content || 'Check it out!'}</span>
+                        <span class="text-text-light break-all line-clamp-1 dark:text-gray-400">${notify.message_content || 'Check it out!'}</span>
                     </div>
                 </div>
 
@@ -1599,19 +1607,19 @@ class QuestionRenderer {
 
             questionElement.innerHTML = `
                 <td class="text-left">
-                    <h3 class="post-title text-lg text-white font-semibold">${question.post_title}</h3>
-                    <p>${question.post_content}</p>
-                </td>
-
-                <td>
-                    <span class="text-sm font-medium rounded-full p-1 ${question.bg_class} ${question.text_class}">${question.module_name}</span>
+                    <h3 class="post-title w-96 text-lg text-white font-semibold">${question.post_title}</h3>
+                    <p class="w-96 line-clamp-1">${question.post_content}</p>
                 </td>
 
                 <td class="text-left">
-                    <div class="flex space-x-4 justify-center items-center"> 
+                    <span class="text-sm text-nowrap font-medium rounded-full p-1 ${question.bg_class} ${question.text_class}">${question.module_name}</span>
+                </td>
+
+                <td class="text-left w-fit">
+                    <div class="flex space-x-4 items-center"> 
                         <img src="${question.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
                         <div class="flex flex-col">
-                            <span class="fullname font-semibold text-white">${question.fullname}</span>
+                            <span class="fullname font-semibold text-white w-fit">${question.fullname}</span>
                             <span class="tagname text-sm">@${question.tag_name}
                         </div>
                     </div>

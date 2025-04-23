@@ -4,12 +4,12 @@
 
     <form id="newpost-form" method="post" enctype="multipart/form-data" class="animate-slideRight">
         <div class="relative mt-2 space-y-4">
-            <input type="text" name="titleValue" id="title" class="border-1 bg-transparent border-text rounded-lg p-2 q px-4 w-full md:w-5/8 lg:w-4/9 dark:border-gray-600 dark:text-gray-400 focus:outline-0 focus:ring-0" placeholder="Post title">
+            <input type="text" name="titleValue" id="title" class="border-1 bg-transparent border-text text-text rounded-lg p-2 q px-4 w-full md:w-5/8 lg:w-4/9 dark:border-gray-600 dark:text-gray-400 focus:outline-0 focus:ring-0" placeholder="Post title">
             <span class="error-message absolute text-red-500 bottom-0 left-0 text-xs"></span>
         </div>
 
         <div class="relative mt-6 flex flex-col w-fit">
-            <textarea name="contentValue" id="content" cols="40" rows="8" class="p-2 border-1 border-text rounded-lg dark:border-gray-600 dark:text-gray-400 focus:outline-0 focus:ring-0" placeholder="Post content"></textarea>
+            <textarea name="contentValue" id="content" cols="40" rows="8" class="p-2 border-1 border-text text-text rounded-lg dark:border-gray-600 dark:text-gray-400 focus:outline-0 focus:ring-0" placeholder="Post content"></textarea>
             <span class="error-message absolute text-red-500 top-54 left-0 text-xs"></span>
 
             <div class="mt-10">

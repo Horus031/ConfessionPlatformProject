@@ -19,12 +19,30 @@
             </div>
 
             <div class="flex flex-col space-y-2">
-                <h2 id="post-title" class="font-bold text-lg lg:text-2xl dark:text-white"></h2>
+                <h2 id="post-title" class="text-text font-bold text-lg lg:text-2xl dark:text-white"></h2>
                 <div id="usertags" class="flex items-center justify-between space-x-2">
-                    <div class="flex items-center space-x-2">
-                        <img id="user-avatar" loading="lazy" src="../assets/images/user.png" alt="" class="h-10 rounded-full md:h-14 2xl:h-16">
-                        <span id="username" class="text-xs text-text md:text-md lg:text-lg dark:text-gray-400"></span>
-                        <span id="created-at" class="text-xs text-text md:text-md lg:text-lg dark:text-gray-400"></span>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative group">
+                            <img id="user-avatar" loading="lazy" alt="" class="profile-hover h-10 rounded-full md:h-14 2xl:h-16">
+
+                            <div class="profile-popup absolute bg-white w-66 rounded-md p-2 -top-26 left-0 border-1 border-gray-600 before:content-[''] before:absolute before:w-full before:h-0 before:right-0 before:-bottom-2 before:border-4 before:border-transparent group-hover:block hidden transition-all dark:bg-gray-800 dark:border-gray-400">
+                                <div class="flex items_center space-x-4 w-full">
+                                    <img loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" class="h-20 rounded-full">
+                                    <div>
+                                        <h4 id="post-username" class="text-text w-fit text-lg font-medium dark:text-white">${question.fullname}</h4>
+                                        <div class="text-sm">
+                                            <span class="text-text tagname dark:text-gray-400">@${question.tag_name ?? ''}</span>
+                                            <span class="text-text dark:text-gray-400">•</span>
+                                            <span class="text-text-light dark:text-gray-400">Joined ${formattedDate}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <span id="username" class="text-xs text-text font-semibold md:text-md lg:text-lg dark:text-gray-400"></span>
+                            <span id="created-at" class="text-xs text-text md:text-base dark:text-gray-400"></span>
+                        </div>
                     </div>
 
 
@@ -37,13 +55,13 @@
 
             <p id="post-content" class="font-roboto mt-3 text-md text-text dark:text-gray-400"></p>
 
-            <a id="post-image-container" data-fancybox="gallery" data-caption="Single image" class="mt-3 rounded-md lg:w-2/3 2xl:w-full">
+            <a id="post-image-container" data-fancybox="gallery" data-caption="Single image" class="mt-3 rounded-md lg:w-2/3 2xl:w-3/4">
                 <img id="post-image" loading="lazy" src="" alt="Post image" class="w-full rounded-md h-1/3 lg:h-full bg-contain">
             </a>
 
             <div id="postdetail-action" class="flex justify-between items-center mt-3">
                 <div class="flex justify-between w-fit rounded-md space-x-2">
-                    <button type="button" id="like-btn" class="flex text-text items-center px-2 rounded-md dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-600 text-3xl font-light w-full space-x-2 transition-all">
+                    <button type="button" id="like-btn" class="flex text-text items-center p-2 rounded-md dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 text-3xl font-light w-full space-x-2 transition-all">
                         <span class="material-symbols-rounded custom-icon like-img">
                             thumb_up
                         </span>

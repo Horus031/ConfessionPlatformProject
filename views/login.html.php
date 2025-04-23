@@ -58,9 +58,9 @@
                     <span class="error-message absolute text-red-500 -bottom-6 left-0 text-xs"></span>
                 </div>
 
-                <div class="text-[#3ea29a] flex justify-between items-center ">
+                <div class="text-[#3ea29a] flex justify-between items-center accent-amber-50">
                     <div class="flex space-x-2">
-                        <input type="checkbox" name="remember_me" id="remember_me" class="accent-[#3ea29a]">
+                        <input type="checkbox" name="remember_me" id="remember_me" class="accent-[#3ea29a] text-[#3ea29a] focus:outline-0 focus:ring-0">
                         <label for="remember_me" class="text-sm">Remember me</label>
                     </div>
 

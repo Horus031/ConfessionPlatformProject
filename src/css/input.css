@@ -49,6 +49,10 @@
   td {
     text-align: center;
   }
+
+  textarea {
+    resize: none;
+  }
 }
 
 @layer components {

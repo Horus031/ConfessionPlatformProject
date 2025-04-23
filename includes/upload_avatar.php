@@ -8,9 +8,9 @@ if (isset($_FILES['avatarURL']) && $_FILES['avatarURL']['tmp_name']) {
         $upload = (new UploadApi())->upload($_FILES['avatarURL']['tmp_name'], [
             'folder' => 'avatars',
             'transformation' => [
-                'width' => 1920,
-                'height' => 1080,
-                'crop' => 'limit',
+                'width' => 300,
+                'height' => 300,
+                'crop' => 'fill',
                 'quality' => 'auto', // Automatically adjust the quality
                 'fetch_format' => 'auto' // Automatically adjust the format
             ]

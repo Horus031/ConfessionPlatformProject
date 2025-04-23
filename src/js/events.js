@@ -9,6 +9,7 @@ class EventListener {
         this.popupModal = document.querySelector('#popup-modal');
 
         if (this.currentURL.includes('main.html.php')) {
+            const _this = this;
             this.initSessionData().then(() => {
                 this.socket = new WebSocket(`ws://localhost:8080?user_id=${this.userId}`);
     
@@ -45,21 +46,48 @@ class EventListener {
                             const localTime = new Date(data.created_at);
     
                             const newCommentElement = document.createElement('div');
-                            newCommentElement.setAttribute('data-value', `${data.comment_id}`);
+                            newCommentElement.id = `comment-${data.commentId}`;
+                            newCommentElement.setAttribute('data-value', `${data.commentId}`);
                             newCommentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700', 'animate-slideRight');
                             newCommentElement.innerHTML = `
                                 <img src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
     
-                                <div>
+                                <div id="comments-information">
                                     <div class="flex items-center space-x-2">
                                         <h2 class="text-text font-medium text-md dark:text-white">${data.username}</h2>
                                         <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(localTime)}</span>
                                     </div>
-                                    <p class="text-text text-sm dark:text-gray-400">${data.comment}</p>
+                                    <p class="comment-content-${data.commentId} text-text text-sm dark:text-gray-400">${data.comment}</p>
+                                </div>
+
+                                <div class="flex text-3xl font-light dark:text-gray-400 ml-auto my-auto text-center space-x-2">
+                                    <span class="edit-comment-btn material-symbols-rounded custom-icon text-text text-center rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-900 dark:text-gray-400 cursor-pointer active:scale-90">
+                                        edit
+                                    </span>
+                                    <span class="delete-comment-btn material-symbols-rounded custom-icon text-center rounded-full p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-200 cursor-pointer active:scale-90">
+                                        delete
+                                    </span>
                                 </div>
                             `;
     
                             commentSection.insertBefore(newCommentElement, firstChildComment);
+
+                            const commentElements = commentSection.querySelectorAll('div[id^="comment-"]')
+                            console.log(commentElements)
+
+                            commentElements.forEach(comment => {
+                                comment.addEventListener('click', function(e) {
+                                    if (e.target.closest('span[class^="edit-comment-btn"]')) {
+                                        const commentInformation = comment.querySelector('#comments-information');
+                                        const iconElement = comment.querySelector('span[class^="edit-comment-btn"]')
+                                        console.log(commentInformation, iconElement);
+                                        _this.handleEditComment(iconElement, commentInformation, comment)
+                                        
+                                    } else if (e.target.closest('span[class^="delete-comment-btn"]')) {
+                                        _this.handleDeleteComement(commentSection, comment);
+                                    }
+                                })
+                            })
     
                             document.querySelector('.comment-count').textContent = `(${commentSection.children.length})`;
                         }
@@ -218,6 +246,7 @@ class EventListener {
         this.tagElements = document.querySelectorAll('div[id^="tag-"]');
         this.postForm = document.querySelector('#post-form');
         this.postDetailContainer = document.querySelector('#postdetail-container');
+        this.commentContainer = document.querySelector('div[id^="comment-container-"]');
         this.newPostForm = document.querySelector('#newpost-form')
         this.tagSearch = document.querySelector('#tag-search');
         this.questionFilter = document.querySelector('#question-filter');
@@ -229,6 +258,7 @@ class EventListener {
         }
         this.darkModeToggle = document.querySelector('#darkmode-btn');
         this.infoContainer = document.querySelector('#info-container');
+        this.avatarInput = document.querySelector('#avatarURL');
     }
 
     initAdminElements() {
@@ -1149,14 +1179,14 @@ class EventListener {
                 this.questionElement.forEach(question => {
                     question.addEventListener('click', async function(e) {
                         const postId = question.getAttribute('data-value');
-                        const moreButton = question.querySelector('span[id="post-actions"]');
-                        const profileShortCut = question.querySelector('img[id="profile-hover"]');
-                        const profilePopup = question.querySelector('div[id="profile-popup"]');
+                        const moreButton = question.querySelector('span[class^="post-actions"]');
+                        const profileShortCut = question.querySelector('img[class^="profile-hover"]');
+                        const profilePopup = question.querySelector('div[class^="profile-popup"]');
                         let button = e.target.closest('button');
 
 
-                        if (e.target.id == moreButton.id) {
-                            const actionPopup = question.querySelector('#action-popup');
+                        if (e.target.className == moreButton.className) {
+                            const actionPopup = question.querySelector('div[class^="action-popup"]');
                             actionPopup.classList.toggle('hidden');
                             document.addEventListener('click', function(e) {
                                 if (!moreButton.contains(e.target) && !actionPopup.contains(e.target)) {
@@ -1164,7 +1194,7 @@ class EventListener {
                                 }
                             });
                             return;
-                        } else if (e.target.id == profileShortCut.id) {
+                        } else if (e.target.className == profileShortCut.className) {
                             const tagNameValue = profilePopup.querySelector('.tagname').textContent;
                             window.location.href = `main.html.php?page=profile&tag_name=${tagNameValue.slice(1)}`;
                             return;
@@ -1353,7 +1383,7 @@ class EventListener {
                     commentElements.forEach(comment => {
                         comment.addEventListener('click', function(e) {
                             if (e.target.closest('span[class^="edit-comment-btn"]')) {
-                                const commentInformation = comment.querySelector('#comment-information');
+                                const commentInformation = comment.querySelector('#comments-information');
                                 const iconElement = comment.querySelector('span[class^="edit-comment-btn"]')
                                 _this.handleEditComment(iconElement, commentInformation, comment)
                                 
@@ -1364,6 +1394,25 @@ class EventListener {
                     })
                 }, 100))
 
+            }
+
+            if (this.commentContainer) {
+                setTimeout(function() {
+                    const commentElement = _this.commentContainer.querySelectorAll('div[id^="comment-"]');
+                    console.log(commentElement)
+                    commentElement.forEach(comment => {
+                        comment.addEventListener('click', function(e) {
+                            const profileShortCut = comment.querySelector('img[class^="profile-hover"]');
+                            const profilePopup = comment.querySelector('div[class^="profile-popup"]');
+                            if (e.target.className == profileShortCut.className) {
+                                const tagNameValue = profilePopup.querySelector('.tagname').textContent;
+                                window.location.href = `../views/main.html.php?page=profile&tag_name=${tagNameValue.slice(1)}`;
+                            }
+                        })
+                    })
+                }, 300)
+                
+                
             }
 
             if (this.postForm) {
@@ -1435,6 +1484,30 @@ class EventListener {
                         _this.fileName.textContent = _this.fileInput.files[0].name;
                     } else {
                         _this.fileName.textContent = 'Upload your image';
+                    }
+                });
+            }
+
+            if (this.avatarInput) {
+                this.avatarInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const imageURL = URL.createObjectURL(file);
+                        const imageElement = document.getElementById('image');
+                        const fileNameElement = document.getElementById('file-name');
+
+                        const img = new Image();
+                        img.onload = function() {
+                            imageElement.src = imageURL;
+                            fileNameElement.textContent = file.name;
+
+                            // Automatically adjust the image to fit in a circle shape
+                            imageElement.style.objectFit = 'cover';
+                            imageElement.style.borderRadius = '50%';
+                            imageElement.style.width = '120px'; // Adjust width as needed
+                            imageElement.style.height = '120px'; // Adjust height as needed
+                        };
+                        img.src = imageURL;
                     }
                 });
             }
@@ -1678,20 +1751,36 @@ class EventListener {
             userLists.forEach(user => {
                 const userActions = user.querySelector('#user-actions');
                 const userId = user.getAttribute('data-value');
+                const userRole = user.querySelector('td:nth-child(3)').textContent;
                 userActions.addEventListener('click', function(e) {
                     if (e.target.closest('span[class^="view-userbtn"]')) {
                         const tagName = user.querySelector('span[class^="tagname"]').textContent;
                         window.open(`main.html.php?page=profile&tag_name=${tagName.slice(1)}`, '_blank')
                     } else if (e.target.closest('span[class^="edit-userbtn"]')) {
-                        _this.handleAdminEdit(userId);
+                        if (userRole == 'Admin') {
+                            _this.showConfirmModal('You cannot edit admin account!', true);
+                        } else {
+                            _this.handleAdminEdit(userId);
 
-                        _this.editUserContainer.querySelector('#edit-title').textContent = `Edit User`
-                        _this.userManagement.classList.add('hidden');
-                        _this.editUserContainer.classList.remove('hidden');
+                            _this.editUserContainer.querySelector('#edit-title').textContent = `Edit User`
+                            _this.userManagement.classList.add('hidden');
+                            _this.editUserContainer.classList.remove('hidden');
 
-                        _this.handleUpdateUser(parseInt(userId))
+                            // Remove any existing submit event listeners
+                            const newEditUserForm = _this.adminEditForm.cloneNode(true);
+                            _this.adminEditForm.parentNode.replaceChild(newEditUserForm, _this.adminEditForm);
+                            _this.adminEditForm = newEditUserForm;
+
+                            _this.handleUpdateUser(parseInt(userId))
+
+                            _this.handleChangeImage();
+                        }
                     } else {
-                        _this.handleDeleteUser(userId);
+                        if (userRole == 'Admin') {
+                            _this.showConfirmModal('You cannot delete admin account!', true);
+                        } else {
+                            _this.handleDeleteUser(userId);
+                        }
                     }
                 })
             })
@@ -1766,6 +1855,7 @@ class EventListener {
                 if (e.target.closest('button[id^="cancel-"]')) {
                     _this.userManagement.classList.remove('hidden');
                     _this.editUserContainer.classList.add('hidden');
+
                 }
             })
         }
@@ -1951,6 +2041,7 @@ class EventListener {
         }
 
         if (this.moduleContainer) {
+            const _this = this;
             const moduleLists = this.moduleContainer.querySelectorAll('tr');
             
             moduleLists.forEach(module => {
@@ -1963,9 +2054,17 @@ class EventListener {
                         const moduleName = moduleData.querySelector('span').textContent;
                         const moduleBgData = moduleData.querySelector('span').getAttribute('data-bg-color');
                         const moduleTextData = moduleData.querySelector('span').getAttribute('data-text-color');
-                        const previewEditModule = document.querySelector('#edit-preview');
-                        _this.handleGetModuleInfo(moduleId, moduleName, moduleBgData, moduleTextData);
+                        const editmoduleName = _this.editModuleForm.querySelector('input[id="edit-module-name"]');
+                        const moduleBgColor = _this.editModuleForm.querySelector('span[id="edit-bg"]');
+                        const moduleTextColor = _this.editModuleForm.querySelector('span[id="edit-text-color"]');
+                        if (moduleId == '0') {
+                            _this.showConfirmModal('You cannot edit this module!', true);
+                            return
+                        } else {
+                            _this.handleGetModuleInfo(moduleId, moduleName, moduleBgData, moduleTextData);
 
+                            _this.handleUpdateModules(moduleId, editmoduleName ,moduleBgColor, moduleTextColor)
+                        }
                         _this.moduleManagement.classList.add('hidden');
                         _this.editModuleContainer.classList.remove('hidden');
                     } else {
@@ -2113,59 +2212,6 @@ class EventListener {
                 const nameValue = moduleName.value.trim();
                 previewModule.textContent = nameValue;
             });
-
-            this.editModuleForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const formData = new FormData(_this.editModuleForm);
-                const backgroundData = moduleBgColor.getAttribute('data-bg-color');
-                const textData = moduleTextColor.getAttribute('data-text-color');
-                let isValid = true;
-
-
-
-                if (moduleName.value == '') {
-                    moduleName.classList.add('animate-turnErrorColor');
-                    _this.showError('edit-module-name', 'Module name is required.')
-                    isValid = false;
-                }
-
-                if (isValid) {
-                    formData.set('moduleId', moduleName.getAttribute('data-module-id'));
-                    formData.set('editBackground', backgroundData)
-                    formData.set('editText', textData)
-
-                    const response = await _this.renderer.fetchData('../controllers/admin/update_modules.php', {
-                        method: "POST",
-                        body: formData
-                    })
-
-                    if (response['admin']) {
-                        location.reload();
-                    }
-                }
-            });
-
-            // this.editModuleForm.addEventListener('submit', async function(e) {
-            //     e.preventDefault();
-
-            //     const backgroundData = moduleBgColor.getAttribute('data-bg-color');
-            //     const textData = moduleTextColor.getAttribute('data-text-color');
-
-
-            //     const formData = new FormData(_this.editModuleForm);
-            //     formData.set('moduleId', moduleName.getAttribute('data-module-id'));
-            //     formData.set('editBackground', backgroundData)
-            //     formData.set('editText', textData)
-
-            //     const response = await _this.renderer.fetchData('../controllers/admin/update_modules.php', {
-            //         method: "POST",
-            //         body: formData
-            //     })
-
-            //     if (response['admin']) {
-            //         location.reload();
-            //     }
-            // });
         }
     
     }
@@ -2343,10 +2389,10 @@ class EventListener {
         if (icon.innerText == 'edit') {
             const commentContent = commentElement.querySelector('p[class^="comment-content-"]')
 
-            const commentInput = document.createElement('input');
+            const commentInput = document.createElement('textarea');
             commentInput.id = 'comment-input';
-            commentInput.type = 'text';
-            commentInput.classList.add('border-1', 'border-gray-400', 'text-gray-400', 'rounded-md', 'p-2')
+            commentInput.cols = 80;
+            commentInput.classList.add('h-fit','border-1', 'border-text', 'text-text', 'rounded-md', 'p-2', 'dark:text-gray-400', 'dark:border-gray-400')
             commentInput.value = commentContent.textContent;
 
 
@@ -2354,9 +2400,9 @@ class EventListener {
             icon.textContent = 'check';
         } else {
             const commentValue = commentElement.getAttribute('data-value');
-            const inputValue = commentElement.querySelector('input[id="comment-input"]');
+            const inputValue = commentElement.querySelector('textarea[id="comment-input"]');
             const newComment = document.createElement('p');
-            newComment.classList.add(`comment-content-${commentValue}`, 'text-sm', 'dark:text-gray-400');
+            newComment.classList.add(`comment-content-${commentValue}`, 'text-sm', 'text-text' ,'dark:text-gray-400');
             newComment.textContent = inputValue.value;
 
             container.replaceChild(newComment, inputValue);
@@ -2411,10 +2457,24 @@ class EventListener {
                         commentElement.setAttribute('data-value', `${comment.comment_id}`);
                         commentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700' ,'animate-slideRight');
                         commentElement.innerHTML = `
-                            <img src="${comment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
-                            <div id="comment-information">
+                            <div class="relative group">
+                                <img data-value="${comment.user_id}" loading="lazy" src="${comment.avatar ? comment.avatar : '../assets/images/user.png'}" alt="" class="profile-hover user-${comment.user_id} h-10 rounded-full hover:opacity-80 cursor-pointer">
+
+                                <div class="profile-popup absolute bg-white w-66 rounded-md p-2 -top-26 left-0 border-1 border-gray-600 before:content-[''] before:absolute before:w-full before:h-0 before:right-0 before:-bottom-2 before:border-4 before:border-transparent group-hover:block hidden transition-all dark:bg-gray-800 dark:border-gray-400">
+                                    <div class="flex items_center space-x-4 w-full">
+                                        <img loading="lazy" src="${comment.avatar ? comment.avatar : '../assets/images/user.png'}" class="h-20 rounded-full">
+                                        <div>
+                                            <h4 id="post-username" class="text-text w-fit text-lg font-medium dark:text-white">${comment.fullname}</h4>
+                                            <div class="text-sm">
+                                                <h4 class="text-text tagname dark:text-gray-400">@${comment.tag_name ?? ''}</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="comments-information">
                                 <div class="flex items-center space-x-2">
-                                    <h2 class="text-text font-medium text-md dark:text-white">${comment.fullname}</h2>
+                                    <a href="../views/main.html.php?page=profile&tag_name=${comment.tag_name}" class="text-text font-medium text-md dark:text-white hover:underline cursor-pointer">${comment.fullname}</a>
                                     <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(comment.created_at)}</span>
                                 </div>
                                 <p class="comment-content-${comment.comment_id} text-text text-sm dark:text-gray-400">${comment.content}</p>
@@ -2857,7 +2917,7 @@ class EventListener {
         } else {
             console.error('sendNotification conditions not met:', { userId, username, avatar, type, postData});
         }
-      }
+    }
 
     updateNotificationBadge() {
         const notifyBadge = document.querySelector('#notify-badge');
@@ -2872,7 +2932,6 @@ class EventListener {
             this.notifyBtn.appendChild(newBadge);
         }
     }
-
 
     showConfirmModal(modalMessage, isModule = false) {
         return new Promise((resolve) => {
@@ -3145,7 +3204,6 @@ class EventListener {
     // Admin functions
     // Render user info for editing
     async handleAdminEdit(userId) {
-        
         try {
             const editUserInfo = await this.renderer.fetchData(`../controllers/admin/get_edituser.php`, {
                 method: "POST",
@@ -3164,10 +3222,44 @@ class EventListener {
         }
     }
 
+    handleChangeImage() {
+        const avatarInput = document.querySelector('#avatarURL');
+        if (avatarInput) {
+            avatarInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const imageURL = URL.createObjectURL(file);
+                    const imageElement = document.getElementById('image');
+                    const fileNameElement = document.getElementById('file-user-name');
+        
+                    if (imageElement && fileNameElement) {
+                        const img = new Image();
+                        img.onload = function() {
+                            imageElement.src = imageURL;
+                            fileNameElement.textContent = file.name;
+        
+                            // Automatically adjust the image to fit in a circle shape
+                            imageElement.style.objectFit = 'cover';
+                            imageElement.style.borderRadius = '50%';
+                            imageElement.style.width = '120px'; // Adjust width as needed
+                            imageElement.style.height = '120px'; // Adjust height as needed
+                        };
+                        img.src = imageURL;
+                    } else {
+                        console.error('Image element or file name element not found in the DOM.');
+                    }
+                }
+            });
+        }
+    }
+
     handleUpdateUser(userId) {
         const _this = this;
         this.adminEditForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+
+            console.log(userId);
+            console.log('done')
             const loadingOverlay = document.querySelector('#loading-overlay');
 
             const formData = new FormData(_this.adminEditForm);
@@ -3193,6 +3285,8 @@ class EventListener {
             for (const [key, value] of formData.entries()) {
                 console.log(key, value);
             }
+
+            
             
             try {
                 loadingOverlay.classList.remove('hidden');
@@ -3212,8 +3306,6 @@ class EventListener {
 
                 
             }
-
-            
         })
     }
 
@@ -3346,8 +3438,40 @@ class EventListener {
 
     }
 
-    handleUpdateModules(moduleId, bgColor, textColor) {
-        
+    handleUpdateModules(moduleId, moduleName, bgColor, textColor) {
+        const _this = this;
+        this.editModuleForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(_this.editModuleForm);
+            const backgroundData = bgColor.getAttribute('data-bg-color');
+            const textData = textColor.getAttribute('data-text-color');
+            let isValid = true;
+
+            console.log(moduleId);
+
+            if (moduleName.value == '') {
+                moduleName.classList.add('animate-turnErrorColor');
+                _this.showError('edit-module-name', 'Module name is required.')
+                isValid = false;
+            }
+
+            if (isValid) {
+                formData.set('moduleId', moduleId);
+                formData.set('editBackground', backgroundData);
+                formData.set('editText', textData);
+
+                const response = await _this.renderer.fetchData('../controllers/admin/update_modules.php', {
+                    method: "POST",
+                    body: formData
+                })
+
+                console.log(response)
+
+                if (response['admin']) {
+                    location.reload();
+                }
+            }
+        });
     }
 
     async handleDeleteModule(moduleId, modulePostCount) {

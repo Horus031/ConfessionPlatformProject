@@ -1,7 +1,9 @@
 <main id="userprofile-container" class="mt-28 w-full px-4 md:pl-[26%] lg:pl-[20%] xl:pl-[20%] 2xl:pl-[20%]">
     <div id="profile-container" class="flex flex-col md:flex-row md:items-center">
         <div id="profile-actions" class="flex  justify-between items-start px-2 md:flex-col md:items-center md:justify-start dark:bg-transparent z-30">
-            <img id="user-img" alt="" aspect-ratio="1/1" class="h-30 w-30 rounded-full mb-4">
+            <a id="user-avatar-container" data-fancybox="gallery">
+                <img id="user-img" alt="" aspect-ratio="1/1" class="h-30 w-30 rounded-full mb-4">
+            </a>
 
             <a id="edit-profile" class="text-text border-1 border-secondary rounded-lg px-3 py-1 font-semibold cursor-pointer dark:border-gray-600 dark:text-gray-400 hidden">Edit profile</a>
             <a id="follow-btn" class="border-1 bg-blue-500 text-white border-secondary rounded-lg px-3 py-1 font-semibold cursor-pointer hidden">Follow</a>

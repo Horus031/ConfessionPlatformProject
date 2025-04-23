@@ -124,7 +124,7 @@
                     <span class="absolute left-2 bottom-2 material-symbols-rounded custom-icon">
                         account_circle
                     </span>
-                    <input type="text" name="firstName" id="firstname" placeholder="First Name" class="border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black focus:outline-0">
+                    <input type="text" name="firstName" id="firstname" placeholder="First Name" class="border-0 border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black focus:outline-0 focus:ring-0">
                     <span class="error-message absolute text-red-500 -bottom-6 left-0 text-xs"></span>
                 </div>
 
@@ -132,7 +132,7 @@
                     <span class="absolute left-2 bottom-2 material-symbols-rounded custom-icon">
                         account_circle
                     </span>
-                    <input type="text" name="lastName" id="lastname" placeholder="Last Name" class="border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black focus:outline-0">
+                    <input type="text" name="lastName" id="lastname" placeholder="Last Name" class="border-0 border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black focus:outline-0 focus:ring-0">
                     <span class="error-message absolute text-red-500 -bottom-6 left-0 text-xs"></span>
                 </div>
 
@@ -141,7 +141,7 @@
                     <span class="absolute left-2 bottom-2 material-symbols-outlined custom-icon">
                         alternate_email
                     </span>
-                    <input type="text" name="tagName" id="tagname" placeholder="Your tag name" class="border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black font-normal focus:outline-0">
+                    <input type="text" name="tagName" id="tagname" placeholder="Your tag name" class="border-0 border-b-1 pb-2 border-[#3ea29a] px-12 w-full text-lg text-black font-normal focus:outline-0 focus:ring-0">
                     <span class="error-message absolute text-red-500 -bottom-6 left-0 text-xs"></span>
                 </div>
 

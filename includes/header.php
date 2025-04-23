@@ -44,7 +44,7 @@
             </div>
         </button>
         <button class="relative group">
-            <img id="user-btn" loading="lazy" src="<?= isset($_SESSION['avatarURL']) ? $_SESSION["avatarURL"] : '../assets/images/user.png'; ?>" alt="" class="h-10 rounded-full">
+            <img id="user-btn" loading="lazy" src="<?= isset($_SESSION['avatarURL']) ? $_SESSION["avatarURL"] : '../assets/images/user.png'; ?>" alt="" class="rounded-full size-10">
             <div id="users-popup" class="text-text absolute bg-white border-1 rounded-md shadow-[0_4px_12px_-4px] top-12 right-0 w-64 z-70 hidden lg:group-hover:block before:content-[''] before:absolute before:w-12 before:h-0 before:right-0 before:-top-2 before:border-4 before:border-transparent dark:bg-gray-900 dark:border-gray-600">
                 <a href="main.html.php?page=profile&tag_name=<?= $_SESSION['tag_name'] ?>" class="text-text flex items-center rounded-md text-3xl font-light space-x-4 p-3 hover:bg-gray-200 cursor-pointer dark:text-gray-400">
                     <span class="material-symbols-rounded custom-icon">account_circle</span>

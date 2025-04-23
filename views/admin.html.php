@@ -176,7 +176,7 @@
                 Edit User
             </div>
 
-            <form id="admin-edit" action="../controllers/edit_userinfo.php" method="post" enctype="multipart/form-data" class="bg-gray-800 mt-4 p-4 rounded-lg ">
+            <form id="admin-edit" method="post" enctype="multipart/form-data" class="bg-gray-800 mt-4 p-4 rounded-lg ">
                 <div class="edit-container">
                     <div class="mt-2">
                         <h2 class="text-xl font-semibold dark:text-white">Profile Picture</h2>
@@ -185,9 +185,9 @@
 
 
                             <div id="img-child" class="mt-4">
-                                <label for="avatarURL" class="block absolute w-full z-1 left-0 right-0 top-0 py-7 cursor-pointer rounded-full  text-text text-center dark:text-gray-400">
+                                <label for="avatarURL" class="flex items-center absolute left-0 right-0 top-0 h-full rounded-full  text-text text-center dark:text-gray-400 cursor-pointer">
                                     <input type="file" name="avatarURL" id="avatarURL" class="hidden">
-                                    <span id="file-user-name" class="ml-12">Change their image</span>
+                                    <span id="file-user-name" class="w-56 line-clamp-1 mx-auto">Change their image</span>
                                 </label>
                             </div>
                         </div>
@@ -244,7 +244,7 @@
                     <div class="my-4 flex justify-between 2xl:w-1/3">
                         <button id="cancel-user-btn" type="button" class="bg-transparent border-1 border-gray-400 px-6 rounded-lg" name="Edit" value="Cancel">Cancel</button>
 
-                        <button type="submit" class="bg-black text-white border-1 border-text px-8 py-2 rounded-lg" name="Edit" value="Save">Save</button>
+                        <button type="submit" class="bg-black text-white border-1 border-text px-8 py-2 rounded-lg cursor-pointer" name="Edit" value="Save">Save</button>
                     </div>
                 </div>
             </form>
@@ -305,7 +305,7 @@
                     <table class="w-full mt-4 rounded-lg overflow-x-auto">
                         <thead class="bg-gray-900 rounded-lg p-4 font-semibold">
                             <td class="p-4 text-left">Question</td>
-                            <td>Module</td>
+                            <td class="">Module</td>
                             <td>User</td>
                             <td>Posted</td>
                             <td>Comments</td>

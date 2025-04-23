@@ -57,6 +57,7 @@ class NotificationServer implements MessageComponentInterface
             if ($data['type'] === 'comment') {
                 $response = [
                     "type" => "comment",
+                    "commentId" => $data['commentId'],
                     "postId" => $data['postId'],
                     "userId" => $data['userId'],
                     "username" => $data['username'],

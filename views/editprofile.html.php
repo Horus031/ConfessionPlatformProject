@@ -8,13 +8,14 @@
                 <h2 class="text-text text-xl font-semibold dark:text-white">Profile Picture</h2>
                 <p class="text-text font-semibold dark:text-gray-400">Let's upload your picture so that everyone can recognize you</p>
 
-                <div id="uploadimg-container" class="relative flex border-1 z-5 bg-none border-text rounded-full space-x-4 m-4 cursor-pointer md:mx-30 lg:mx-50 lg:space-x-12 2xl:w-1/3 2xl:mx-0 dark:border-gray-600">
+                <div id="uploadimg-container" class="relative flex space-x-8 border-1 z-5 bg-none border-text rounded-full m-4 cursor-pointer md:mx-30 lg:mx-50 lg:space-x-12 2xl:w-1/3 2xl:mx-0 dark:border-gray-600">
 
 
-                    <div id="img-child" class="mt-4">
-                        <label for="avatarURL" class="block absolute w-full z-1 left-0 right-0 top-0 py-7 cursor-pointer rounded-full  text-text text-center dark:text-gray-400">
-                            <input type="file" name="avatarURL" id="avatarURL" class="hidden">
-                            <span id="file-name" class="ml-12"> Upload your image</span>
+                    <div id="img-child" class="w-full h-full absolute left-0 right-0 z-1 cursor-pointer">
+
+                        <label for="avatarURL" class="flex items-center absolute left-0 right-0 top-0 h-full rounded-full  text-text text-center dark:text-gray-400 cursor-pointer">
+                            <input type="file" name="avatarURL" id="avatarURL" class="hidden text-center">
+                            <span id="file-name" class="w-56 line-clamp-1 mx-auto"> Upload your image</span>
                         </label>
                     </div>
                 </div>

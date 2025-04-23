@@ -36,5 +36,5 @@ document.addEventListener('DOMContentLoaded', async function() {
     canvasRenderer.renderEditCanvas();
     
 
-    eventListener.start();
+    await eventListener.start();
 });
