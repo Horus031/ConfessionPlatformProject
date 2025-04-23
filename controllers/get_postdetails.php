@@ -28,7 +28,7 @@ try {
 
         echo json_encode($post);
     } else {
-        throw new Exception("Post not found");
+        echo json_encode(['404' => 'Post not found']);
     }
 } catch (Exception $e) {
     echo json_encode(['error' => $e->getMessage()]);

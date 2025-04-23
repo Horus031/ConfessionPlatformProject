@@ -19,7 +19,7 @@ try {
         $userInfo = $database->fetchUserInfo($tagName);
 
         if (empty($userInfo)) {
-            echo json_encode(['error' => 'No user found with the given tag name']);
+            echo json_encode(['404' => 'No user found with the given tag name']);
         } else {
             $socialLink = $database->fetchSocialLinks($userInfo['user_id']);
             $userInfo['socialLinks'] = $socialLink;

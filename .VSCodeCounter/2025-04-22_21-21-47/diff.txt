@@ -1,0 +1,53 @@
+Date : 2025-04-22 21:21:47
+Directory : d:\xampp\htdocs\mywebsite
+Total : 19 files,  701 codes, 8 comments, 131 blanks, all 840 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| PHP        |         13 |        344 |          3 |         75 |        422 |
+| JavaScript |          5 |        275 |          5 |         56 |        336 |
+| PostCSS    |          1 |         82 |          0 |          0 |         82 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                  | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                     |         19 |        701 |          8 |        131 |        840 |
+| controllers                                                           |         10 |        143 |          6 |         38 |        187 |
+| controllers (Files)                                                   |          7 |        103 |          2 |         30 |        135 |
+| controllers\render&events                                             |          3 |         40 |          4 |          8 |         52 |
+| includes                                                              |          2 |         23 |          0 |          7 |         30 |
+| src                                                                   |          3 |        317 |          1 |         48 |        366 |
+| src\css                                                               |          1 |         82 |          0 |          0 |         82 |
+| src\js                                                                |          2 |        235 |          1 |         48 |        284 |
+| views                                                                 |          4 |        218 |          1 |         38 |        257 |
++-----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                              | language   | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| d:\xampp\htdocs\mywebsite\controllers\change_password.php             | PHP        |         15 |          0 |          3 |         18 |
+| d:\xampp\htdocs\mywebsite\controllers\render&events\admin.js          | JavaScript |          0 |          0 |          1 |          1 |
+| d:\xampp\htdocs\mywebsite\controllers\render&events\changepassword.js | JavaScript |         38 |          4 |          7 |         49 |
+| d:\xampp\htdocs\mywebsite\controllers\render&events\profile.js        | JavaScript |          2 |          0 |          0 |          2 |
+| d:\xampp\htdocs\mywebsite\controllers\send_message.php                | PHP        |         -2 |         -1 |         -1 |         -4 |
+| d:\xampp\htdocs\mywebsite\controllers\send_otp.php                    | PHP        |         39 |          3 |         11 |         53 |
+| d:\xampp\htdocs\mywebsite\controllers\session_data.php                | PHP        |          8 |          0 |          0 |          8 |
+| d:\xampp\htdocs\mywebsite\controllers\update_password.php             | PHP        |         12 |          0 |          5 |         17 |
+| d:\xampp\htdocs\mywebsite\controllers\validate_password.php           | PHP        |         15 |          0 |          5 |         20 |
+| d:\xampp\htdocs\mywebsite\controllers\verify_otp.php                  | PHP        |         16 |          0 |          7 |         23 |
+| d:\xampp\htdocs\mywebsite\includes\dbfunctions.php                    | PHP        |         24 |          0 |          5 |         29 |
+| d:\xampp\htdocs\mywebsite\includes\upload_avatar.php                  | PHP        |         -1 |          0 |          2 |          1 |
+| d:\xampp\htdocs\mywebsite\src\css\output.css                          | PostCSS    |         82 |          0 |          0 |         82 |
+| d:\xampp\htdocs\mywebsite\src\js\events.js                            | JavaScript |        202 |          1 |         44 |        247 |
+| d:\xampp\htdocs\mywebsite\src\js\render.js                            | JavaScript |         33 |          0 |          4 |         37 |
+| d:\xampp\htdocs\mywebsite\views\changepassword.html.php               | PHP        |        204 |          0 |         34 |        238 |
+| d:\xampp\htdocs\mywebsite\views\login.html.php                        | PHP        |          0 |          0 |          1 |          1 |
+| d:\xampp\htdocs\mywebsite\views\main.html.php                         | PHP        |          8 |          1 |          1 |         10 |
+| d:\xampp\htdocs\mywebsite\views\register.html.php                     | PHP        |          6 |          0 |          2 |          8 |
+| Total                                                                 |            |        701 |          8 |        131 |        840 |
++-----------------------------------------------------------------------+------------+------------+------------+------------+------------+

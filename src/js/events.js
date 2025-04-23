@@ -8,7 +8,6 @@ class EventListener {
         this.loadingOverlay = document.querySelector('#loading-overlay');
         this.popupModal = document.querySelector('#popup-modal');
 
-        console.log(culori);
         if (this.currentURL.includes('main.html.php')) {
             this.initSessionData().then(() => {
                 this.socket = new WebSocket(`ws://localhost:8080?user_id=${this.userId}`);
@@ -67,6 +66,7 @@ class EventListener {
                     }
     
                     if (data.type === "notification") {
+                        this.updateNotificationBadge();
     
                         const notifyContainer = document.querySelector('#notify-popup');
 
@@ -144,6 +144,11 @@ class EventListener {
                 };
             });
         }
+
+        if (this.currentURL.includes('admin')) {
+            console.log('admin')
+            document.documentElement.classList.add('dark');
+        }
     }
 
     async initSessionData() {
@@ -160,7 +165,7 @@ class EventListener {
                 this.tagName = sessionData.tag_name || '';
                 this.roleId = sessionData.role_id || 1;
             } else {
-                throw new Error('Invalid session data received');
+                window.location.href = `../views/login.html.php`;
             }
         } catch (error) {
             console.error('Error initializing session data:', error);
@@ -606,7 +611,7 @@ class EventListener {
                     return
                 } else {
                     confirmPassword.classList.remove('animate-turnErrorColor');
-                    _this.clear('confirm-password');
+                    _this.clearError('confirm-password');
                 }
 
                 try {
@@ -3422,13 +3427,11 @@ class EventListener {
     }
 
     async start() {
-        // Apply dark mode preference on page load
-        await this.applyDarkModePreference();
-
         // Check if the current page is admin or not
         if (this.currentURL.includes('admin')) {
             this.handleAdminEvents();
         } else {
+            await this.applyDarkModePreference();
             this.handleEvents();
         }
 

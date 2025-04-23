@@ -49,7 +49,7 @@
     </div>
 </aside>
 
-<main id="section-container" class="font-poppins mt-26 md:ml-64 p-4 w-full bg-gray-900 text-gray-400">
+<main id="section-container" class="dark font-poppins h-full mt-26 md:ml-64 p-4 w-full bg-gray-900 text-gray-400">
     <!-- Users Management -->
     <div id="user">
         <section id="user-management">
@@ -187,7 +187,7 @@
                             <div id="img-child" class="mt-4">
                                 <label for="avatarURL" class="block absolute w-full z-1 left-0 right-0 top-0 py-7 cursor-pointer rounded-full  text-text text-center dark:text-gray-400">
                                     <input type="file" name="avatarURL" id="avatarURL" class="hidden">
-                                    <span id="file-name" class="ml-12"> Change their image</span>
+                                    <span id="file-user-name" class="ml-12">Change their image</span>
                                 </label>
                             </div>
                         </div>
@@ -330,16 +330,16 @@
             <form id="admin-edit-post" action="../controllers/edit_post.php" method="post" enctype="multipart/form-data" class="bg-gray-800 mt-4 p-4 rounded-lg ">
                 <input type="hidden" name="postValues" id="post-value">
                 <div class="relative mt-2 space-y-4">
-                    <input type="text" name="titleValue" id="title" class="bg-transparent border-1 text-text border-text rounded-lg p-2 q px-4 w-full md:w-5/8 lg:w-4/9 dark:border-gray-600 dark:text-gray-400" placeholder="Post title">
+                    <input type="text" name="titleValue" id="title" class="text-gray-400 bg-transparent border-1 border-gray-400 rounded-lg p-2 q px-4 w-full md:w-5/8 lg:w-4/9" placeholder="Post title">
                     <span class="error-message absolute text-red-500 bottom-0 left-0 text-xs"></span>
                 </div>
 
                 <div class="relative mt-6 flex flex-col w-fit">
-                    <textarea name="contentValue" id="content" cols="40" rows="8" class="p-2 text-text border-1 border-text rounded-lg dark:border-gray-600 dark:text-gray-400" placeholder="Post content"></textarea>
+                    <textarea name="contentValue" id="content" cols="40" rows="8" class="p-2 text-gray-400 border-1 border-gray rounded-lg" placeholder="Post content"></textarea>
                     <span class="error-message absolute text-red-500 top-54 left-0 text-xs"></span>
 
                     <div class="mt-10">
-                        <label for="imageURL" class="block py-1.5 px-3 cursor-pointer border-1 border-secondary rounded-md bg-[#f8f8f8] text-text text-center hover:bg-[#e8e8e8] dark:bg-transparent dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700">
+                        <label for="imageURL" class="block py-1.5 px-3 cursor-pointer border-1 rounded-md bg-transparent text-center dark:bg-transparent border-gray-600 text-gray-400 hover:bg-gray-700">
                             <input type="file" name="imageURL" id="imageURL" class="hidden">
                             <span id="file-name" class="w-44 text-wrap line-clamp-1 m-auto">Upload your image</span>
                         </label>
@@ -347,17 +347,17 @@
                 </div>
 
                 <div class="mt-4 flex flex-col">
-                    <label for="select-tag-type" class="text-text dark:text-gray-400">Select your tag here</label>
-                    <select name="selectTagType" id="select-tag-type" class="text-text border-1 border-black rounded-lg py-1 px-4 mt-4 md:w-5/8 lg:w-4/9 dark:text-gray-400 dark:border-gray-700 focus:outline-0 focus:ring-0">
-                        <option value="" selected class="bg-transparent text-text dark:text-gray-400 dark:bg-gray-900"></option>
-                        <option value="general" class="bg-transparent text-text dark:text-gray-400 dark:bg-gray-900">General Subject</option>
-                        <option value="prog&tech" class="bg-transparent text-text dark:text-gray-400 dark:bg-gray-900">Programming & Technology</option>
-                        <option value="study" class="bg-transparent text-text dark:text-gray-400 dark:bg-gray-900">Study Tips</option>
-                        <option value="career" class="bg-transparent text-text dark:text-gray-400 dark:bg-gray-900">Career & Guidance</option>
+                    <label for="select-tag-type" class="*:text-gray-400">Select your tag here</label>
+                    <select name="selectTagType" id="select-tag-type" class="border-1 rounded-lg py-1 px-4 mt-4 md:w-5/8 lg:w-4/9 text-gray-400 border-gray-700 focus:outline-0 focus:ring-0">
+                        <option value="" selected class=" text-gray-400 bg-gray-900"></option>
+                        <option value="general" class=" text-gray-400 bg-gray-900">General Subject</option>
+                        <option value="prog&tech" class=" text-gray-400 bg-gray-900">Programming & Technology</option>
+                        <option value="study" class=" text-gray-400 bg-gray-900">Study Tips</option>
+                        <option value="career" class=" text-gray-400 bg-gray-900">Career & Guidance</option>
                     </select>
 
                     <div class="flex items-center mt-4 space-x-6">
-                        <select name="tagList" id="tag-list" class="border-1 bg-gray-800 border-black text-text rounded-lg py-1 px-4 overflow-y-scroll w-full  md:w-5/8 lg:w-4/9 dark:text-gray-400 dark:border-gray-700 focus:outline-0">
+                        <select name="tagList" id="tag-list" class="border-1 bg-gray-800 rounded-lg py-1 px-4 overflow-y-scroll w-full  md:w-5/8 lg:w-4/9 text-gray-400 border-gray-700 focus:outline-0">
 
                         </select>
 
@@ -368,13 +368,13 @@
                     </div>
 
                     <div id="tag-container" class="mt-4">
-                        <input type="text" name="tagInput" id="tag-input" class="bg-transparent text-text border-1 border-black rounded-lg py-1 px-4 w-full md:w-5/8 lg:w-4/9 dark:text-gray-400 dark:border-gray-700" readonly>
+                        <input type="text" name="tagInput" id="tag-input" class="bg-transparent border-1 rounded-lg py-1 px-4 w-full md:w-5/8 lg:w-4/9 text-gray-400 border-gray-700" readonly>
                     </div>
                 </div>
 
                 <div class="mt-4 flex flex-col">
-                    <h2 class="text-lg text-text dark:text-gray-400">Select modules</h2>
-                    <select name="moduleValues" id="modules" class="border-1 border-black text-text rounded-lg py-1 px-4 mt-4 md:w-5/8 lg:w-4/9 dark:text-gray-400 dark:border-gray-700">
+                    <h2 class="text-lg text-gray-400">Select modules</h2>
+                    <select name="moduleValues" id="modules" class="border-1 rounded-lg py-1 px-4 mt-4 md:w-5/8 lg:w-4/9 text-gray-400 border-gray-700">
 
                     </select>
                 </div>
@@ -541,7 +541,7 @@
                 <div>
                     <h3 class="text-2xl font-medium text-white">Choose Module Color:</h3>
                     <div id="edit-color-canvas" class="relative not-prose grid grid-cols-[auto_minmax(0,_1fr)] items-center gap-4 bg-black rounded-lg p-4">
-                        <select id="color-edit-type" class="sticky flex items-center top-28 z-9 bg-white lg:top-14 dark:bg-gray-950 cursor-pointer focus:outline-0 focus:ring-0">
+                        <select id="color-edit-type" class="sticky flex items-center top-28 z-9 lg:top-14 bg-gray-950 cursor-pointer focus:outline-0 focus:ring-0">
                             <option value="background">Background Color</option>
                             <option value="text">Text Color</option>
                         </select>

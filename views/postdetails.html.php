@@ -1,4 +1,4 @@
-<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[20%] transition-all">
+<main id="postdetails-container" class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[20%] transition-all">
     <div class="flex items-center">
         <a href="main.html.php?page=home" class="flex items-center text-text dark:text-gray-400 hover:bg-secondary text-3xl text-light rounded-full">
             <span class="material-symbols-rounded custom-icon">
@@ -37,9 +37,9 @@
 
             <p id="post-content" class="font-roboto mt-3 text-md text-text dark:text-gray-400"></p>
 
-            <div id="post-image-container" class="mt-3 rounded-md lg:w-2/3 2xl:w-1/3">
-                <img id="post-image" loading="lazy" src="" alt="Post image" class="w-full rounded-md h-1/3">
-            </div>
+            <a id="post-image-container" data-fancybox="gallery" data-caption="Single image" class="mt-3 rounded-md lg:w-2/3 2xl:w-full">
+                <img id="post-image" loading="lazy" src="" alt="Post image" class="w-full rounded-md h-1/3 lg:h-full bg-contain">
+            </a>
 
             <div id="postdetail-action" class="flex justify-between items-center mt-3">
                 <div class="flex justify-between w-fit rounded-md space-x-2">

@@ -5,7 +5,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bg-white dark:bg-gray-900">
 
 <head>
     <meta charset="UTF-8">
@@ -13,12 +13,16 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
     <title>Knowledge Nexus</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
     <link rel="stylesheet" href="/mywebsite/src/css/output.css">
 
 
 </head>
 
-<body class="h-screen">
+<body class="h-screen bg-white dark:bg-gray-900" style="height: 100%;">
     <div class="bg-white relative flex h-full w-full overflow-x-hidden overflow-y-auto transition-all scroll dark:bg-gray-900  ">
         <!-- Check if page is not admin page -->
         <?php if ($page !== 'admin') : ?>
@@ -71,6 +75,12 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 
 
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+    <script>
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    </script>
 </body>
 
 </html>

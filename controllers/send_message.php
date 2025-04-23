@@ -33,10 +33,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
-        // Debugging
-        $mail->SMTPDebug = 0;
-        $mail->Debugoutput = 'html';
-
         // Recipients
         $mail->setFrom($email, $name);
         $mail->addAddress('vominhnghia1878@gmail.com');

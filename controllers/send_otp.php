@@ -30,10 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com'; // Replace with your SMTP server
+        $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'mailsystemkn@gmail.com'; // Replace with your email
-        $mail->Password = 'hjdk prmd ftvu zoho'; // Replace with your email password
+        $mail->Username = 'mailsystemkn@gmail.com';
+        $mail->Password = 'hjdk prmd ftvu zoho';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 

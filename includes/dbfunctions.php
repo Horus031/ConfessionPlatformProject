@@ -656,7 +656,7 @@ class Database
 
     public function getAllNotifications($userId)
     {
-        $sql = "SELECT notifications.*, users.avatar, users.username 
+        $sql = "SELECT notifications.*, users.avatar, users.username, CONCAT(first_name, ' ', last_name) AS fullname 
                 FROM notifications
                 INNER JOIN users ON notifications.sender_id = users.user_id
                 WHERE notifications.user_id = ?

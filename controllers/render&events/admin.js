@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     canvasRenderer.renderColorHolder();
     canvasRenderer.renderColorCanvas();
     canvasRenderer.renderEditCanvas();
+    
 
     eventListener.start();
 });

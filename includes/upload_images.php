@@ -8,9 +8,9 @@ if (isset($_FILES['imageURL']['tmp_name']) && is_uploaded_file($_FILES['imageURL
         $upload = (new UploadApi())->upload($_FILES['imageURL']['tmp_name'], [
             'folder' => 'posts', // Save the image in the folder on Cloudinary
             'transformation' => [
-                'width' => 320,
-                'height' => 200,
-                'crop' => 'fill',
+                'width' => 1920, // Higher width for better quality
+                'height' => 1080, // Higher height for better quality
+                'crop' => 'limit', // Ensure the image fits within the dimensions without cropping
                 'quality' => 'auto', // Automatically adjust the quality
                 'fetch_format' => 'auto', // Automatically adjust the format
             ],
