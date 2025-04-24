@@ -29,11 +29,11 @@
                                 <div class="flex items_center space-x-4 w-full">
                                     <img loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" class="h-20 rounded-full">
                                     <div>
-                                        <h4 id="post-username" class="text-text w-fit text-lg font-medium dark:text-white">${question.fullname}</h4>
+                                        <h4 id="post-username" class="text-text w-fit text-lg font-medium dark:text-white"></h4>
                                         <div class="text-sm">
-                                            <span class="text-text tagname dark:text-gray-400">@${question.tag_name ?? ''}</span>
+                                            <span class="text-text tagname dark:text-gray-400"></span>
                                             <span class="text-text dark:text-gray-400">•</span>
-                                            <span class="text-text-light dark:text-gray-400">Joined ${formattedDate}</span>
+                                            <span class="text-text-light dark:text-gray-400"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -53,9 +53,9 @@
 
             <hr class="mt-4 text-secondary dark:text-gray-400">
 
-            <p id="post-content" class="font-roboto mt-3 text-md text-text dark:text-gray-400"></p>
+            <p id="post-content" class="font-roboto mt-3 text-base md:text-lg text-text dark:text-gray-400"></p>
 
-            <a id="post-image-container" data-fancybox="gallery" data-caption="Single image" class="mt-3 rounded-md lg:w-2/3 2xl:w-3/4">
+            <a id="post-image-container" data-fancybox="gallery" class="mt-3 rounded-md lg:w-2/3 2xl:w-3/4">
                 <img id="post-image" loading="lazy" src="" alt="Post image" class="w-full rounded-md h-1/3 lg:h-full bg-contain">
             </a>
 

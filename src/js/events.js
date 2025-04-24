@@ -1140,7 +1140,7 @@ class EventListener {
 
                             const notifications = document.querySelectorAll('#notify-popup a.bg-blue-200');
                             notifications.forEach(notification => {
-                                notification.classList.remove('bg-blue-200');
+                                notification.classList.remove('bg-blue-200', 'dark:bg-gray-600');
                             });
 
                             const notifyButton = document.querySelector('#notify-btn');
@@ -1167,7 +1167,7 @@ class EventListener {
                             });
 
                             // Remove the "new" color from the clicked notification
-                            e.currentTarget.classList.remove('bg-blue-200');
+                            e.currentTarget.classList.remove('bg-blue-200', 'dark:bg-gray-600');
                         } catch (error) {
                             console.error('Error marking notification as read:', error);
                         }
@@ -2238,7 +2238,7 @@ class EventListener {
     async handleLikeButtonClick(postId, question) {
         const likeImage = question.querySelector('.like-img');
         const likeCountSpan = question.querySelector(`.like-count-${postId}`);
-        const receiverId = question.querySelector('img[class^="user-"]').getAttribute('data-value');
+        const receiverId = question.querySelector('img[id^="user-"]').getAttribute('data-value');
         const avatar = `${this.avatar || '../assets/images/user.png'}`;
         const messageNotify = `has liked your post!`;
         const content = `Check it out`;
@@ -2671,7 +2671,7 @@ class EventListener {
         followerOverlay.id = "follow-overlay";
         followerOverlay.className = `font-poppins flex absolute items-center justify-center bg-black/60 h-full top-0 bottom-0 left-0 right-0 z-90`;
         followerOverlay.innerHTML = `
-            <div id="follow-popup" class=" z-90 bg-white dark:bg-gray-800 dark:text-gray-400 w-md h-md rounded-lg">
+            <div id="follow-popup" class=" z-90 bg-white text-text dark:bg-gray-800 dark:text-gray-400 w-md h-md rounded-lg">
                 <div class="relative border-b-1 border-b-black p-2 dark:border-b-gray-600">
                     <h1 id="follow-title" class="text-center text-lg">Followers</h1>
                     <div class="absolute text-3xl font-light right-2 top-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer">
@@ -2747,7 +2747,7 @@ class EventListener {
         followerOverlay.id = "follow-overlay";
         followerOverlay.className = `font-poppins flex absolute items-center justify-center bg-black/60 h-full top-0 bottom-0 left-0 right-0 z-90`;
         followerOverlay.innerHTML = `
-            <div id="follow-popup" class=" z-90 bg-white dark:bg-gray-800 dark:text-gray-400 w-md h-md rounded-lg">
+            <div id="follow-popup" class=" z-90 bg-white text-text dark:bg-gray-800 dark:text-gray-400 w-md h-md rounded-lg">
                 <div class="relative border-b-1 border-b-black p-2 dark:border-b-gray-600">
                     <h1 id="follow-title" class="text-center text-lg">Following</h1>
                     <div class="absolute text-3xl font-light right-2 top-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer">

@@ -68,7 +68,7 @@ class QuestionRenderer {
                                 <div class="flex items-center space-x-2 font-normal md:space-y-2 md:flex-wrap 2xl:flex-nowrap 2xl:space-y-0">
                                     <div class="flex items-center space-x-2">
                                         <div class="relative group">
-                                            <img data-value="${post.user_id}" loading="lazy" src="${post.avatar ? post.avatar : '../assets/images/user.png'}" alt="" class="profile-hover user-${post.user_id} h-10 rounded-full">
+                                            <img id="user-${post.user_id}" data-value="${post.user_id}" loading="lazy" src="${post.avatar ? post.avatar : '../assets/images/user.png'}" alt="" class="profile-hover user-${post.user_id} h-10 rounded-full">
 
                                             <div class="profile-popup absolute bg-white w-66 rounded-md p-2 -top-26 left-0 border-1 border-gray-600 before:content-[''] before:absolute before:w-full before:h-0 before:right-0 before:-bottom-2 before:border-4 before:border-transparent group-hover:block hidden transition-all dark:bg-gray-800 dark:border-gray-400">
                                                 <div class="flex items_center space-x-4">
@@ -369,7 +369,7 @@ class QuestionRenderer {
                             <div class="flex items-center space-x-2 font-normal md:space-y-2 md:flex-wrap 2xl:flex-nowrap 2xl:space-y-0">
                                 <div class="flex items-center space-x-2">
                                     <div class="relative group">
-                                        <img data-value="${question.user_id}" loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" alt="" class="profile-hover user-${question.user_id} h-10 rounded-full">
+                                        <img id="user-avatar" data-value="${question.user_id}" loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" alt="" class="profile-hover user-${question.user_id} h-10 rounded-full">
 
                                         <div class="profile-popup absolute bg-white w-66 rounded-md p-2 -top-26 left-0 border-1 border-gray-600 before:content-[''] before:absolute before:w-full before:h-0 before:right-0 before:-bottom-2 before:border-4 before:border-transparent group-hover:block hidden transition-all dark:bg-gray-800 dark:border-gray-400">
                                             <div class="flex items_center space-x-4 w-full">
@@ -754,18 +754,18 @@ class QuestionRenderer {
                 <div class="flex space-x-2">
                     <div id="follower-btn" class="text-text cursor-pointer active:scale-90">
                         <span id="follower-count" class="text-text dark:text-white">0</span>
-                        <span class="text-text-light dark:text-gray-400">Followers</span>
+                        <span class="text-text dark:text-gray-400">Followers</span>
                     </div>
                     <div id="following-btn" class="cursor-pointer active:scale-90">
                         <span id="following-count" class="text-text dark:text-white">0</span>
-                        <span class="text-text-light dark:text-gray-400">Following</span>
+                        <span class="text-text dark:text-gray-400">Following</span>
                     </div>
                 </div>
                 <div>
                     <span id="view-count" class="text-text dark:text-white">0</span>
-                    <span class="text-text-light dark:text-gray-400">Views</span>
+                    <span class="text-text dark:text-gray-400">Views</span>
                     <span id="like-count" class="text-text dark:text-white">0</span>
-                    <span class="text-text-light dark:text-gray-400">Likes</span>
+                    <span class="text-text dark:text-gray-400">Likes</span>
                 </div>
             `;
 
@@ -799,7 +799,7 @@ class QuestionRenderer {
             });
 
             const bioContext = document.createElement('span');
-            bioContext.classList.add('font-semibold', 'text-text-light', 'dark:text-gray-400');
+            bioContext.classList.add('font-semibold', 'text-text', 'dark:text-gray-400');
             bioContext.textContent = data.bio ?? '';
 
             bioContainer.appendChild(bioContext);
@@ -956,7 +956,7 @@ class QuestionRenderer {
         bioElement.placeholder = 'Your bio...';
         bioElement.cols = '40';
         bioElement.rows = '8';
-        bioElement.classList.add('border-1', 'border-text', 'p-2', 'rounded-lg', 'dark:border-gray-600', 'dark:text-gray-400');
+        bioElement.classList.add('border-1', 'border-text', 'text-text' ,'p-2', 'rounded-lg', 'dark:border-gray-600', 'dark:text-gray-400');
         bioElement.value = `${userInfo.bio ?? ''}`;
 
         bioInput.appendChild(bioElement);

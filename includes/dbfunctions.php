@@ -504,7 +504,7 @@ class Database
     public function searchPostsAndUsers($query)
     {
         $sql = "
-        SELECT 'title' AS type, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
+        SELECT 'title' AS type, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, CONCAT(users.first_name, ' ', users.last_name) AS fullname ,users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
         FROM ((((posts 
         INNER JOIN users ON posts.user_id = users.user_id)
         INNER JOIN modules ON posts.module_id = modules.module_id)
@@ -521,7 +521,7 @@ class Database
     public function searchPostByTags($query)
     {
         $stmt = $this->pdo->prepare("
-        SELECT DISTINCT 'tag' AS type, tags.tag_name, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
+        SELECT DISTINCT 'tag' AS type, tags.tag_name, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, CONCAT(users.first_name, ' ', users.last_name) AS fullname ,users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
         FROM ((((posts 
         INNER JOIN posttags ON posts.post_id = posttags.post_id)
         INNER JOIN tags ON posttags.tag_id = tags.tag_id)
@@ -537,7 +537,7 @@ class Database
     public function searchPostByTagName($query)
     {
         $stmt = $this->pdo->prepare("
-        SELECT DISTINCT 'user' AS type, users.tag_name, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
+        SELECT DISTINCT 'user' AS type, users.tag_name, posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, CONCAT(users.first_name, ' ', users.last_name) AS fullname ,users.username, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
         FROM ((((posts 
         INNER JOIN users ON posts.user_id = users.user_id)
         INNER JOIN modules ON posts.module_id = modules.module_id)

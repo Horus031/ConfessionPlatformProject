@@ -54,7 +54,7 @@
         </div>
 
         <div class="text-right md:text-left">
-            <button type="submit" name="submit" id="submit-btn" class="bg-black text-white rounded-lg px-4 py-2 mt-4">
+            <button type="submit" name="submit" id="submit-btn" class="bg-black text-white rounded-lg px-4 py-2 mt-4 cursor-pointer">
                 Post
             </button>
         </div>
