@@ -19,7 +19,7 @@
                 priority_high
             </span>
         </div>
-        <div id="toast-message" class="ms-3 text-sm font-normal">Please fill out all information!</div>
+        <div id="toast-message" class="ms-3 text-sm font-normal">Please fill out all information</div>
     </div>
 
 
