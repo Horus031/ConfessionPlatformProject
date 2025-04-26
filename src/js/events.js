@@ -227,6 +227,7 @@ class EventListener {
         this.btnWrapper = document.querySelector('#btn-wrapper');
         this.userBtn = document.querySelector('#user-btn');
         this.userPopup = document.querySelector('#users-popup');
+        this.addquesBtn = document.querySelector('#addques-btn')
         this.notifyBtn = document.querySelector('#notify-btn');
         this.notifyContainer = document.querySelector('#notification-container');
         this.notifyPopupContainer = document.querySelector('#notify-container');
@@ -823,6 +824,12 @@ class EventListener {
                         }
                     }
                 });
+            }
+
+            if (this.addquesBtn) {
+                this.addquesBtn.addEventListener('click', function() {
+                    window.location.href = '../views/main.html.php?page=newpost';
+                })
             }
 
             if (this.userBtn) {

@@ -14,11 +14,11 @@
 
             <div class="border border-text rounded-md text-right w-fit ">
                 <select name="filter-tags" id="filter-tags" class="text-text w-fit border-0 p-2 rounded-md font-medium dark:text-gray-400 dark:border-1 dark:border-gray-600 focus:outline-none focus:ring-0 focus:border-0">
-                    <option value="all" class="bg-white text-text dark:bg-gray-800">All</option>
-                    <option value="general" class="bg-white text-text dark:bg-gray-800">General Subject</option>
-                    <option value="prog&tech" class="bg-white text-text dark:bg-gray-800">Programming & Technology</option>
-                    <option value="study" class="bg-white text-text dark:bg-gray-800">Study & Productivity</option>
-                    <option value="career" class="bg-white text-text dark:bg-gray-800">Career & Guidance</option>
+                    <option value="all" class="bg-white text-text dark:bg-gray-800 dark:text-gray-400">All</option>
+                    <option value="general" class="bg-white text-text dark:bg-gray-800 dark:text-gray-400">General Subject</option>
+                    <option value="prog&tech" class="bg-white text-text dark:bg-gray-800 dark:text-gray-400">Programming & Technology</option>
+                    <option value="study" class="bg-white text-text dark:bg-gray-800 dark:text-gray-400">Study & Productivity</option>
+                    <option value="career" class="bg-white text-text dark:bg-gray-800 dark:text-gray-400">Career & Guidance</option>
                 </select>
             </div>
         </div>

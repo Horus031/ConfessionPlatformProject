@@ -55,10 +55,10 @@
         </div>
 
         <div class="flex justify-between md:w-2/3 lg:w-4/9">
-            <button id="cancel-btn" type="button" class="border border-black rounded-lg px-4 py-2 mt-4">
+            <button id="cancel-btn" type="button" class="border border-black text-text rounded-lg px-4 py-2 mt-4 dark:border-gray-400 dark:text-gray-400 cursor-pointer">
                 Cancel
             </button>
-            <button type="submit" name="submit" class="bg-black text-white rounded-lg px-4 py-2 mt-4">
+            <button type="submit" name="submit" class="bg-black text-white rounded-lg px-4 py-2 mt-4 cursor-pointer">
                 Save
             </button>
         </div>
