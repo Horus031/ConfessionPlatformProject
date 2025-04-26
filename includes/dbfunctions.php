@@ -325,7 +325,7 @@ class Database
 
     public function fetchUserByUsername($username)
     {
-        $sql = "SELECT user_id, CONCAT(first_name, ' ', last_name) AS fullname, username, password, avatar, tag_name, role_id FROM users WHERE BINARY username = ?";
+        $sql = "SELECT user_id, CONCAT(first_name, ' ', last_name) AS fullname, username, password, avatar, tag_name, email ,role_id FROM users WHERE BINARY username = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$username]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -350,6 +350,14 @@ class Database
         $sql = "SELECT user_id FROM users WHERE email = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$email]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function checkTagName($tagName)
+    {
+        $sql = "SELECT COUNT(*) AS count FROM users WHERE tag_name = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$tagName]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 

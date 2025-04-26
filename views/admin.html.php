@@ -261,9 +261,9 @@
 
             <div class="flex space-x-4 px-4 mt-4 bg-gray-800 rounded-lg p-4">
                 <div class="flex items-center space-x-2">
-                    <h2>Category:</h2>
+                    <h2>Modules:</h2>
                     <select name="moduleValue" id="module-filter" class="bg-gray-700 rounded-md p-2">
-                        <option value="all">All Category</option>
+                        <option value="all">All Modules</option>
 
                     </select>
                 </div>

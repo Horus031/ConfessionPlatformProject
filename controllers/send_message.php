@@ -1,5 +1,4 @@
 <?php
-// filepath: d:\xampp\htdocs\mywebsite\controllers\send_message.php
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;

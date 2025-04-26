@@ -191,6 +191,7 @@ class EventListener {
                 this.username = sessionData.username || '';
                 this.avatar = sessionData.avatar || '';
                 this.tagName = sessionData.tag_name || '';
+                this.email = sessionData.email || '';
                 this.roleId = sessionData.role_id || 1;
             } else {
                 window.location.href = `../views/login.html.php`;
@@ -918,7 +919,7 @@ class EventListener {
                         try {
                             if (result.success) {
                                 formFeedback.textContent = 'Message sent successfully! Thank you for contacting us.';
-                                formFeedback.classList.add('text-green-500');
+                                formFeedback.classList.add('text-green-500', 'font-bold');
                                 form.reset();
 
                                 setTimeout(function() {
@@ -926,7 +927,7 @@ class EventListener {
                                 }, 3000)
                             } else {
                                 formFeedback.textContent = 'Failed to send message. Please try again.';
-                                formFeedback.classList.add('text-red-500');
+                                formFeedback.classList.add('text-red-500', 'font-bold');
 
                                 setTimeout(function() {
                                     formFeedback.textContent = '';
@@ -950,6 +951,10 @@ class EventListener {
 
            if (this.editUserForm) {
                 const tagNameValue = document.querySelector('input[id="edit-tagname"]');
+                const currentTagName = this.tagName;
+                const currentEmail = this.email;
+
+                console.log(currentTagName, currentEmail)
 
                 this.editUserForm.addEventListener('click', async function(e) {
                     if (e.target.closest('button[id^="cancel-"]')) {
@@ -963,41 +968,129 @@ class EventListener {
 
                 this.editUserForm.addEventListener('submit', async function(e) {
                         e.preventDefault();
+                        const editFirstName = _this.editUserForm.querySelector('input[id="edit-firstname"]');
+                        const editLastName = _this.editUserForm.querySelector('input[id="edit-lastname"]');
+                        const editTagName = _this.editUserForm.querySelector('input[id="edit-tagname"]');
+                        const editEmail = _this.editUserForm.querySelector('input[id="edit-email"]');
+                        const loadingOverlay = document.querySelector('#loading-overlay');
+                        let isValid = true;
                         
-                        const formData = new FormData(_this.editUserForm);
-            
-                        // Define the desired order of social links
-                        const socialLinkOrder = ['Facebook', 'Github', 'LinkedIn'];
-            
-                        // Combine social_links into an object with keys as names
-                        const socialLinks = {};
-                        socialLinkOrder.forEach(key => {
-                            const value = formData.get(`social_links[${key}]`);
-                            socialLinks[key] = value || '';
-                        });
-            
-                        // Add the social_links object as a JSON string to FormData
-                        formData.set('social_links', JSON.stringify(socialLinks));
-            
-                        formData.set('currentURL', window.location.href);
-            
-                    
-                        try {
-                            _this.loadingOverlay.classList.remove('hidden');
+                        const validConditions = editFirstName.value || editLastName.value || editTagName.value || editEmail.value;
 
-                            const response = await _this.renderer.fetchData('../controllers/edit_userinfo.php', {
-                                method: 'POST',
-                                body: formData
-                            })
-    
-                            if (response['user']) {
-                                window.location.href = `../views/main.html.php?page=profile&tag_name=${tagNameValue.value}`;
+                        if (validConditions) {
+                            if (editFirstName.value == '') {
+                                _this.showError('edit-firstname', 'First name is required');
+                                isValid = false;
+                            } else {
+                                _this.clearError('edit-firstname');
                             }
-                        } catch (error) {
-                            console.error(error);
-                        } finally {
-                            _this.loadingOverlay.classList.add('hidden');
+
+                            if (editLastName.value == '') {
+                                _this.showError('edit-lastname', 'Last name is required');
+                                isValid = false;
+                            } else {
+                                _this.clearError('edit-lastname');
+                            }
+
+                            if (editTagName.value == '') {
+                                _this.showError('edit-tagname', 'Tag name is required');
+                                isValid = false;
+                            } else {
+                                _this.clearError('edit-tagname');
+                            }
+
+                            if (editEmail.value == '') {
+                                _this.showError('edit-email', 'Email is required');
+                                isValid = false;
+                            } else {
+                                _this.clearError('edit-email');
+                            }
+                        } else {
+                            _this.showToastMessage('Please fill out all information', 'top-8', '-right-2');
+                            isValid = false;
                         }
+
+                        if (editTagName.value != '' && editTagName.value !== currentTagName) {
+                            try {
+                                const tagCheckResult = await _this.renderer.fetchData('../controllers/check_tagname.php', {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ tagName: editTagName.value })
+                                });
+                        
+                                if (tagCheckResult.exists) {
+                                    _this.showError("edit-tagname", "Tag name is already taken.");
+                                    isValid = false;
+                                } else {
+                                    _this.clearError("edit-tagname");
+                                }
+                            } catch (error) {
+                            console.error('Error checking tag name:', error);
+                            isValid = false;
+                            }
+                        }
+
+                        if (editEmail.value != '' && editEmail.value !== currentEmail) {
+                            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editEmail.value)) {
+                                _this.showError('edit-email', "Invalid email format");
+                                isValid = false;
+                            } else {
+                                try {
+                                    const emailCheckResult = await _this.renderer.fetchData('../controllers/check_email.php', {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ email: editEmail.value })
+                                    });
+
+                                    if (emailCheckResult.emailExists) {
+                                        _this.showError('edit-email', "Email is already taken");
+                                        isValid = false;
+                                    } else {
+                                        _this.clearError('edit-email');
+                                    }
+                                } catch (error) {
+                                    console.error('Error checking email', error);
+                                    isValid = false;
+                                }
+                            }
+                        }
+
+                        if (isValid) {
+                            const formData = new FormData(_this.editUserForm);
+            
+                            // Define the desired order of social links
+                            const socialLinkOrder = ['Facebook', 'Github', 'LinkedIn'];
+                
+                            // Combine social_links into an object with keys as names
+                            const socialLinks = {};
+                            socialLinkOrder.forEach(key => {
+                                const value = formData.get(`social_links[${key}]`);
+                                socialLinks[key] = value || '';
+                            });
+                
+                            // Add the social_links object as a JSON string to FormData
+                            formData.set('social_links', JSON.stringify(socialLinks));
+                
+                            formData.set('currentURL', window.location.href);
+                
+                        
+                            try {
+                                _this.loadingOverlay.classList.remove('hidden');
+    
+                                const response = await _this.renderer.fetchData('../controllers/edit_userinfo.php', {
+                                    method: 'POST',
+                                    body: formData
+                                })
+        
+                                if (response['user']) {
+                                    window.location.href = `../views/main.html.php?page=profile&tag_name=${tagNameValue.value}`;
+                                }
+                            } catch (error) {
+                                console.error(error);
+                            } finally {
+                                _this.loadingOverlay.classList.add('hidden');
+                            }
+                        } 
                 })
             }
 
@@ -1055,8 +1148,6 @@ class EventListener {
                         if (e.target.closest('span[id="delete-notify"]')) {
                             const notifyId = notify.getAttribute('data-value');
                             
-                            
-
                             notify.classList.remove('animate-slideRight');
                             notify.classList.add('animate-slideAndFadeOut');
 
@@ -1752,6 +1843,8 @@ class EventListener {
                 const userActions = user.querySelector('#user-actions');
                 const userId = user.getAttribute('data-value');
                 const userRole = user.querySelector('td:nth-child(3)').textContent;
+                const currentTagName = user.querySelector('span[class^="tagname"]')
+                const currentEmail = currentTagName.nextElementSibling;
                 userActions.addEventListener('click', function(e) {
                     if (e.target.closest('span[class^="view-userbtn"]')) {
                         const tagName = user.querySelector('span[class^="tagname"]').textContent;
@@ -1771,7 +1864,7 @@ class EventListener {
                             _this.adminEditForm.parentNode.replaceChild(newEditUserForm, _this.adminEditForm);
                             _this.adminEditForm = newEditUserForm;
 
-                            _this.handleUpdateUser(parseInt(userId))
+                            _this.handleUpdateUser(parseInt(userId), currentTagName, currentEmail)
 
                             _this.handleChangeImage();
                         }
@@ -2002,6 +2095,8 @@ class EventListener {
                                 }
                             }
                             isValid = false;
+
+
                         } else {
                             if (isValid) {
                                 try {
@@ -2063,7 +2158,7 @@ class EventListener {
                         } else {
                             _this.handleGetModuleInfo(moduleId, moduleName, moduleBgData, moduleTextData);
 
-                            _this.handleUpdateModules(moduleId, editmoduleName ,moduleBgColor, moduleTextColor)
+                            _this.handleUpdateModules(moduleId, moduleName, editmoduleName ,moduleBgColor, moduleTextColor)
                         }
                         _this.moduleManagement.classList.add('hidden');
                         _this.editModuleContainer.classList.remove('hidden');
@@ -3108,8 +3203,12 @@ class EventListener {
                 _this.showError('newPassword', 'New password is required');
                 isValid = false;
                 return
+            } else if (currentPassword.value.trim() == newPassword.value.trim()) {
+                _this.showError('newPassword', 'New password must not be the same with your current password');
+                isValid = false;
             } else {
                 _this.clearError('newPassword');
+
             }
 
             if (currentPassword.value.trim() !== '' && confirmPassword.value.trim() == '') {
@@ -3253,58 +3352,141 @@ class EventListener {
         }
     }
 
-    handleUpdateUser(userId) {
+    handleUpdateUser(userId, currentTagName, currentEmail) {
         const _this = this;
+        const currentTagname = currentTagName.textContent.slice(1);
         this.adminEditForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-
-            console.log(userId);
-            console.log('done')
+            const editFirstName = _this.adminEditForm.querySelector('input[id="edit-firstname"]');
+            const editLastName = _this.adminEditForm.querySelector('input[id="edit-lastname"]');
+            const editTagName = _this.adminEditForm.querySelector('input[id="edit-tagname"]');
+            const editEmail = _this.adminEditForm.querySelector('input[id="edit-email"]');
             const loadingOverlay = document.querySelector('#loading-overlay');
+            let isValid = true;
 
-            const formData = new FormData(_this.adminEditForm);
+            const validConditions = editFirstName.value || editLastName.value || editTagName.value || editEmail.value;
 
-            // Define the desired order of social links
-            const socialLinkOrder = ['Facebook', 'Github', 'LinkedIn'];
+            if (validConditions) {
+                if (editFirstName.value == '') {
+                    _this.showError('edit-firstname', 'First name is required');
+                    isValid = false;
+                } else {
+                    _this.clearError('edit-firstname');
+                }
 
-            // Combine social_links into an object with keys as names
-            const socialLinks = {};
-            socialLinkOrder.forEach(key => {
-                const value = formData.get(`social_links[${key}]`);
-                socialLinks[key] = value || ''; // Default to an empty string if the value is missing
-            });
+                if (editLastName.value == '') {
+                    _this.showError('edit-lastname', 'Last name is required');
+                    isValid = false;
+                } else {
+                    _this.clearError('edit-lastname');
+                }
 
-            // Add the social_links object as a JSON string to FormData
-            formData.set('social_links', JSON.stringify(socialLinks));
+                if (editTagName.value == '') {
+                    _this.showError('edit-tagname', 'Tag name is required');
+                    isValid = false;
+                } else {
+                    _this.clearError('edit-tagname');
+                }
 
-            // Add userId and currentURL to FormData
-            formData.set('userId', userId);
-            formData.set('currentURL', window.location.href);
-
-            // Debugging: Log the FormData contents
-            for (const [key, value] of formData.entries()) {
-                console.log(key, value);
+                if (editEmail.value == '') {
+                    _this.showError('edit-email', 'Email is required');
+                    isValid = false;
+                } else {
+                    _this.clearError('edit-email');
+                }
+            } else {
+                _this.showToastMessage('Please fill out all information', 'top-8', '-right-2');
+                isValid = false;
             }
 
+            if (editTagName.value != '' && editTagName.value !== currentTagname) {
+                try {
+                    const tagCheckResult = await _this.renderer.fetchData('../controllers/check_tagname.php', {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ tagName: editTagName.value })
+                    });
             
-            
-            try {
-                loadingOverlay.classList.remove('hidden');
-
-                const response = await _this.renderer.fetchData('../controllers/edit_userinfo.php', {
-                    method: 'POST',
-                    body: formData
-                })
-
-                if (response['admin']) {
-                    location.reload();
+                    if (tagCheckResult.exists) {
+                        _this.showError("edit-tagname", "Tag name is already taken.");
+                        isValid = false;
+                    } else {
+                        _this.clearError("edit-tagname");
+                    }
+                } catch (error) {
+                console.error('Error checking tag name:', error);
+                isValid = false;
                 }
-            } catch (error) {
-                console.error(error)
-            } finally {
-                loadingOverlay.classList.add('hidden')
+            }
+
+            if (editEmail.value != '' && editEmail.value !== currentEmail.textContent) {
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editEmail.value)) {
+                    _this.showError('edit-email', "Invalid email format");
+                    isValid = false;
+                } else {
+                    try {
+                        const emailCheckResult = await _this.renderer.fetchData('../controllers/check_email.php', {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ email: editEmail.value })
+                        });
+
+                        if (emailCheckResult.emailExists) {
+                            _this.showError('edit-email', "Email is already taken");
+                            isValid = false;
+                        } else {
+                            _this.clearError('edit-email');
+                        }
+                    } catch (error) {
+                        console.error('Error checking email', error);
+                        isValid = false;
+                    }
+                }
+            }
+
+
+            if (isValid) {
+                const formData = new FormData(_this.adminEditForm);
+                // Define the desired order of social links
+                const socialLinkOrder = ['Facebook', 'Github', 'LinkedIn'];
+
+                // Combine social_links into an object with keys as names
+                const socialLinks = {};
+                socialLinkOrder.forEach(key => {
+                    const value = formData.get(`social_links[${key}]`);
+                    socialLinks[key] = value || ''; // Default to an empty string if the value is missing
+                });
+
+                // Add the social_links object as a JSON string to FormData
+                formData.set('social_links', JSON.stringify(socialLinks));
+
+                // Add userId and currentURL to FormData
+                formData.set('userId', userId);
+                formData.set('currentURL', window.location.href);
+
+                // Debugging: Log the FormData contents
+                for (const [key, value] of formData.entries()) {
+                    console.log(key, value);
+                }
 
                 
+                
+                try {
+                    loadingOverlay.classList.remove('hidden');
+
+                    const response = await _this.renderer.fetchData('../controllers/edit_userinfo.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+
+                    if (response['admin']) {
+                        location.reload();
+                    }
+                } catch (error) {
+                    console.error(error)
+                } finally {
+                    loadingOverlay.classList.add('hidden')   
+                }
             }
         })
     }
@@ -3438,7 +3620,7 @@ class EventListener {
 
     }
 
-    handleUpdateModules(moduleId, moduleName, bgColor, textColor) {
+    handleUpdateModules(moduleId, moduleName, editModuleName, bgColor, textColor) {
         const _this = this;
         this.editModuleForm.addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -3449,11 +3631,30 @@ class EventListener {
 
             console.log(moduleId);
 
-            if (moduleName.value == '') {
-                moduleName.classList.add('animate-turnErrorColor');
+            if (editModuleName.value == '') {
+                editModuleName.classList.add('animate-turnErrorColor');
                 _this.showError('edit-module-name', 'Module name is required.')
                 isValid = false;
+            } else if (editModuleName.value !== '' && editModuleName.value !== moduleName) {
+                try {
+                    const moduleValid = await _this.renderer.fetchData('../controllers/admin/validate_modules.php', {
+                        method: "POST",
+                        body: formData
+                    })
+
+                    if (moduleValid.existingModule) {
+                        editModuleName.classList.add('animate-turnErrorColor');
+                        _this.showError('edit-module-name', 'This  module name is already taken, please try again')
+                        isValid = false;
+                    } else {
+                        editModuleName.classList.remove('animate-turnErrorColor');
+                        _this.clearError('edit-module-name');
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
             }
+
 
             if (isValid) {
                 formData.set('moduleId', moduleId);

@@ -10,6 +10,7 @@ try {
             'username' => $_SESSION['fullname'],
             'avatar' => $_SESSION['avatarURL'],
             'tag_name' => $_SESSION['tag_name'],
+            'email' => $_SESSION['email'],
             'role_id' => $_SESSION['role_id'],
         ]);
     } else {

@@ -8,20 +8,15 @@ $database = new Database($pdo);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents("php://input"), true);
-    $tagName = isset($data['tagName']) ? trim($data['tagName']) : '';
-
-    if (empty($tagName)) {
-        echo json_encode(['exists' => false, 'error' => 'Tag name is required.']);
-        exit;
-    }
+    $email = isset($data['email']) ? trim($data['email']) : '';
 
     try {
-        $result = $database->checkTagName($tagName);
+        $emailResult = $database->checkEmailExists($email);
 
-        if ($result['count'] > 0) {
-            echo json_encode(['exists' => true]);
+        if ($emailResult) {
+            echo json_encode(['emailExists' => 'Email is already exists']);
         } else {
-            echo json_encode(['exists' => false]);
+            echo json_encode(['success' => 'Validation done']);
         }
     } catch (PDOException $e) {
         echo json_encode(['exists' => false, 'error' => $e->getMessage()]);

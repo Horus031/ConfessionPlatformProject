@@ -363,7 +363,7 @@ class QuestionRenderer {
                     <p class="font-roboto mt-3 text-md text-text font-normal line-clamp-1 dark:text-gray-400">${question.post_content}</p>
                     <div>
                         <div class="mt-3 rounded-md">
-                            <img id="post-image" loading="lazy" src="${question.imageURL ?? ''}" alt="Post image" width="100%" class="rounded-md lazy-load h-64">
+                            <img id="post-image" loading="lazy" src="${question.imageURL ?? ''}" alt="Post image" width="100%" class="rounded-md lazy-load h-56 md:h-40 xl:h-64">
                         </div>
                         <div class="flex justify-between items-center mt-3">
                             <div class="flex items-center space-x-2 font-normal md:space-y-2 md:flex-wrap 2xl:flex-nowrap 2xl:space-y-0">
@@ -927,24 +927,28 @@ class QuestionRenderer {
                     badge
                 </span>
                 <input type="text" name="firstnameValue" id="edit-firstname" class="bg-transparent border-1 text-text border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your firstname" value="${userInfo.first_name}">
+                <span class="error-message absolute text-red-500 -bottom-4 left-0 text-xs font-bold"></span>
             </div>
             <div class="text-text relative flex items-center text-3xl font-light dark:text-gray-400 2xl:w-1/3">
                 <span class="material-symbols-rounded custom-icon absolute top-1/5 left-4">
                     badge
                 </span>
                 <input type="text" name="lastnameValue" id="edit-lastname" class="bg-transparent border-1 text-text border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your lastname" value="${userInfo.last_name}">
+                <span class="error-message absolute text-red-500 -bottom-4 left-0 text-xs font-bold"></span>
             </div>
             <div class="text-text relative flex items-center text-3xl font-light dark:text-gray-400 2xl:w-1/3">
                 <span class="material-symbols-rounded custom-icon absolute top-1/5 left-4">
                     alternate_email
                 </span>
                 <input type="text" name="tagnameValue" id="edit-tagname" class="bg-transparent border-1 text-text border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your tagname" value="${userInfo.tag_name ?? ''}">
+                <span class="error-message absolute text-red-500 -bottom-4 left-0 text-xs font-bold"></span>
             </div>
             <div class="text-text relative flex items-center text-3xl font-light dark:text-gray-400 2xl:w-1/3">
                 <span class="material-symbols-rounded custom-icon absolute top-1/5 left-4">
                     mail
                 </span>
                 <input type="text" name="emailValue" id="edit-email" class="bg-transparent border-1 text-text border-text rounded-lg text-lg font-normal px-4 py-3 pl-12 w-full dark:border-gray-700 dark:text-gray-400" placeholder="Your email" value="${userInfo.email ?? ''}">
+                <span class="error-message absolute text-red-500 -bottom-4 left-0 text-xs font-bold"></span>
             </div>
 
             <button type="button" id="change-password-btn" class="w-fit text-white bg-black p-4 font-medium rounded-lg dark:border-1 dark:text-gray-400 dark:bg-transparent dark:border-gray-700 cursor-pointer active:scale-90">Change your password</button>
@@ -1392,7 +1396,7 @@ class QuestionRenderer {
                         <span>${timeInHour}</span>
                     </div>
                 </div>
-                <div class="group absolute right-0 top-0 text-center  dark:text-red-500 p-1 text-2xl font-light rounded-full cursor-pointer">
+                <div class="group absolute right-0 top-0 text-center  dark:text-red-500 p-1 text-3xl font-light rounded-full cursor-pointer">
                     <span id="delete-notify" class="material-symbols-rounded custom-icon p-1 rounded-full hover:bg-red-300 dark:hover:bg-red-100 active:scale-90">
                         delete
                     </span>
@@ -1413,8 +1417,10 @@ class QuestionRenderer {
                 notifyElement.insertBefore(newBadge, firstChildElement);
             }
 
-            notifyElement.addEventListener('click', function() {
-                window.location.href = `${notification.url}`;
+            notifyElement.addEventListener('click', function(e) {
+                if (!e.target.closest('span[id="delete-notify"]')) {
+                    window.location.href = `${notification.url}`;
+                }
             })
 
             this.container.appendChild(notifyElement)
