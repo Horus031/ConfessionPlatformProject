@@ -23,31 +23,24 @@
                 <div id="usertags" class="flex items-center justify-between space-x-2">
                     <div class="flex items-center space-x-4">
                         <div class="relative group">
-                            <img id="user-avatar" loading="lazy" alt="" class="profile-hover h-10 rounded-full md:h-14 2xl:h-16">
-
+                            <img id="user-avatar" loading="lazy" alt="" class="profile-hover h-10 rounded-full md:h-14 2xl:h-16 cursor-pointer">
                             <div class="profile-popup absolute bg-white w-66 rounded-md p-2 -top-26 left-0 border-1 border-gray-600 before:content-[''] before:absolute before:w-full before:h-0 before:right-0 before:-bottom-2 before:border-4 before:border-transparent group-hover:block hidden transition-all dark:bg-gray-800 dark:border-gray-400">
                                 <div class="flex items_center space-x-4 w-full">
-                                    <img loading="lazy" src="${question.avatar ? question.avatar : '../assets/images/user.png'}" class="h-20 rounded-full">
+                                    <img loading="lazy" id="popup-avatar" src="" class="h-20 rounded-full">
                                     <div>
                                         <h4 id="post-username" class="text-text w-fit text-lg font-medium dark:text-white"></h4>
                                         <div class="text-sm">
-                                            <span class="text-text tagname dark:text-gray-400"></span>
-                                            <span class="text-text dark:text-gray-400">•</span>
-                                            <span class="text-text-light dark:text-gray-400"></span>
+                                            <span id="post-tagname" class="text-text tagname dark:text-gray-400"></span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="flex flex-col">
-                            <span id="username" class="text-xs text-text font-semibold md:text-md lg:text-lg dark:text-gray-400"></span>
+                            <span id="username" class="text-xs text-text font-semibold md:text-md lg:text-lg dark:text-gray-400 hover:underline cursor-pointer"></span>
                             <span id="created-at" class="text-xs text-text md:text-base dark:text-gray-400"></span>
                         </div>
                     </div>
-
-
-
-
                 </div>
             </div>
 

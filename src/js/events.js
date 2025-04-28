@@ -433,7 +433,7 @@ class EventListener {
                         console.error('Error validating form:', error);
                     }
                 } else {
-                    if (_this.toastMessage.classList.contains('animate-toastSlide')) {
+                    if (_this.toastMessage) {
                         return;
                     } else { 
                         _this.showToastMessage('Please fill out all information!', 'top-8', '-right-2');
@@ -1446,6 +1446,12 @@ class EventListener {
 
             if (this.postDetailContainer) {
                 this.postDetailContainer.addEventListener('click', async function(e) {
+                    if (e.target.closest('img[id="user-avatar"]') || e.target.closest('span[id="username"]')) {
+                        const tagNameValue = _this.postDetailContainer.querySelector('#post-tagname').textContent;
+                        window.location.href = `../views/main.html.php?page=profile&tag_name=${tagNameValue.slice(1)}`;
+                    }
+
+
                     const postId = _this.postDetailContainer.getAttribute('data-value');
                     let button = e.target.closest('button');
 

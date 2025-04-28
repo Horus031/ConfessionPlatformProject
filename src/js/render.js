@@ -1014,6 +1014,9 @@ class QuestionRenderer {
         document.querySelector('#user-avatar').setAttribute('data-value', post.user_id);
         document.querySelector('#user-avatar').classList.add(`user-${post.user_id}`);
         document.querySelector('#username').textContent = post.fullname;
+        document.querySelector('#popup-avatar').src = post.avatar ?? '../assets/images/user.png';
+        document.querySelector('#post-username').textContent = post.fullname;
+        document.querySelector('#post-tagname').textContent = `@${post.tag_name}`;
         document.querySelector('#created-at').textContent = this.timeAgo(post.created_at);
         document.querySelector('#post-content').textContent = post.post_content;
         document.querySelector('#post-image-container').href = `${post.imageURL}`;

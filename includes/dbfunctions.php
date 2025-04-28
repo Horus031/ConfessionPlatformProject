@@ -234,7 +234,7 @@ class Database
 
     public function fetchPostDetails($post_id)
     {
-        $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, CONCAT(users.first_name, " ", users.last_name) AS fullname ,users.username, COUNT(DISTINCT likes.like_id) as likes, COUNT(DISTINCT comments.comment_id) as comments, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
+        $sql = 'SELECT posts.post_id, posts.user_id, posts.post_title, posts.post_content, posts.created_at, posts.imageURL, users.avatar, CONCAT(users.first_name, " ", users.last_name) AS fullname ,users.username, users.tag_name ,COUNT(DISTINCT likes.like_id) as likes, COUNT(DISTINCT comments.comment_id) as comments, modules.module_id, modules.module_name, modules.bg_class, modules.text_class
                 FROM ((((posts 
                 INNER JOIN users ON posts.user_id = users.user_id)
                 INNER JOIN modules ON posts.module_id = modules.module_id)

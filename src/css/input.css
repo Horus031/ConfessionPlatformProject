@@ -128,6 +128,8 @@
     --animate-turnErrorColor: turnErrorColor 0.8s ease forwards;
     --animate-toastSlide: toastSlide 1s ease forwards;
     --animate-toastSlideOut: toastSlideOut 1s ease forwards;
+    --animate-wave-mobile: wave-mobile-animation 30s linear infinite;
+    --animate-wave-mobile-reverse: wave-mobile-animation-reverse 30s linear infinite;
 
     @keyframes wave-animation {
       0% {
@@ -153,6 +155,33 @@
 
       100% {
         transform: translate(-3%, -50%)
+      }
+    }
+
+    @keyframes wave-mobile-animation {
+      0% {
+        transform: translate(0, 0);
+      }
+      50% {
+        transform: translate(-3%, -25%);
+      }
+
+      100% {
+        transform:translateX(0, 0);
+      }
+    }
+    
+    @keyframes wave-mobile-animation-reverse {
+      0% {
+        transform: translate(0, 0);
+      }
+      
+      50% {
+        transform: translate(3%, 25%);
+      }
+
+      100% {
+        transform: translate(0, 0)
       }
     }
 

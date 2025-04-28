@@ -10,8 +10,8 @@
 </head>
 
 <body class="font-poppins h-screen overflow-hidden bg-no-repeat bg-linear-to-br from-gradient1 to-gradient2">
-    <div class="absolute right-0 top-0 animate-slideLeft transition-all">
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="visual" viewBox="0 0 1919 1024" width="1919" height="1024" version="1.1">
+    <div class="absolute right-0 top-0 animate-slideLeft overflow-hidden transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="visual" viewBox="0 0 1919 1024" width="1919" height="1024" version="1.1" class="overflow-hidden lg:translate-x-1/6 xl:translate-x-1/8 2xl:translate-x-0 ">
             <g transform="translate(-50, 0)">
                 <path class="animate-wave-medium" opacity="0.5" xmlns="http://www.w3.org/2000/svg" d="M1081 1600L1072.7 1555.5C1064.3 1511 1047.7 1422 1063.3 1333.2C1079 1244.3 1127 1155.7 1129.2 1066.8C1131.3 978 1087.7 889 1052.5 800C1017.3 711 990.7 622 1015 533.2C1039.3 444.3 1114.7 355.7 1124.2 266.8C1133.7 178 1077.3 89 1049.2 44.5L1021 0L1991 0L1991 44.5C1991 89 1991 178 1991 266.8C1991 355.7 1991 444.3 1991 533.2C1991 622 1991 711 1991 800C1991 889 1991 978 1991 1066.8C1991 1155.7 1991 1244.3 1991 1333.2C1991 1422 1991 1511 1991 1555.5L1991 1600Z" fill="#ffffff" stroke-linecap="round" stroke-linejoin="miter" />
             </g>
@@ -30,7 +30,7 @@
             <path d="M1042 1024L1034 995.5C1026 967 1010 910 1025 853.2C1040 796.3 1086 739.7 1088 682.8C1090 626 1048 569 1014.2 512C980.3 455 954.7 398 978.2 341.2C1001.7 284.3 1074.3 227.7 1083.5 170.8C1092.7 114 1038.3 57 1011.2 28.5L984 0L1919 0L1919 28.5C1919 57 1919 114 1919 170.8C1919 227.7 1919 284.3 1919 341.2C1919 398 1919 455 1919 512C1919 569 1919 626 1919 682.8C1919 739.7 1919 796.3 1919 853.2C1919 910 1919 967 1919 995.5L1919 1024Z" fill="#FFFFFF" stroke-linecap="round" stroke-linejoin="miter" />
         </svg>
 
-        <div id="valid-email-container" class="absolute top-[30%] right-[14%] w-[26%] animate-slideLeft transition-all">
+        <div id="valid-email-container" class="absolute top-[30%] right-[14%] w-[26%] lg:translate-x-1/3 xl:translate-x-1/3 2xl:translate-x-0 animate-slideLeft transition-all">
             <div class="text-[#3ea29a] space-y-4">
                 <h1 class="text-4xl font-semibold">
                     Change your password
@@ -56,7 +56,7 @@
             </form>
         </div>
 
-        <div id="otp-container" class="absolute top-[30%] right-[14%] w-[26%] animate-slideLeft transition-all hidden">
+        <div id="otp-container" class="absolute top-[30%] right-[14%] w-[26%] lg:translate-x-1/3 xl:translate-x-1/3 2xl:translate-x-0 animate-slideLeft transition-all hidden">
             <div class="text-[#3ea29a] space-y-4">
                 <h1 class="text-4xl font-semibold">
                     OTP Validation
@@ -97,7 +97,7 @@
             </form>
         </div>
 
-        <div id="new-password-container" class="absolute top-[30%] right-[14%] w-[26%] animate-slideLeft transition-all hidden">
+        <div id="new-password-container" class="absolute top-[30%] right-[14%] w-[26%] lg:translate-x-1/3 xl:translate-x-1/3 2xl:translate-x-0 animate-slideLeft transition-all hidden">
             <div class="text-[#3ea29a] space-y-4">
                 <h1 class="text-4xl font-semibold">
                     Verification Complete
@@ -135,8 +135,8 @@
     </div>
 
 
-    <div class="font-pacifico text-white w-1/2 flex flex-col items-center justify-center animate-slideRight transition-all">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" style="height: 500px;">
+    <div class="font-pacifico text-white w-1/2 flex flex-col lg:item-start xl:items-center justify-center animate-slideRight transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" style="height: 500px;" class="lg:w-[350px] xl:w-[400px] 2xl:w-[500px]">
             <!-- Background -->
             <rect width="400" height="400" fill="white" opacity="0" />
 
@@ -188,16 +188,16 @@
             </line>
 
             <!-- Outer ring -->
-            <circle cx="200" cy="200" r="110" fill="none" stroke="#2196F3" stroke-width="4" stroke-opacity="0.3" />
+            <circle cx="200" cy="200" r="110" fill="none" stroke="white" stroke-width="4" stroke-opacity="0.3" />
 
             <!-- Middle ring with pulse animation -->
-            <circle cx="200" cy="200" r="90" fill="none" stroke="#2196F3" stroke-width="3" stroke-opacity="0.5">
+            <circle cx="200" cy="200" r="90" fill="none" stroke="white" stroke-width="3" stroke-opacity="0.5">
                 <animate attributeName="r" values="85;95;85" dur="4s" repeatCount="indefinite" />
                 <animate attributeName="stroke-opacity" values="0.3;0.6;0.3" dur="4s" repeatCount="indefinite" />
             </circle>
 
             <!-- Inner ring -->
-            <circle cx="200" cy="200" r="75" fill="none" stroke="#2196F3" stroke-width="2" stroke-opacity="0.7" />
+            <circle cx="200" cy="200" r="75" fill="none" stroke="white" stroke-width="2" stroke-opacity="0.7" />
 
             <!-- Nodes (representing knowledge sources) -->
             <circle cx="150" cy="150" r="28" fill="url(#node1Gradient)" filter="url(#glow)" />
@@ -215,9 +215,9 @@
             <path d="M225,180 L225,220 M225,180 L245,220 M245,180 L245,220" transform="translate(-20,0)" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
 
-        <h1 class="text-4xl py-2 px-8 -mt-36 text-white/70">Knowledge Nexus</h1>
+        <h1 class="text-4xl py-2 px-8 -mt-36 text-white/80">Knowledge Nexus</h1>
 
-        <p class="font-poppins text-center text-sm mt-20 text-gray-100 px-8">Knowledge Nexus provides the perfect space for meaningful exchanges. Join our growing community today to ask questions, provide valuable answers, and build your professional network while expanding your knowledge horizon. Together, we're building the most comprehensive knowledge base on the web—one question at a time.</p>
+        <p class="font-poppins hidden 2xl:block lg:text-left xl:text-center text-sm mt-20 text-gray-100 px-8 lg:w-[400px] xl:w-[500px] 2xl:w-full">Knowledge Nexus provides the perfect space for meaningful exchanges. Join our growing community today to ask questions, provide valuable answers, and build your professional network while expanding your knowledge horizon. Together, we're building the most comprehensive knowledge base on the web—one question at a time.</p>
     </div>
 
     <div id="loading-overlay" class="fixed w-full h-full top-0 left-0 overlay bg-black/60 z-60 hidden">
