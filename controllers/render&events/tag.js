@@ -7,12 +7,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     const eventListener = new EventListener();
 
     try {
+        document.querySelector('#loading-overlay').classList.remove('hidden');
+        await eventListener.start();
+
         const tags = await renderer.fetchData('../controllers/list_tags.php');
         renderer.renderTags(tags);
 
-
-        eventListener.start();
     } catch (error) {
         console.error('Error loading data:', error);
+    } finally {
+        document.querySelector('#loading-overlay').classList.add('hidden');
     }
-});
+}); 

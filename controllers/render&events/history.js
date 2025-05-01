@@ -6,9 +6,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     const renderer = new QuestionRenderer('#history-container');
     await eventListener.initSessionData();
 
-    const history = await renderer.fetchData(`../controllers/get_reading_history.php?user_id=${eventListener.userId}`);
-    renderer.renderReadingHistory(history);
+    try {
+        document.querySelector('#loading-overlay').classList.remove('hidden');
+        await eventListener.start();
 
-
-    eventListener.start();
+        const history = await renderer.fetchData(`../controllers/get_reading_history.php?user_id=${eventListener.userId}`);
+        renderer.renderReadingHistory(history);
+    } catch (error) {
+        console.error('Error loading data:', error);
+    }
+    finally {
+        document.querySelector('#loading-overlay').classList.add('hidden');
+    }
 });

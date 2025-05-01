@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     await eventListener.initSessionData();
 
     try {
+        document.querySelector('#loading-overlay').classList.remove('hidden');
+        await eventListener.start();
+
         const notifications = await renderer.fetchData('../controllers/get_notifications.php', {
             method: "POST",
             headers: {
@@ -22,7 +25,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     } catch (error) {
         console.log('Error fetching data', error);
+    }  finally {
+        document.querySelector('#loading-overlay').classList.add('hidden');
     }
 
-    eventListener.start();
 })

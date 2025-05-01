@@ -12,7 +12,7 @@ if (isset($_SESSION['user_id'])) {
 if (isset($_COOKIE['remember_token'])) {
     $token = $_COOKIE['remember_token'];
 
-    $stmt = $pdo->prepare("SELECT user_id, username, tag_name, avatar FROM users WHERE remember_token = ?");
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE remember_token = ?");
     $stmt->execute([$token]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -20,8 +20,11 @@ if (isset($_COOKIE['remember_token'])) {
         // Tạo session cho người dùng
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['username'] = $username;
+        $_SESSION['fullname'] = $user['fullname'];
         $_SESSION['avatarURL'] = $user['avatar'];
         $_SESSION['tag_name'] = $user['tag_name'];
+        $_SESSION['email'] = $user['email'];
+        $_SESSION['role_id'] = $user['role_id'];
 
         // Chuyển hướng đến dashboard
         header("Location: views/main.html.php?page=home");

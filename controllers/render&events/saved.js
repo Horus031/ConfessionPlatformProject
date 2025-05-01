@@ -5,13 +5,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     const renderer = new QuestionRenderer('#saved-container');
     const eventListener = new EventListener();
     try {
+        document.querySelector('#loading-overlay').classList.remove('hidden');
+        await eventListener.start();
+
         const savedPosts = await renderer.fetchData('../controllers/get_savedposts.php');
         renderer.renderSavedPosts(savedPosts, eventListener.userId);
 
-
-        eventListener.start();
     } catch (error) {
         console.log(error);
+    } finally {
+        document.querySelector('#loading-overlay').classList.add('hidden');
     }
 
 });

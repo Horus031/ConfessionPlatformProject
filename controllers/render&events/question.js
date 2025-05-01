@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     const query = urlParams.get('query');
 
     try {
+        document.querySelector('#loading-overlay').classList.remove('hidden');
+        await eventListener.start();
+
         let questions;
         let questionType;
         if (query) {
@@ -31,9 +34,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             renderer.renderModules(modules);
         }, 100);
 
-        eventListener.start();
     } catch (error) {
         console.error('Error loading data:', error);
+    } finally {
+        document.querySelector('#loading-overlay').classList.add('hidden');
     }
 
 });

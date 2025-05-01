@@ -174,7 +174,6 @@ class EventListener {
         }
 
         if (this.currentURL.includes('admin')) {
-            console.log('admin')
             document.documentElement.classList.add('dark');
         }
     }
@@ -193,8 +192,7 @@ class EventListener {
                 this.tagName = sessionData.tag_name || '';
                 this.email = sessionData.email || '';
                 this.roleId = sessionData.role_id || 1;
-            } else {
-                window.location.href = `../views/login.html.php`;
+
             }
         } catch (error) {
             console.error('Error initializing session data:', error);
@@ -264,6 +262,7 @@ class EventListener {
     }
 
     initAdminElements() {
+        this.adminInformation = document.querySelector('#admin-infor');
         this.sectionContainer = document.querySelector('#section-container');
         this.sectionChild = this.sectionContainer.children;
         this.backHomeBtn = document.querySelector('#backToHome');
@@ -296,11 +295,15 @@ class EventListener {
     }
 
     handleEvents() {
+        if (this.currentURL.includes('main')) {
+            if (!this.userId || !this.roleId) {
+                window.location.href = '../views/login.html.php';
+            }
+        }
+
         const _this = this;
         this.initElements();
         
-        console.log('main')
-
         if (this.loginForm) {
             const passwordIcon = this.loginForm.querySelector('span[class^="password-visible"]');
             const passwordInput = passwordIcon.nextElementSibling;
@@ -1815,10 +1818,19 @@ class EventListener {
     }
 
     async handleAdminEvents() {
+        await this.initSessionData();
+
+        if (!this.userId || !this.roleId) {
+            return false
+        }
+        
         const _this = this;
         this.initAdminElements();
-        await this.initSessionData();
        
+        if (this.adminInformation) {
+            this.adminInformation.querySelector('#admin-avatar').src = `${this.avatar || '../assets/images/user.png'}`;
+            this.adminInformation.querySelector('#admin-username').textContent = `${this.fullName}`;
+        }
 
         if (this.adminMenu) {
             const menuTabs = this.adminMenu.querySelectorAll('div[id$="-tab"]');
@@ -3765,6 +3777,7 @@ class EventListener {
     }
 
     async start() {
+        this.initSessionData();
         // Check if the current page is admin or not
         if (this.currentURL.includes('admin')) {
             this.handleAdminEvents();

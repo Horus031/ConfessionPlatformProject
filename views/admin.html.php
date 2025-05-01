@@ -10,12 +10,12 @@
 
 
 <aside class="w-64 -translate-x-full fixed top-0 h-full mt-26 bg-gray-900 border-r border-gray-700 md:-translate-0">
-    <div class="flex items-center text-white bg-gray-800 mt-4 p-4">
+    <div id="admin-infor" class="flex items-center text-white bg-gray-800 mt-4 p-4">
         <div class="mr-4">
-            <img src="../assets/images/user.png" alt="" class="h-12 rounded-full">
+            <img id="admin-avatar" src="../assets/images/user.png" alt="" class="h-12 rounded-full">
         </div>
         <div>
-            <h2 class="font-semibold text-lg">Horus Weaver</h2>
+            <h2 id="admin-username" class="font-semibold text-lg">Horus Weaver</h2>
             <p class="text-text-light text-sm">Administrator</p>
         </div>
     </div>

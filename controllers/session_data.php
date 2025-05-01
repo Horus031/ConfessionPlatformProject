@@ -7,7 +7,7 @@ try {
         echo json_encode([
             'user_id' => $_SESSION['user_id'],
             'fullname' => $_SESSION['fullname'],
-            'username' => $_SESSION['fullname'],
+            'username' => $_SESSION['username'],
             'avatar' => $_SESSION['avatarURL'],
             'tag_name' => $_SESSION['tag_name'],
             'email' => $_SESSION['email'],

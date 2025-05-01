@@ -17,7 +17,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
-    <link rel="stylesheet" href="/mywebsite/src/css/output.css">
+    <link rel="stylesheet" href="../src/css/output.css">
 
 
 </head>

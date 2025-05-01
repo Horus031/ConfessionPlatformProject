@@ -1,11 +1,16 @@
 import QuestionRenderer from '../../src/js/render.js';
 import EventListener from '../../src/js/events.js';
 document.addEventListener('DOMContentLoaded', async function() {
-    const postId = sessionStorage.getItem('editPostId');
-    const renderer = new QuestionRenderer(null, '#modules');
     const eventListener = new EventListener();
+    
 
     try {
+        document.querySelector('#loading-overlay').classList.remove('hidden');
+        await eventListener.start();
+
+        const postId = sessionStorage.getItem('editPostId');
+        const renderer = new QuestionRenderer(null, '#modules');
+         
         const modules = await renderer.fetchData('../controllers/list_modules.php');
         renderer.renderModules(modules);
 
@@ -28,9 +33,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         renderer.renderTagsWithType();
 
-
-        eventListener.start();
     } catch (error) {
         console.error('Error loading data:', error);
+    } finally {
+        document.querySelector('#loading-overlay').classList.add('hidden');
     }
 })

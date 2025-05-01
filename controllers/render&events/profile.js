@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     await eventListener.initSessionData();
 
     try {
+        document.querySelector('#loading-overlay').classList.remove('hidden');
+        await eventListener.start();
+
         const userInfo = await renderer.fetchData(`../controllers/get_userinfo.php?tag_name=${tagName}`);
         renderer.renderUserProfile(userInfo);
 
@@ -33,8 +36,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             document.getElementById('like-count').textContent = userPostCounts.total_like_count;
         }
 
-        eventListener.start();
     } catch (error) {
         console.error('Error loading data:', error);
+    } finally {
+        document.querySelector('#loading-overlay').classList.add('hidden');
     }
 });

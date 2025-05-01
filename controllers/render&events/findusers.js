@@ -6,9 +6,21 @@ document.addEventListener('DOMContentLoaded', async function() {
     const eventListener = new EventListener();
     await eventListener.initSessionData();
 
-    const users = await renderer.fetchData('../controllers/list_users.php');
-    renderer.renderAllUsers(users, eventListener.userId);
+
+    try {
+        document.querySelector('#loading-overlay').classList.remove('hidden');
+        await eventListener.start();
+        
+
+        const users = await renderer.fetchData('../controllers/list_users.php');
+        renderer.renderAllUsers(users, eventListener.userId);
+    } catch (error) {
+        console.error('Error loading data:', error);
+    } finally {
+        document.querySelector('#loading-overlay').classList.add('hidden');
+    }
+
+    
 
 
-    eventListener.start();
 })
