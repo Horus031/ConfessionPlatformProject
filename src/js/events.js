@@ -28,6 +28,7 @@ class EventListener {
                     }
     
                     if (data.type === "comment") {
+                        console.log(data.type);
                         const commentCountSpan = document.querySelector(`.comment-count-${data.postId}`);
                         if (commentCountSpan) {
                             commentCountSpan.innerText = data.commentCount;
@@ -54,7 +55,7 @@ class EventListener {
     
                                 <div id="comments-information">
                                     <div class="flex items-center space-x-2">
-                                        <h2 class="text-text font-medium text-md dark:text-white">${data.username}</h2>
+                                        <h2 class="text-text font-medium text-md dark:text-white">${data.fullname}</h2>
                                         <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(localTime)}</span>
                                     </div>
                                     <p class="comment-content-${data.commentId} text-text text-sm dark:text-gray-400">${data.comment}</p>
@@ -73,7 +74,6 @@ class EventListener {
                             commentSection.insertBefore(newCommentElement, firstChildComment);
 
                             const commentElements = commentSection.querySelectorAll('div[id^="comment-"]')
-                            console.log(commentElements)
 
                             commentElements.forEach(comment => {
                                 comment.addEventListener('click', function(e) {
@@ -89,22 +89,27 @@ class EventListener {
                                 })
                             })
     
+
                             document.querySelector('.comment-count').textContent = `(${commentSection.children.length})`;
                         }
                     }
     
-                    if (data.type === "notification") {
-                        this.updateNotificationBadge();
-    
+                    if (data.type === "notification") {   
+                        console.log(data); 
                         const notifyContainer = document.querySelector('#notify-popup');
 
                         const notifyFirstChild = notifyContainer.firstElementChild;
+
+                        // Update the badge only if the notification is not from the current user
+                        if (parseInt(data.userId) != this.userId) {
+                            this.updateNotificationBadge();
+                        }
     
                         // Convert UTC time to local time
                         const localTime = new Date(data.created_at);
     
                         const notifyElement = document.createElement('a');
-                        notifyElement.classList.add('flex', 'justify-between', 'px-2', 'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer', 'bg-blue-200', 'dark:bg-gray-200', 'dark:hover:bg-gray-700');
+                        notifyElement.classList.add('flex', 'justify-between', 'px-2', 'text-left', 'space-x-2', 'hover:bg-gray-200', 'cursor-pointer', 'bg-blue-200', 'dark:bg-gray-600', 'dark:hover:bg-gray-700');
                         notifyElement.href = `${data.url}`;
                         notifyElement.id = `notify-${data.notification_id}`;
                         const timeInMonth = localTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -113,14 +118,18 @@ class EventListener {
                             <div class="flex space-x-3">
                                 <img loading="lazy" src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-8 rounded-full">
     
-                                <div class="flex flex-col space-y-1">
-                                    <span>${data.username} ${data.message}</span>
+                                <div class="flex flex-col space-y-1 dark:text-gray-400">
+                                    <span class="text-text dark:text-white">
+                                        <span class="font-bold">${data.fullname} </span>
+                                    ${data.message}
+                                    
+                                    </span>
     
                                     <span class="text-text-light break-all line-clamp-1">${data.content || 'Check it out!'}</span>
                                 </div>
                             </div>
     
-                            <div class="flex flex-col space-y-1 text-nowrap mt-1 text-right">
+                            <div class="text-text flex flex-col space-y-1 text-nowrap mt-1 text-right dark:text-gray-400">
                                 <span class="text-xs">${timeInMonth}</span>
                                 <span class="text-xs">${timeInHour}</span>
                             </div>
@@ -155,7 +164,10 @@ class EventListener {
                                 <img loading="lazy" src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-8 rounded-full">
     
                                 <div class="flex flex-col space-y-1">
-                                    <span>${data.username} has shared a new post</span>
+                                    <span>
+                                        <span class="font-bold">${data.fullname} </span>
+                                        has shared a new post
+                                    </span>
     
                                     <span class="text-text-light break-all line-clamp-1">${data.title || 'Check it out!'}</span>
                                 </div>
@@ -295,11 +307,6 @@ class EventListener {
     }
 
     handleEvents() {
-        if (this.currentURL.includes('main')) {
-            if (!this.userId || !this.roleId) {
-                window.location.href = '../views/login.html.php';
-            }
-        }
 
         const _this = this;
         this.initElements();
@@ -1448,6 +1455,7 @@ class EventListener {
             }
 
             if (this.postDetailContainer) {
+                const postId = _this.postDetailContainer.getAttribute('data-value');
                 this.postDetailContainer.addEventListener('click', async function(e) {
                     if (e.target.closest('img[id="user-avatar"]') || e.target.closest('span[id="username"]')) {
                         const tagNameValue = _this.postDetailContainer.querySelector('#post-tagname').textContent;
@@ -1455,7 +1463,6 @@ class EventListener {
                     }
 
 
-                    const postId = _this.postDetailContainer.getAttribute('data-value');
                     let button = e.target.closest('button');
 
                     if (!button) {
@@ -1506,7 +1513,6 @@ class EventListener {
             if (this.commentContainer) {
                 setTimeout(function() {
                     const commentElement = _this.commentContainer.querySelectorAll('div[id^="comment-"]');
-                    console.log(commentElement)
                     commentElement.forEach(comment => {
                         comment.addEventListener('click', function(e) {
                             const profileShortCut = comment.querySelector('img[class^="profile-hover"]');
@@ -1563,7 +1569,7 @@ class EventListener {
                                     body: JSON.stringify({ receiverId: receiverId, senderId: _this.userId, type: 'comment', message: messageNotify, message_content: newComment.content, url: urlNotify })
                                 });
 
-                                _this.sendNotification(receiverId, _this.fullName, avatar, _this.userId, 'comment', messageNotify, newComment.content, urlNotify, createdTime);
+                                _this.sendNotification(receiverId, _this.username, _this.fullName, avatar, _this.userId, 'comment', messageNotify, newComment.content, urlNotify, createdTime);
                                 document.querySelector('.comment-count').textContent = `(${_this.renderedComments.size})`;
                             } 
                         }, 100);
@@ -1574,6 +1580,7 @@ class EventListener {
                             postId: commentContainer.getAttribute('data-post-id'),
                             userId: newComment.user_id,
                             username: _this.username,
+                            fullname: _this.fullName,
                             avatar: newComment.avatar,
                             createdTime: new Date(newComment.created_at).toISOString(),
                             comment: newComment.content,
@@ -1786,7 +1793,7 @@ class EventListener {
                             method: 'POST',
                             body: formData
                         })
-                        _this.sendNewPostNotify(_this.userId, _this.username, _this.avatar, 'new_post', newPost)
+                        _this.sendNewPostNotify(_this.userId, _this.username, _this.fullName, _this.avatar, 'new_post', newPost)
                         
 
                         window.location.href = `../views/main.html.php`;
@@ -1820,10 +1827,6 @@ class EventListener {
     async handleAdminEvents() {
         await this.initSessionData();
 
-        if (!this.userId || !this.roleId) {
-            return false
-        }
-        
         const _this = this;
         this.initAdminElements();
        
@@ -2379,7 +2382,7 @@ class EventListener {
                     body: JSON.stringify({ receiverId: receiverId, senderId: this.userId, type: 'like', message: messageNotify, url: urlNotify })
                 });
     
-                this.sendNotification(receiverId, this.username, avatar, this.userId, 'like', messageNotify, content, urlNotify, createdTime);
+                this.sendNotification(receiverId, this.username, this.fullName, avatar, this.userId, 'like', messageNotify, content, urlNotify, createdTime);
             } catch (error) {
                 console.error('Error sending like notification:', error);
             }
@@ -2426,7 +2429,7 @@ class EventListener {
                         body: JSON.stringify({ receiverId: userIdValue, senderId: _this.userId, type: 'follow', message: messageNotify, url: urlNotify })
                     });
 
-                    _this.sendNotification(userIdValue, _this.username, avatar, _this.userId, 'follow', messageNotify, '', urlNotify, createdTime);
+                    _this.sendNotification(userIdValue, _this.username, _this.fullName, avatar, _this.userId, 'follow', messageNotify, '', urlNotify, createdTime);
                 } else if (followResult.status === 'unfollowed') {
                     followButton.textContent = 'Follow';
                     const followerCount = document.getElementById('follower-count');
@@ -2492,6 +2495,7 @@ class EventListener {
                 headers: { "Content-Type" : "application/json" },
                 body: JSON.stringify({ post_id: postId })
             });
+            console.log(commentCount);
             if (commentCount.error) {
                 console.log(commentCount.error)
             } else {
@@ -2539,6 +2543,7 @@ class EventListener {
     }
 
     async handleDeleteComement(commentContainer, commentElement) {
+        const _this = this;
         const commentValue = commentElement.getAttribute('data-value');
         commentElement.classList.remove('animate-slideRight');
         commentElement.classList.add('animate-slideAndFadeOut');
@@ -2991,13 +2996,14 @@ class EventListener {
         }
     }
 
-    sendNotification(userId, username, avatar, senderId, type, message, content, url, createdTime) {
+    sendNotification(userId, username, fullname, avatar, senderId, type, message, content, url, createdTime) {
         const conditions = userId && senderId && type && message && url && createdTime;
         if (conditions) {
             let notificationData = {
                 type: "notification",
                 user_id: userId,
-                username: username,
+                username: fullname,
+                fullname: fullname,
                 avatar: avatar,
                 senderId: senderId,
                 notification_type: type,
@@ -3013,7 +3019,7 @@ class EventListener {
         }
     }
 
-    sendNewPostNotify(userId, username, avatar, type, postData) {    
+    sendNewPostNotify(userId, username, fullname, avatar, type, postData) {    
         const messageNotify = `has shared a new post`;
         const urlNotify = `../views/main.html.php?page=postdetails&id=${postData.post_id}`;
         const conditions = userId && username && avatar && postData;
@@ -3023,6 +3029,7 @@ class EventListener {
                 type: 'new_post',
                 user_id: userId,
                 username: username,
+                fullname: fullname,
                 avatar: avatar,
                 notification_type: type,
                 postId: postData.post_id,

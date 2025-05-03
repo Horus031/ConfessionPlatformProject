@@ -1,5 +1,6 @@
 import QuestionRenderer from '../../src/js/render.js';
 import EventListener from '../../src/js/events.js';
+import ValidateUsers from '../../src/js/validate_users.js';
 
 document.addEventListener('DOMContentLoaded', async function() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -7,11 +8,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     const renderer = new QuestionRenderer('#profile-container');
     const tagsRenderer = new QuestionRenderer('#top-tags-container');
     const eventListener = new EventListener();
+    const validation = new ValidateUsers();
     await eventListener.initSessionData();
 
     try {
         document.querySelector('#loading-overlay').classList.remove('hidden');
-        await eventListener.start();
+
+        await validation.checkUserPermissions();
 
         const userInfo = await renderer.fetchData(`../controllers/get_userinfo.php?tag_name=${tagName}`);
         renderer.renderUserProfile(userInfo);
@@ -41,4 +44,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     } finally {
         document.querySelector('#loading-overlay').classList.add('hidden');
     }
+
+    eventListener.start();
+
 });

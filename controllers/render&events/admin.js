@@ -1,20 +1,16 @@
 import EventListener from '../../src/js/events.js';
 import QuestionRenderer from '../../src/js/render.js';
+import ValidateUsers from '../../src/js/validate_users.js';
 
 document.addEventListener('DOMContentLoaded', async function() {
+    const eventListener = new EventListener();
+    const validation = new ValidateUsers();
     try {
         document.querySelector('#loading-overlay').classList.remove('hidden');
-        const eventListener = new EventListener();
         await eventListener.initSessionData();
 
-        // Check if the user is logged in
-        const isLoggedIn = await eventListener.start();
-        if (!isLoggedIn) {
-            // Redirect to login page if not logged in
-            window.location.href = '../views/404notfound.html.php';
-            return;
-        }
-
+        await validation.checkUserPermissions();
+        
         const userRenderer = new QuestionRenderer('#user-container', '#modules', eventListener.userId);
         const questionRenderer = new QuestionRenderer('#question-container');
         const moduleRenderer = new QuestionRenderer('#module-container', '#module-filter');
@@ -47,5 +43,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.error('Error initializing the application:', error);
     } finally {
         document.querySelector('#loading-overlay').classList.add('hidden');
+        await eventListener.start();
     }
 });

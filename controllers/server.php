@@ -61,6 +61,7 @@ class NotificationServer implements MessageComponentInterface
                     "postId" => $data['postId'],
                     "userId" => $data['userId'],
                     "username" => $data['username'],
+                    "fullname" => $data['fullname'],
                     "avatar" => $data['avatar'],
                     "created_at" => $data['createdTime'],
                     "comment" => $data['comment'],
@@ -77,6 +78,7 @@ class NotificationServer implements MessageComponentInterface
                     "type" => "notification",
                     "receiverId" => $data['user_id'],
                     "username" => $data['username'],
+                    "fullname" => $data['fullname'],
                     "avatar" => $data['avatar'],
                     "senderId" => $data['senderId'],
                     "notification_type" => $data['notification_type'],
@@ -106,6 +108,7 @@ class NotificationServer implements MessageComponentInterface
         $database = new Database($this->pdo);
         $creatorId = $data['user_id'];
         $username = $data['username'];
+        $fullname = $data['fullname'];
         $avatar = $data['avatar'];
         $postId = $data['postId'];
         $postTitle = isset($data['postTitle']) ? $data['postTitle'] : '';
@@ -128,6 +131,7 @@ class NotificationServer implements MessageComponentInterface
                 "type" => "new_post",
                 "senderId" => $creatorId,
                 "username" => $username,
+                "fullname" => $fullname,
                 "avatar" => $avatar,
                 "postId" => $postId,
                 "notification_type" => $data['notification_type'],

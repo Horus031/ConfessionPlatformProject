@@ -1,12 +1,14 @@
 import QuestionRenderer from '../../src/js/render.js';
 import EventListener from '../../src/js/events.js';
+import ValidateUsers from '../../src/js/validate_users.js';
 document.addEventListener('DOMContentLoaded', async function() {
     const eventListener = new EventListener();
-    
+    const validation = new ValidateUsers();
 
     try {
         document.querySelector('#loading-overlay').classList.remove('hidden');
-        await eventListener.start();
+
+        await validation.checkUserPermissions();
 
         const postId = sessionStorage.getItem('editPostId');
         const renderer = new QuestionRenderer(null, '#modules');
@@ -38,4 +40,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     } finally {
         document.querySelector('#loading-overlay').classList.add('hidden');
     }
+
+    eventListener.start();
+
 })
