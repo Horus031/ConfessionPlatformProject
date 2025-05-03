@@ -221,7 +221,7 @@ class Database
 
     public function fetchNewComment($comment_id)
     {
-        $sql = 'SELECT users.user_id, users.username, users.avatar, comments.comment_id, comments.content, comments.created_at 
+        $sql = 'SELECT users.user_id, users.username, CONCAT(users.first_name, " ", users.last_name) as fullname,users.avatar, comments.comment_id, comments.content, comments.created_at 
         FROM comments 
         JOIN users ON comments.user_id = users.user_id 
         WHERE comments.comment_id = ?';

@@ -41,56 +41,56 @@ class EventListener {
                             // Update the badge only if the comment is not from the current user
                             if (parseInt(data.userId) != this.userId) {
                                 this.updateNotificationBadge();
-                            }
-    
-                            // Convert UTC time to local time
-                            const localTime = new Date(data.created_at);
-    
-                            const newCommentElement = document.createElement('div');
-                            newCommentElement.id = `comment-${data.commentId}`;
-                            newCommentElement.setAttribute('data-value', `${data.commentId}`);
-                            newCommentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700', 'animate-slideRight');
-                            newCommentElement.innerHTML = `
-                                <img src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
-    
-                                <div id="comments-information">
-                                    <div class="flex items-center space-x-2">
-                                        <h2 class="text-text font-medium text-md dark:text-white">${data.fullname}</h2>
-                                        <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(localTime)}</span>
+
+                                // Convert UTC time to local time
+                                const localTime = new Date(data.created_at);
+        
+                                const newCommentElement = document.createElement('div');
+                                newCommentElement.id = `comment-${data.commentId}`;
+                                newCommentElement.setAttribute('data-value', `${data.commentId}`);
+                                newCommentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700', 'animate-slideRight');
+                                newCommentElement.innerHTML = `
+                                    <img src="${data.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+        
+                                    <div id="comments-information">
+                                        <div class="flex items-center space-x-2">
+                                            <h2 class="text-text font-medium text-md dark:text-white">${data.fullname}</h2>
+                                            <span class="text-xs dark:text-gray-400">${this.renderer.timeAgo(localTime)}</span>
+                                        </div>
+                                        <p class="comment-content-${data.commentId} text-text text-sm dark:text-gray-400">${data.comment}</p>
                                     </div>
-                                    <p class="comment-content-${data.commentId} text-text text-sm dark:text-gray-400">${data.comment}</p>
-                                </div>
 
-                                <div class="flex text-3xl font-light dark:text-gray-400 ml-auto my-auto text-center space-x-2">
-                                    <span class="edit-comment-btn material-symbols-rounded custom-icon text-text text-center rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-900 dark:text-gray-400 cursor-pointer active:scale-90">
-                                        edit
-                                    </span>
-                                    <span class="delete-comment-btn material-symbols-rounded custom-icon text-center rounded-full p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-200 cursor-pointer active:scale-90">
-                                        delete
-                                    </span>
-                                </div>
-                            `;
-    
-                            commentSection.insertBefore(newCommentElement, firstChildComment);
+                                    <div class="flex text-3xl font-light dark:text-gray-400 ml-auto my-auto text-center space-x-2">
+                                        <span class="edit-comment-btn material-symbols-rounded custom-icon text-text text-center rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-900 dark:text-gray-400 cursor-pointer active:scale-90">
+                                            edit
+                                        </span>
+                                        <span class="delete-comment-btn material-symbols-rounded custom-icon text-center rounded-full p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-200 cursor-pointer active:scale-90">
+                                            delete
+                                        </span>
+                                    </div>
+                                `;
+        
+                                commentSection.insertBefore(newCommentElement, firstChildComment);
 
-                            const commentElements = commentSection.querySelectorAll('div[id^="comment-"]')
+                                const commentElements = commentSection.querySelectorAll('div[id^="comment-"]')
 
-                            commentElements.forEach(comment => {
-                                comment.addEventListener('click', function(e) {
-                                    if (e.target.closest('span[class^="edit-comment-btn"]')) {
-                                        const commentInformation = comment.querySelector('#comments-information');
-                                        const iconElement = comment.querySelector('span[class^="edit-comment-btn"]')
-                                        console.log(commentInformation, iconElement);
-                                        _this.handleEditComment(iconElement, commentInformation, comment)
-                                        
-                                    } else if (e.target.closest('span[class^="delete-comment-btn"]')) {
-                                        _this.handleDeleteComement(commentSection, comment);
-                                    }
+                                commentElements.forEach(comment => {
+                                    comment.addEventListener('click', function(e) {
+                                        if (e.target.closest('span[class^="edit-comment-btn"]')) {
+                                            const commentInformation = comment.querySelector('#comments-information');
+                                            const iconElement = comment.querySelector('span[class^="edit-comment-btn"]')
+                                            console.log(commentInformation, iconElement);
+                                            _this.handleEditComment(iconElement, commentInformation, comment)
+                                            
+                                        } else if (e.target.closest('span[class^="delete-comment-btn"]')) {
+                                            _this.handleDeleteComement(commentSection, comment);
+                                        }
+                                    })
                                 })
-                            })
-    
+        
 
-                            document.querySelector('.comment-count').textContent = `(${commentSection.children.length})`;
+                                document.querySelector('.comment-count').textContent = `(${commentSection.children.length})`;
+                            }
                         }
                     }
     
@@ -1550,6 +1550,7 @@ class EventListener {
                         console.log(newComment.error);
                     } else {
                         const commentContainer = document.querySelector('div[id^="comment-container-"]');
+                        let firstChildComment = commentContainer.firstElementChild;
         
                         _this.renderedComments.add(newComment.comment_id); // Add the comment ID to the Set
                         textarea.value = '';
@@ -1573,6 +1574,55 @@ class EventListener {
                                 document.querySelector('.comment-count').textContent = `(${_this.renderedComments.size})`;
                             } 
                         }, 100);
+
+
+                        const localTime = new Date(newComment.created_at);
+        
+                        const newCommentElement = document.createElement('div');
+                        newCommentElement.id = `comment-${newComment.commentId}`;
+                        newCommentElement.setAttribute('data-value', `${newComment.commentId}`);
+                        newCommentElement.classList.add('bg-[#F1F1F1]', 'flex', 'p-4', 'space-x-4', 'rounded-md', 'dark:bg-gray-700', 'animate-slideRight');
+                        newCommentElement.innerHTML = `
+                            <img src="${newComment.avatar ?? '../assets/images/user.png'}" alt="" class="h-10 rounded-full">
+
+                            <div id="comments-information">
+                                <div class="flex items-center space-x-2">
+                                    <h2 class="text-text font-medium text-md dark:text-white">${newComment.fullname}</h2>
+                                    <span class="text-xs dark:text-gray-400">${_this.renderer.timeAgo(localTime)}</span>
+                                </div>
+                                <p class="comment-content-${newComment.commentId} text-text text-sm dark:text-gray-400">${newComment.content}</p>
+                            </div>
+
+                            <div class="flex text-3xl font-light dark:text-gray-400 ml-auto my-auto text-center space-x-2">
+                                <span class="edit-comment-btn material-symbols-rounded custom-icon text-text text-center rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-900 dark:text-gray-400 cursor-pointer active:scale-90">
+                                    edit
+                                </span>
+                                <span class="delete-comment-btn material-symbols-rounded custom-icon text-center rounded-full p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-200 cursor-pointer active:scale-90">
+                                    delete
+                                </span>
+                            </div>
+                        `;
+
+                        commentContainer.insertBefore(newCommentElement, firstChildComment);
+
+                        const commentElements = commentContainer.querySelectorAll('div[id^="comment-"]')
+
+                        commentElements.forEach(comment => {
+                            comment.addEventListener('click', function(e) {
+                                if (e.target.closest('span[class^="edit-comment-btn"]')) {
+                                    const commentInformation = comment.querySelector('#comments-information');
+                                    const iconElement = comment.querySelector('span[class^="edit-comment-btn"]')
+                                    console.log(commentInformation, iconElement);
+                                    _this.handleEditComment(iconElement, commentInformation, comment)
+                                    
+                                } else if (e.target.closest('span[class^="delete-comment-btn"]')) {
+                                    _this.handleDeleteComement(commentSection, comment);
+                                }
+                            })
+                        })
+
+
+                        document.querySelector('.comment-count').textContent = `(${commentContainer.children.length})`;
 
                         _this.socket.send(JSON.stringify({
                             type: "comment",
@@ -1908,32 +1958,33 @@ class EventListener {
         }
 
         if (this.questionContainer) {
-            const questionLists = this.questionContainer.querySelectorAll('tr');
             const moduleFilter = document.querySelector('#module-filter');
             const fromDateInput = document.querySelector('#from-date');
             const toDateInput = document.querySelector('#to-date');
             let questionInput = document.querySelector('#question-search').value.trim().toLowerCase();
-            questionLists.forEach(question => {
-                const questionActions = question.querySelector('#question-actions');
-                const questionId = question.getAttribute('data-value');
-                questionActions.addEventListener('click', function(e) {
-                    if (e.target.closest('span[class^="view-quesbtn"]')) {
-                        window.open(`main.html.php?page=postdetails&id=${questionId}`, '_blank');
-                    } else if (e.target.closest('span[class^="edit-quesbtn"]')) {
-                        _this.handleFetchEditPost(questionId);
-                        
-                        _this.questionManagement.classList.add('hidden');
-                        _this.editQuestionContainer.classList.remove('hidden');
-
-                        _this.handleUpdateQuestions();
-                    } else {
-                        _this.handleDeleteQuestion(questionId);
-                    }
-                })
-            })
-
-            
-
+        
+            // Event delegation for question actions
+            this.questionContainer.addEventListener('click', function (e) {
+                const questionRow = e.target.closest('tr');
+                if (!questionRow) return;
+        
+                const questionActions = questionRow.querySelector('#question-actions');
+                const questionId = questionRow.getAttribute('data-value');
+        
+                if (e.target.closest('span[class^="view-quesbtn"]')) {
+                    window.open(`main.html.php?page=postdetails&id=${questionId}`, '_blank');
+                } else if (e.target.closest('span[class^="edit-quesbtn"]')) {
+                    _this.handleFetchEditPost(questionId);
+        
+                    _this.questionManagement.classList.add('hidden');
+                    _this.editQuestionContainer.classList.remove('hidden');
+        
+                    _this.handleUpdateQuestions();
+                } else if (e.target.closest('span[class^="delete-quesbtn"]')) {
+                    _this.handleDeleteQuestion(questionId);
+                }
+            });
+        
             // Function to filter questions
             function filterQuestions() {
                 const selectedModule = moduleFilter.value.toLowerCase();
@@ -1941,18 +1992,18 @@ class EventListener {
                 const toDate = new Date(toDateInput.value);
                 fromDate.setHours(0, 0, 0, 0); // Set to the beginning of the day
                 const questionRows = _this.questionContainer.querySelectorAll('tr');
-
+        
                 questionRows.forEach(row => {
                     const postTitle = row.querySelector('h3[class^="post-title"]').textContent.trim().toLowerCase();
                     const moduleValue = row.querySelector('td:nth-child(2)').textContent.trim().toLowerCase(); // Module column
                     const dateValue = new Date(row.querySelector('td:nth-child(4)').textContent); // Posted date column
-
+        
                     const matchesModule = selectedModule === 'all' || moduleValue === selectedModule;
                     const matchesDate =
                         (!fromDateInput.value || dateValue >= fromDate) &&
                         (!toDateInput.value || dateValue <= toDate);
                     const matchesTitle = questionInput === '' || postTitle.includes(questionInput);
-
+        
                     if (matchesModule && matchesDate && matchesTitle) {
                         row.classList.remove('hidden');
                     } else {
@@ -1960,7 +2011,7 @@ class EventListener {
                     }
                 });
             }
-
+        
             // Add event listeners for filtering
             moduleFilter.addEventListener('change', filterQuestions);
             fromDateInput.addEventListener('change', filterQuestions);
@@ -3787,7 +3838,7 @@ class EventListener {
         this.initSessionData();
         // Check if the current page is admin or not
         if (this.currentURL.includes('admin')) {
-            this.handleAdminEvents();
+            await this.handleAdminEvents();
         } else {
             await this.applyDarkModePreference();
             this.handleEvents();
