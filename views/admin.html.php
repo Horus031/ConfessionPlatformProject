@@ -153,12 +153,18 @@
                         <input type="text" name="newEmail" id="email" class="w-full bg-transparent p-4 border-0 border-b-1 border-gray-600 focus:outline-0 focus:ring-0" placeholder="Enter email...">
                         <span class="font-light"></span>
                     </div>
-                    <div class="relative">
-                        <input type="text" name="newPassword" id="password" class="w-full bg-transparent p-4 border-0 border-b-1 border-gray-600 focus:outline-0 focus:ring-0" placeholder="Enter password...">
-                        <span class="font-light"></span>
+                    <div class="relative text-3xl font-light">
+                        <span class="password-visible absolute right-3 top-1/5 material-symbols-rounded custom-icon text-gray-900 dark:text-gray-400 cursor-pointer select-none">
+                            visibility_off
+                        </span>
+                        <input type="password" name="newPassword" id="password" class="w-full text-lg bg-transparent p-4 border-0 border-b-1 border-gray-600 focus:outline-0 focus:ring-0" placeholder="Enter password...">
+                        <span class="font-light text-lg"></span>
                     </div>
-                    <div class="relative">
-                        <input type="text" name="newConfirmPassword" id="confirm-password" class="w-full bg-transparent border-0 p-4 border-b-1 border-gray-600 focus:outline-0 focus:ring-0" placeholder="Confirm password...">
+                    <div class="relative text-3xl font-light">
+                        <span class="password-visible absolute right-3 top-1/5 text-xl material-symbols-rounded custom-icon text-gray-900 dark:text-gray-400 cursor-pointer select-none">
+                            visibility_off
+                        </span>
+                        <input type="password" name="newConfirmPassword" id="confirm-password" class="w-full text-lg bg-transparent border-0 p-4 border-b-1 border-gray-600 focus:outline-0 focus:ring-0" placeholder="Confirm password...">
                         <span class="font-light"></span>
                     </div>
 
@@ -242,7 +248,7 @@
                     </div>
 
                     <div class="my-4 flex justify-between 2xl:w-1/3">
-                        <button id="cancel-user-btn" type="button" class="bg-transparent border-1 border-gray-400 px-6 rounded-lg" name="Edit" value="Cancel">Cancel</button>
+                        <button id="cancel-user-btn" type="button" class="bg-transparent border-1 border-gray-400 px-6 rounded-lg cursor-pointer" name="Edit" value="Cancel">Cancel</button>
 
                         <button type="submit" class="bg-black text-white border-1 border-text px-8 py-2 rounded-lg cursor-pointer" name="Edit" value="Save">Save</button>
                     </div>
@@ -362,8 +368,8 @@
                         </select>
 
                         <div id="button-container" class="space-x-2 flex">
-                            <button type="button" id="add-btn" class="bg-blue-500 p-2 rounded-md text-white">Add</button>
-                            <button type="button" id="remove-btn" class="bg-red-500 p-2 rounded-md text-white">Remove</button>
+                            <button type="button" id="add-btn" class="bg-blue-500 p-2 rounded-md text-white cursor-pointer">Add</button>
+                            <button type="button" id="remove-btn" class="bg-red-500 p-2 rounded-md text-white cursor-pointer">Remove</button>
                         </div>
                     </div>
 
@@ -380,10 +386,10 @@
                 </div>
 
                 <div class="flex justify-between md:w-2/3 lg:w-4/9">
-                    <button id="cancel-edit-post" type="button" class="border border-gray-700 rounded-lg px-4 py-2 mt-4">
+                    <button id="cancel-edit-post" type="button" class="border border-gray-700 rounded-lg px-4 py-2 mt-4 cursor-pointer">
                         Cancel
                     </button>
-                    <button type="submit" name="submit" class="bg-black text-white rounded-lg px-4 py-2 mt-4">
+                    <button type="submit" name="submit" class="bg-black text-white rounded-lg px-4 py-2 mt-4 cursor-pointer">
                         Save
                     </button>
                 </div>
@@ -410,7 +416,7 @@
                     <span class="material-symbols-rounded custom-icon absolute top-1/4 left-4">
                         add
                     </span>
-                    <button class="bg-blue-500 text-white p-4 pl-12 rounded-lg cursor-pointer text-lg font-normal">Add New Module</button>
+                    <button class="bg-blue-500 text-white p-4 pl-12 rounded-lg cursor-pointer text-lg font-normal ">Add New Module</button>
                 </div>
             </div>
 

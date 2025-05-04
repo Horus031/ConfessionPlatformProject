@@ -107,7 +107,8 @@
     --color-tags: #DDDDDD;
     --color-border: #666666;
 
-    
+    --breakpoint-3xl: 100rem;
+    --breakpoint-4xl: 120rem;
 
 
     --animate-slideAndFadeOut: fadeOut 1s ease forwards, slideOut 1s ease forwards;

@@ -1,4 +1,4 @@
-<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[20%]">
+<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[23%] 3xl:pl-[23%] 4xl:pl-[18%] 4xl:pr-[1%] bg-white dark:bg-gray-900">
     <h1 class="text-text text-2xl font-semibold lg:text-4xl dark:text-gray-400">Contact Us</h1>
 
     <form id="contactForm" class="mt-4 space-y-4 lg:w-1/2">

@@ -30,7 +30,6 @@ class QuestionRenderer {
         if (!this.container) return;
         this.container.innerHTML = '';
 
-        console.log(posts);
         const fragment = document.createDocumentFragment();
 
         posts.forEach(async post => {
@@ -62,7 +61,7 @@ class QuestionRenderer {
                         <p class="mt-3 text-text-light text-sm dark:text-gray-400 font-medium line-clamp-1">${post.post_content}</p>
                         <div>
                             <div class="mt-3 rounded-md">
-                                <img loading="lazy" src="${post.imageURL ?? ''}" alt="Post image" width="100%" class="rounded-md lazy-load h-64">
+                                <img loading="lazy" src="${post.imageURL ?? ''}" alt="Post image" width="100%" class="rounded-md lazy-load h-full">
                             </div>
                             <div class="flex justify-between items-center mt-3">
                                 <div class="flex items-center space-x-2 font-normal md:space-y-2 md:flex-wrap 2xl:flex-nowrap 2xl:space-y-0">
@@ -332,7 +331,6 @@ class QuestionRenderer {
             return;
         }
 
-        console.log(questions);
 
         const fragment = document.createDocumentFragment();
 
@@ -670,7 +668,7 @@ class QuestionRenderer {
                 const currentTags = tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
 
                 if (currentTags.includes(selectedTag)) {
-                    console.log('You cannot duplicate the tag!');
+                    return;
                 } else {
                     currentTags.push(selectedTag);
                     tagInput.value = currentTags.join(', ');
@@ -839,8 +837,8 @@ class QuestionRenderer {
                                 </button>
                             </div>
                         </div>
-                        <div id="image-container" class="border-2 border-gray-200 rounded-md">
-                            <img id="post-image" loading="lazy" src="${myPost.imageURL}" alt="Post image" class="rounded-md h-30 w-30 md:w-60 md:h-40 2xl:h-50">
+                        <div id="image-container" class="border-2 border-gray-200 rounded-md w-1/2">
+                            <img id="post-image" loading="lazy" src="${myPost.imageURL}" alt="Post image" width="100%" height="100%" class="rounded-md h-full w-full">
                         </div>
                     `;
 

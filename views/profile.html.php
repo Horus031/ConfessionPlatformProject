@@ -1,4 +1,4 @@
-<main id="userprofile-container" class="mt-28 w-full px-4 md:pl-[26%] lg:pl-[20%] xl:pl-[20%] 2xl:pl-[20%]">
+<main id="userprofile-container" class="mt-28 w-full px-4 md:pl-[26%] lg:pl-[20%] xl:pl-[20%] 2xl:pl-[23%] 3xl:pl-[23%] 4xl:pl-[18%] 4xl:pr-[1%] bg-white dark:bg-gray-900">
     <div id="profile-container" class="flex flex-col md:flex-row md:items-center">
         <div id="profile-actions" class="flex  justify-between items-start px-2 md:flex-col md:items-center md:justify-start dark:bg-transparent z-30">
             <a id="user-avatar-container" data-fancybox="gallery">

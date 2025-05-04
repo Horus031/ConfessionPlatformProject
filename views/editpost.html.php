@@ -1,4 +1,4 @@
-<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[20%] transition-all">
+<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[23%] 3xl:pl-[23%] 4xl:pl-[18%] 4xl:pr-[1%] bg-white dark:bg-gray-900 transition-all">
     <h1 class="text-2xl text-text font-semibold lg:text-4xl dark:text-white animate-slideRight">Edit your post</h1>
 
 
@@ -37,8 +37,8 @@
                 </select>
 
                 <div id="button-container" class="space-x-2 flex">
-                    <button type="button" id="add-btn" class="bg-blue-500 p-2 rounded-md text-white">Add</button>
-                    <button type="button" id="remove-btn" class="bg-red-500 p-2 rounded-md text-white">Remove</button>
+                    <button type="button" id="add-btn" class="bg-blue-500 p-2 rounded-md text-white cursor-pointer">Add</button>
+                    <button type="button" id="remove-btn" class="bg-red-500 p-2 rounded-md text-white cursor-pointer">Remove</button>
                 </div>
             </div>
 

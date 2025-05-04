@@ -1,4 +1,4 @@
-<main id="postdetails-container" class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[20%] transition-all">
+<main id="postdetails-container" class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[23%] 3xl:pl-[23%] 4xl:pl-[18%] 4xl:pr-[1%] transition-all bg-white dark:bg-gray-900">
     <div class="flex items-center">
         <a href="main.html.php?page=home" class="flex items-center text-text dark:text-gray-400 hover:bg-secondary text-3xl text-light rounded-full">
             <span class="material-symbols-rounded custom-icon">

@@ -28,7 +28,6 @@ class EventListener {
                     }
     
                     if (data.type === "comment") {
-                        console.log(data.type);
                         const commentCountSpan = document.querySelector(`.comment-count-${data.postId}`);
                         if (commentCountSpan) {
                             commentCountSpan.innerText = data.commentCount;
@@ -79,7 +78,6 @@ class EventListener {
                                         if (e.target.closest('span[class^="edit-comment-btn"]')) {
                                             const commentInformation = comment.querySelector('#comments-information');
                                             const iconElement = comment.querySelector('span[class^="edit-comment-btn"]')
-                                            console.log(commentInformation, iconElement);
                                             _this.handleEditComment(iconElement, commentInformation, comment)
                                             
                                         } else if (e.target.closest('span[class^="delete-comment-btn"]')) {
@@ -95,7 +93,6 @@ class EventListener {
                     }
     
                     if (data.type === "notification") {   
-                        console.log(data); 
                         const notifyContainer = document.querySelector('#notify-popup');
 
                         const notifyFirstChild = notifyContainer.firstElementChild;
@@ -971,7 +968,6 @@ class EventListener {
                 const currentTagName = this.tagName;
                 const currentEmail = this.email;
 
-                console.log(currentTagName, currentEmail)
 
                 this.editUserForm.addEventListener('click', async function(e) {
                     if (e.target.closest('button[id^="cancel-"]')) {
@@ -1322,7 +1318,7 @@ class EventListener {
                                 await _this.handleLikeButtonClick(postId, question);
                                 break;
                             case button.id == "comment-btn":
-                                console.log('comment');
+                                window.location.href = `../views/main.html.php?page=postdetails&id=${postId}`;
                                 break;
                             case button.id == "save-btn":
                                 const savedImage = question.querySelector('.saved-img');
@@ -1482,7 +1478,7 @@ class EventListener {
                             _this.handleSavedPosts(postId, savedImage);
                             break;
                         case button.id == "link-btn":
-                            console.log('link-btn');
+                            await _this.handleCopyLink(postId);
                             break;
                         default:
                             break;
@@ -1612,7 +1608,6 @@ class EventListener {
                                 if (e.target.closest('span[class^="edit-comment-btn"]')) {
                                     const commentInformation = comment.querySelector('#comments-information');
                                     const iconElement = comment.querySelector('span[class^="edit-comment-btn"]')
-                                    console.log(commentInformation, iconElement);
                                     _this.handleEditComment(iconElement, commentInformation, comment)
                                     
                                 } else if (e.target.closest('span[class^="delete-comment-btn"]')) {
@@ -1726,7 +1721,7 @@ class EventListener {
                         const currentTags = _this.tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
         
                         if (currentTags.includes(selectedTag)) {
-                            console.log('You cannot duplicate the tag!');
+                            return
                         } else {
                             currentTags.push(selectedTag);
                             _this.tagInput.value = currentTags.join(', ');
@@ -1913,6 +1908,16 @@ class EventListener {
             this.backHomeBtn.addEventListener('click', function() {
                 window.location.href = '../views/main.html.php';
             });
+        }
+
+        if (this.newUserContainer) {
+            const passwordIcon = this.newUserContainer.querySelectorAll('span[class^="password-visible"]');
+            passwordIcon.forEach(password => {
+                password.addEventListener('click', function(e) {
+                    const passwordInput = e.target.nextElementSibling;
+                    _this.handleShowPassword(e.target, passwordInput);
+                })
+            })
         }
 
         if (this.userContainer) {
@@ -2246,7 +2251,6 @@ class EventListener {
                             _this.showConfirmModal('You cannot delete this module!', true);
                         } else {
                             const modulePostCount = module.querySelector('#module-post-count').textContent;
-                            console.log(modulePostCount);
                             _this.handleDeleteModule(moduleId, parseInt(modulePostCount));
                         }
                     }
@@ -2342,7 +2346,6 @@ class EventListener {
                         })
 
                         if (moduleValid.existingModule) {
-                            console.log(true);
                             moduleName.classList.add('animate-turnErrorColor');
                             _this.showError('module-name', 'This  module name is already taken, please try again')
                             isValid = false;
@@ -2546,7 +2549,6 @@ class EventListener {
                 headers: { "Content-Type" : "application/json" },
                 body: JSON.stringify({ post_id: postId })
             });
-            console.log(commentCount);
             if (commentCount.error) {
                 console.log(commentCount.error)
             } else {
@@ -2583,7 +2585,6 @@ class EventListener {
             container.replaceChild(newComment, inputValue);
             icon.textContent = 'edit';
 
-            console.log(commentValue, newComment.textContent);
 
             await this.renderer.fetchData('../controllers/edit_comment.php', {
                 method: "POST",
@@ -3547,13 +3548,6 @@ class EventListener {
                 formData.set('userId', userId);
                 formData.set('currentURL', window.location.href);
 
-                // Debugging: Log the FormData contents
-                for (const [key, value] of formData.entries()) {
-                    console.log(key, value);
-                }
-
-                
-                
                 try {
                     loadingOverlay.classList.remove('hidden');
 
@@ -3686,7 +3680,6 @@ class EventListener {
         const editTextColor = this.editModuleForm.querySelector('#edit-text-color');
         const editprevModule = this.editModuleForm.querySelector('#edit-preview');
 
-        console.log(editModuleName, editBgColor, editTextColor, editprevModule);
 
         const rgbColor = this.getComputedColor(backgroundColor);
         const rgbText = this.getComputedColor(textColor);
@@ -3712,7 +3705,6 @@ class EventListener {
             const textData = textColor.getAttribute('data-text-color');
             let isValid = true;
 
-            console.log(moduleId);
 
             if (editModuleName.value == '') {
                 editModuleName.classList.add('animate-turnErrorColor');
@@ -3749,7 +3741,6 @@ class EventListener {
                     body: formData
                 })
 
-                console.log(response)
 
                 if (response['admin']) {
                     location.reload();
@@ -3800,9 +3791,7 @@ class EventListener {
             if (e.target.closest('div[class^="color-box"]')) {
                 const selectedBgColor = e.target.getAttribute('data-bg-color');
                 const selectedTextColor = e.target.getAttribute('data-text-color');
-        
-                console.log(selectedBgColor, selectedTextColor);
-        
+                
                 if (colorType.value === "background") {
                     const rgbColor = _this.getComputedColor(selectedBgColor); // Extract the RGB color
                     if (rgbColor.startsWith('rgba')) {

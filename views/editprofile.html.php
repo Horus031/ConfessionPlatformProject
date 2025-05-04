@@ -1,4 +1,4 @@
-<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[20%]">
+<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[23%] 3xl:pl-[23%] 4xl:pl-[18%] 4xl:pr-[1%] bg-white dark:bg-gray-900">
     <h1 class="text-2xl font-semibold lg:text-4xl text-border dark:text-gray-400">Edit your profile</h1>
     <hr class="border-1 border-secondary mt-2 dark:white">
 
@@ -71,9 +71,9 @@
             </div>
 
             <div class="my-4 flex justify-between 2xl:w-1/3">
-                <button id="cancel-user-btn" type="button" class="bg-white border-1 border-text px-6 rounded-lg dark:bg-transparent dark:text-gray-600 dark:border-gray-600" name="Edit" value="Cancel">Cancel</button>
+                <button id="cancel-user-btn" type="button" class="bg-white border-1 border-text px-6 rounded-lg dark:bg-transparent dark:text-gray-600 dark:border-gray-600 cursor-pointer" name="Edit" value="Cancel">Cancel</button>
 
-                <button id="save-user-btn" type="submit" class="bg-black text-white border-1 border-text px-8 py-2 rounded-lg" name="Edit" value="Save">Save</button>
+                <button id="save-user-btn" type="submit" class="bg-black text-white border-1 border-text px-8 py-2 rounded-lg cursor-pointer" name="Edit" value="Save">Save</button>
             </div>
         </div>
     </form>

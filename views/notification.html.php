@@ -1,4 +1,4 @@
-<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[20%] transition-all">
+<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 lg:pl-[20%] xl:pl-[20%] 2xl:pl-[23%] 3xl:pl-[23%] 4xl:pl-[18%] 4xl:pr-[1%] transition-all bg-white dark:bg-gray-900">
     <h1 class="text-2xl font-semibold lg:text-4xl text-text dark:text-gray-400 animate-postSlideIn">Notifications</h1>
     <hr class="border-1 border-secondary mt-2 animate-postSlideIn dark:border-gray-700">
     <button id="clear-notify">

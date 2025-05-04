@@ -1,4 +1,4 @@
-<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 xl:pl-[20%] 2xl:pl-[20%] transition-all">
+<main class="mt-24 px-4 w-full md:pl-[26%] md:mt-28 xl:pl-[20%] 2xl:pl-[23%] 3xl:pl-[23%] 4xl:pl-[18%] 4xl:pr-[1%] transition-all bg-white dark:bg-gray-900">
     <h1 class="text-text text-2xl font-semibold lg:text-4xl dark:text-gray-400 animate-postSlideIn">Users</h1>
 
     <div class="relative flex text-3xl font-light dark:text-gray-400 mt-4 animate-postSlideIn">

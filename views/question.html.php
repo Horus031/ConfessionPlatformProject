@@ -1,4 +1,4 @@
-<main class="mt-24 px-4 w-full md:mt-28 md:pl-[26%] lg:pl-[20%] xl:pl-[20%] 2xl:pl-[20%]">
+<main class="mt-24 px-4 w-full md:mt-28 md:pl-[26%] lg:pl-[20%] xl:pl-[20%] 2xl:pl-[23%] 3xl:pl-[23%] 4xl:pl-[18%] 4xl:pr-[1%] bg-white dark:bg-gray-900">
     <div class="flex justify-between items-center transition-all">
         <div class="animate-slideRight">
             <h1 id="question-title" class="text-black text-2xl font-semibold lg:text-4xl dark:text-gray-400">Questions</h1>
