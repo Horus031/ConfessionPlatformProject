@@ -1614,8 +1614,8 @@ class QuestionRenderer {
 
             questionElement.innerHTML = `
                 <td class="text-left">
-                    <h3 class="post-title w-96 text-lg text-white font-semibold">${question.post_title}</h3>
-                    <p class="w-96 line-clamp-1">${question.post_content}</p>
+                    <h3 class="post-title xl:w-56 2xl:w-96 text-lg text-white font-semibold">${question.post_title}</h3>
+                    <p class="xl:w-56 2xl:w-96 line-clamp-1">${question.post_content}</p>
                 </td>
 
                 <td class="text-left">
@@ -1639,18 +1639,6 @@ class QuestionRenderer {
                 </td>
 
                 <td>
-                    <span class="comment-count">
-                        0
-                    </span>
-                </td>
-
-                <td>
-                    <span class="view-count">
-                        ${question.view_count}
-                    </span>
-                </td>
-
-                <td>
                     <div id="question-actions" class="flex text-2xl text-center justify-center">
                         <span class="view-quesbtn material-symbols-rounded custom-icon p-2 rounded-full hover:bg-gray-700 active:scale-90 cursor-pointer">
                             visibility
@@ -1666,21 +1654,21 @@ class QuestionRenderer {
             `;
 
 
-            try {
-                const commentCount = await this.fetchData('../controllers/get_commentcount.php', {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ post_id: question.post_id })
-                });
+            // try {
+            //     const commentCount = await this.fetchData('../controllers/get_commentcount.php', {
+            //         method: "POST",
+            //         headers: { "Content-Type": "application/json" },
+            //         body: JSON.stringify({ post_id: question.post_id })
+            //     });
 
-                questionElement.querySelector(`.comment-count`).textContent = commentCount.comment_count;
-
-
+            //     questionElement.querySelector(`.comment-count`).textContent = commentCount.comment_count;
 
 
-            } catch (error) {
-                console.log(error);
-            }
+
+
+            // } catch (error) {
+            //     console.log(error);
+            // }
 
 
 

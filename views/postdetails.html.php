@@ -37,7 +37,7 @@
                             </div>
                         </div>
                         <div class="flex flex-col">
-                            <span id="username" class="text-xs text-text font-semibold md:text-md lg:text-lg dark:text-gray-400 hover:underline cursor-pointer"></span>
+                            <span id="username" class="text-xs text-text font-semibold md:text-base lg:text-lg dark:text-gray-400 hover:underline cursor-pointer"></span>
                             <span id="created-at" class="text-xs text-text md:text-base dark:text-gray-400"></span>
                         </div>
                     </div>

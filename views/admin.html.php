@@ -1,6 +1,6 @@
 <header class="font-poppins fixed top-0 w-full flex justify-between items-center z-60 p-3 bg-gray-900 shadow-2xl border-b border-gray-700">
-    <div class="flex items-center w-full -ml-4 text-3xl font-light text-white px-4">
-        <span id="adminmenu-btn" class="material-symbols-rounded custom-icon">
+    <div class="flex items-center w-full -ml-4 text-4xl font-light text-white px-4">
+        <span id="adminmenu-btn" class="ml-4 material-symbols-rounded custom-icon">
             menu
         </span>
         <img loading="lazy" src="../assets/images/weblogo.png" alt="" class="h-20">
@@ -9,7 +9,7 @@
 </header>
 
 
-<aside class="w-64 -translate-x-full fixed top-0 h-full mt-26 bg-gray-900 border-r border-gray-700 md:-translate-0">
+<aside id="menu-container" class="w-64 fixed top-0 h-full mt-26 -translate-x-full xl:-translate-x-0  bg-gray-900 border-r border-gray-700 z-50">
     <div id="admin-infor" class="flex items-center text-white bg-gray-800 mt-4 p-4">
         <div class="mr-4">
             <img id="admin-avatar" src="../assets/images/user.png" alt="" class="h-12 rounded-full">
@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <div id="admin-menu" class="mt-10 flex flex-col text-gray-400 font-semibold space-y-4">
+    <div id="admin-menu" class="mt-10 flex flex-col text-gray-400 font-semibold space-y-4 w-full">
         <div id="user-tab" class="p-4 flex items-center bg-gray-700 hover:bg-gray-700 cursor-pointer transition-all">
             <span class="material-symbols-rounded mr-2">
                 group
@@ -49,7 +49,7 @@
     </div>
 </aside>
 
-<main id="section-container" class="dark font-poppins h-full mt-26 md:ml-64 p-4 w-full bg-gray-900 text-gray-400">
+<main id="section-container" class="dark font-poppins h-full mt-26 xl:ml-64 2xl:ml-64 p-4 w-full bg-gray-900 text-gray-400">
     <!-- Users Management -->
     <div id="user">
         <section id="user-management">
@@ -314,8 +314,6 @@
                             <td class="">Module</td>
                             <td>User</td>
                             <td>Posted</td>
-                            <td>Comments</td>
-                            <td>Views</td>
                             <td>Actions</td>
                         </thead>
                         <tbody id="question-container">

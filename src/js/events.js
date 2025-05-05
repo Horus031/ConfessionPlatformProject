@@ -276,7 +276,10 @@ class EventListener {
         this.sectionChild = this.sectionContainer.children;
         this.backHomeBtn = document.querySelector('#backToHome');
         this.addUserBtn = document.querySelector('#adduser-btn');
+        this.menuContainer = document.querySelector('#menu-container');
         this.adminMenu = document.querySelector('#admin-menu');
+        this.adminMenuBtn = document.querySelector('#adminmenu-btn');
+        this.overlay = document.querySelector('#overlay');
         this.userManagement = document.querySelector('#user-management');
         this.moduleManagement = document.querySelector('#module-management');
         this.moduleContainer = document.querySelector('#module-container');
@@ -1880,8 +1883,31 @@ class EventListener {
             this.adminInformation.querySelector('#admin-username').textContent = `${this.fullName}`;
         }
 
+
         if (this.adminMenu) {
+            this.adminMenuBtn.addEventListener('click', function(){
+                _this.menuContainer.classList.add('animate-menuTransition');
+                _this.overlay.classList.remove('hidden');
+            });
+
+            // Close menu when clicking on overlay
+            this.overlay.addEventListener('click', function(){
+                _this.menuContainer.classList.add('animate-menuOut');
+                _this.menuContainer.classList.remove('animate-menuTransition');
+                _this.overlay.classList.add('hidden');
+            });
+
+            // Close menu when switching to another tab
             const menuTabs = this.adminMenu.querySelectorAll('div[id$="-tab"]');
+            menuTabs.forEach(tab => {
+                tab.addEventListener('click', function(){
+                    _this.menuContainer.classList.add('animate-menuOut');
+                    _this.menuContainer.classList.remove('animate-menuTransition');
+                    _this.overlay.classList.add('hidden');
+                });
+            });
+
+
             menuTabs.forEach(tab => {
                 tab.addEventListener('click', function() {
                     menuTabs.forEach(tab => {
