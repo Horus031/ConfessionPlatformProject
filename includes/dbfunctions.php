@@ -835,4 +835,17 @@ class Database
         $deleteStmt = $this->pdo->prepare($deleteSql);
         $deleteStmt->execute([$module_id]);
     }
+
+    public function getTopTags($userId)
+    {
+        $sql = "SELECT tag_name, read_count, 
+                (read_count / (SELECT SUM(read_count) FROM user_tags_history WHERE user_id = ?)) * 100 AS percentage
+                FROM user_tags_history
+                WHERE user_id = ?
+                ORDER BY percentage DESC
+                LIMIT 3";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$userId, $userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

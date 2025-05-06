@@ -85,7 +85,7 @@
 
 
                 <div class="flex flex-col justify-center items-center">
-                    <input type="button" id="registerNextBtn" value="Register" class="bg-linear-to-br from-gradient1 to-gradient2 rounded-full mt-9 p-3 pl-8 w-72 text-white text-xl text-center font-semibold shadow-text shadow-[0_6px_16px_-6px] cursor-pointer">
+                    <input type="submit" id="registerNextBtn" value="Register" class="bg-linear-to-br from-gradient1 to-gradient2 rounded-full mt-9 p-3 pl-8 w-72 text-white text-xl text-center font-semibold shadow-text shadow-[0_6px_16px_-6px] cursor-pointer">
                     <div class="mt-8">
                         <span class="text-text-light">Already have account?</span>
                         <a href="./login.html.php" class="text-form-btn cursor-pointer">Login</a>

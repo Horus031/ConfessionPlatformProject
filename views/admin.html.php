@@ -1,6 +1,6 @@
 <header class="font-poppins fixed top-0 w-full flex justify-between items-center z-60 p-3 bg-gray-900 shadow-2xl border-b border-gray-700">
     <div class="flex items-center w-full -ml-4 text-4xl font-light text-white px-4">
-        <span id="adminmenu-btn" class="ml-4 material-symbols-rounded custom-icon">
+        <span id="adminmenu-btn" class="ml-4 material-symbols-rounded custom-icon cursor-pointer active:scale-90">
             menu
         </span>
         <img loading="lazy" src="../assets/images/weblogo.png" alt="" class="h-20">

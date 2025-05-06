@@ -11,15 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     if ($userId) {
         try {
-            $sql = "SELECT tag_name, read_count, 
-                           (read_count / (SELECT SUM(read_count) FROM user_tags_history WHERE user_id = :user_id)) * 100 AS percentage
-                    FROM user_tags_history
-                    WHERE user_id = :user_id
-                    ORDER BY percentage DESC
-                    LIMIT 3";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(['user_id' => $userId]);
-            $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $tags = $database->getTopTags($userId);
 
             echo json_encode($tags);
         } catch (PDOException $e) {

@@ -213,6 +213,7 @@ class EventListener {
         this.searchSuggestions = document.getElementById('searchSuggestions');
         this.registerNextButton = document.querySelector('#registerNextBtn');
         this.step1Register = document.querySelector('#step1-container');
+        this.step1Form = document.querySelector('#step1-form');
         this.step2Register = document.querySelector('#step2-container');
         this.step2Form = document.querySelector('#step2-form');
         this.editUserForm = document.querySelector('#edit-form');
@@ -280,6 +281,8 @@ class EventListener {
         this.adminMenu = document.querySelector('#admin-menu');
         this.adminMenuBtn = document.querySelector('#adminmenu-btn');
         this.overlay = document.querySelector('#overlay');
+        this.fileInput = document.querySelector('#imageURL');
+        this.fileName = document.querySelector('#file-name');
         this.userManagement = document.querySelector('#user-management');
         this.moduleManagement = document.querySelector('#module-management');
         this.moduleContainer = document.querySelector('#module-container');
@@ -372,7 +375,8 @@ class EventListener {
         }
 
         if (this.registerNextButton) {
-            this.registerNextButton.addEventListener('click', async function() {
+            this.step1Form.addEventListener('submit', async function(e) {
+                e.preventDefault();
                 const username = _this.step1Register.querySelector('#username').value;
                 const email = _this.step1Register.querySelector('#email').value;
                 const password = _this.step1Register.querySelector('#password').value;
@@ -2061,6 +2065,16 @@ class EventListener {
 
                 }
             })
+        }
+
+        if (this.fileInput) {
+            this.fileInput.addEventListener('change', function() {
+                if (_this.fileInput.files.length > 0) {
+                    _this.fileName.textContent = _this.fileInput.files[0].name;
+                } else {
+                    _this.fileName.textContent = 'Upload your image';
+                }
+            });
         }
 
         if (this.adminEditPostForm) {
