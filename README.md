@@ -1,6 +1,5 @@
 Admin Account for testing:
-Username: administrator
-Password: 123456
+Username: administrator, Password: 123456
 
 WebSocket is applied for this website, it you want to use, follow this instruction:
 1. Download the installer at: https://getcomposer.org/Composer-Setup.exe (if you don't have Composer)
